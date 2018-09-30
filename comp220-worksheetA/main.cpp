@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <GL\glew.h>
+#include <SDL_opengl.h> // Needs to go after glew include
 
 int main(int argc, char ** argsv)
 {
@@ -16,7 +17,7 @@ int main(int argc, char ** argsv)
 
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
-	SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN|SDL_WINDOW_OPENGL);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
@@ -28,6 +29,34 @@ int main(int argc, char ** argsv)
 		return 1;
 	}
 
+	// Request 3.2 Core OpenGL
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	SDL_GLContext gl_Context = SDL_GL_CreateContext(window);
+	if (gl_Context == nullptr) 
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreatedContext Failed", SDL_GetError(), NULL);
+		SDL_DestroyWindow(window);
+		SDL_Quit();
+
+		return 1;
+	}
+
+	// Init GLEW
+	glewExperimental = GL_TRUE;
+	// Make sure GLEW is being initalised correctly
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+	{
+		// Show error
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreateWindow failed", (char*)glewGetErrorString(err), NULL);
+		SDL_DestroyWindow(window);
+		SDL_Quit();
+
+		return 1;
+	}
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -59,9 +88,15 @@ int main(int argc, char ** argsv)
 			}
 		}
 
+		// Update game and draw with OpenGL
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		SDL_GL_SwapWindow(window);
 	}
+
+	// Delete Context
+	SDL_GL_DeleteContext(gl_Context);
 
 	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
 	//https://wiki.libsdl.org/SDL_DestroyWindow
