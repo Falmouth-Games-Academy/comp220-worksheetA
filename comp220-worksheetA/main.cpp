@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <GL\glew.h>
 #include <SDL_opengl.h> // Needs to go after glew include
+#include "Shader.h"
 
 int main(int argc, char ** argsv)
 {
@@ -78,6 +79,8 @@ int main(int argc, char ** argsv)
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Gives our vertices to OpenGL
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+	GLuint programID = LoadShaders("vert.glsl", "frag.glsl"); // Normally would name the var what it does
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -113,6 +116,8 @@ int main(int argc, char ** argsv)
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glUseProgram(programID); // for shaders
+
 		// 1st attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -130,6 +135,9 @@ int main(int argc, char ** argsv)
 
 		SDL_GL_SwapWindow(window);
 	}
+
+	// Delete program
+	glDeleteProgram(programID);
 
 	// Delete buffers
 	glDeleteBuffers(1, &vertexbuffer);
