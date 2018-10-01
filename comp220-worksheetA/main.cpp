@@ -118,6 +118,11 @@ int main(int argc, char ** argsv)
 
 		glUseProgram(programID); // for shaders
 
+		// Change colour
+		GLuint location
+			= glGetUniformLocation(programID, "myColour");
+		glUniform3f(location, 0, 1, 0);
+
 		// 1st attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
