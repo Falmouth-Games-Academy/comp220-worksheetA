@@ -2,6 +2,12 @@
 #include <SDL.h>
 #include <GL\glew.h>
 #include <SDL_opengl.h> // Needs to go after glew include
+#include <glm/glm.hpp> // Old header file standard (.hpp)
+
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
 
 int main(int argc, char ** argsv)
@@ -80,7 +86,28 @@ int main(int argc, char ** argsv)
 	// Gives our vertices to OpenGL
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
+	// Triangle
+	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 triangleScale = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 trinagleRotation = glm::uvec3(0.0f, 0.0f, 0.0f);
+
+	// View
+	glm::mat4 translationMatrix = glm::translate(trianglePosition);
+	glm::mat4 scaleMatrix = glm::scale(triangleScale);
+	glm::mat4 rotationMatrix = glm::rotate(trinagleRotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(trinagleRotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::rotate(trinagleRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	// Model
+	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+
 	GLuint programID = LoadShaders("vert.glsl", "frag.glsl"); // Normally would name the var what it does
+
+	//glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f);
+
+	//glm::mat4 modelMatrix = glm::translate(position);
+
+	// Get location from .glsl
+	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix"); // Same name as in vert.glsl
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -117,6 +144,9 @@ int main(int argc, char ** argsv)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(programID); // for shaders
+
+		// Send matrix to vert.glsl
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
 		// Change colour
 		GLuint location
