@@ -100,6 +100,15 @@ int main(int argc, char ** argsv)
 	// Model
 	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
+	// Camera
+	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -5.0f);
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
+
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)800 / 600), 0.1f, 100.0f);
+
 	GLuint programID = LoadShaders("vert.glsl", "frag.glsl"); // Normally would name the var what it does
 
 	//glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f);
@@ -108,6 +117,10 @@ int main(int argc, char ** argsv)
 
 	// Get location from .glsl
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix"); // Same name as in vert.glsl
+
+	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
+
+	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -147,6 +160,10 @@ int main(int argc, char ** argsv)
 
 		// Send matrix to vert.glsl
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
+		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
 		// Change colour
 		GLuint location
