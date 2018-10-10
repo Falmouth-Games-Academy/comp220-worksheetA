@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono> // Get time
 #include <SDL.h>
 #include <GL\glew.h>
 #include <SDL_opengl.h> // Needs to go after glew include
@@ -9,6 +10,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
+
+typedef std::chrono::high_resolution_clock Time;
 
 int main(int argc, char ** argsv)
 {
@@ -121,6 +124,10 @@ int main(int argc, char ** argsv)
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
+
+	// Inspired by http://gameprogrammingpatterns.com/game-loop.html
+	Time::time_point previous = Time::now();
+	double lag = 0.0;
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -128,6 +135,12 @@ int main(int argc, char ** argsv)
 	SDL_Event ev;
 	while (running)
 	{
+		// Keep track of processing time
+		Time::time_point current = Time::now();
+		double elapsed = std::chrono::duration<double, std::nano>(current - previous).count();
+		Time::time_point previous = current;
+		lag += elapsed;
+
 		//Poll for the events which have happened in this frame
 		//https://wiki.libsdl.org/SDL_PollEvent
 		while (SDL_PollEvent(&ev))
