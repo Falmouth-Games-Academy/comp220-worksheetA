@@ -77,9 +77,54 @@ int main(int argc, char ** argsv)
 	// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-2-the-first-triangle/
 	// {x,y,z,r,g,b,a}
 	static const Vertex v[] = {
-		{-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-		{1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
-		{0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f}
+		/*
+		// Front
+		{ -0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,1.0f },
+		{ 0.5f,-0.5f,0.0f,0.0f,1.0f,0.0f,1.0f },
+		{ 0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f },
+		{ -0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f },
+
+		// Top
+		{ 0.5f,0.5f,-0.5f,0.0f,0.0f,1.0f,1.0f },
+		{ -0.5f,0.5f,-0.5f,0.0f,0.0f,1.0f,1.0f },
+		*/
+
+		// 0, 1, 1 (Top Front left)
+		{ 0.0f,1.0f,1.0f,	1.0f,0.0f,1.0f,1.0f }, // 0
+		// 0, 1, 0 (Top Back left)
+		{ 0.0f,1.0f,0.0f,	0.0f,0.0f,1.0f,1.0f }, // 1
+
+		// 1, 1, 1 (Top Front right)
+		{ 1.0f,1.0f,1.0f,	1.0f,0.0f,1.0f,1.0f }, // 2
+		// 1, 1, 0 (Top Back right)
+		{ 1.0f,1.0f,0.0f,	0.0f,0.0f,1.0f,1.0f }, // 3
+
+		// 0, 0, 1 (Bottom Front left)
+		{ 0.0f,0.0f,1.0f,	1.0f,0.0f,1.0f,1.0f }, // 4
+		// 0, 0, 0 (Bottom Back left)
+		{ 0.0f,0.0f,0.0f,	0.0f,0.0f,1.0f,1.0f }, // 5
+
+		// 1, 0, 1 (Bottom Front right)
+		{ 1.0f,0.0f,1.0f,	1.0f,0.0f,1.0f,1.0f }, // 6
+		// 1, 0, 0 (Bottom Back right)
+		{ 1.0f,0.0f,0.0f,	0.0f,0.0f,1.0f,1.0f }, // 7
+
+	};
+
+	// Describes the square (two triangles) anti-clockwise for front facing
+	static const unsigned int indices[] =
+	{
+		// Front
+		//0,1,2,
+		//2,0,3,
+
+		// Top
+		2, 3, 1,
+		2, 1, 0,
+
+		// Front
+		0, 4, 6
+
 	};
 
 	//This will identify our vertex buffer
@@ -89,7 +134,12 @@ int main(int argc, char ** argsv)
 	// The following commands will talk about our 'vertexbuffer' buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Gives our vertices to OpenGL
-	glBufferData(GL_ARRAY_BUFFER, 3*sizeof(Vertex), v, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 8*sizeof(Vertex), v, GL_STATIC_DRAW);
+
+	GLuint elementBuffer;
+	glGenBuffers(1, &elementBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer); // Binding an element buffer
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 9 * sizeof(int), indices, GL_STATIC_DRAW); // GL_STATIC_DRAW as doesn't need to be updated every frame
 
 	// Triangle
 	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -106,7 +156,7 @@ int main(int argc, char ** argsv)
 	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 	// Camera
-	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -5.0f);
+	glm::vec3 cameraPosition = glm::vec3(2.0f, 2.0f, -2.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -188,6 +238,7 @@ int main(int argc, char ** argsv)
 		// 1st attribute buffer : vertices
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
 		glVertexAttribPointer(
 			0,			// Attribute 0. No particular reason for 0, but must match the Layout in the shader
 			3,			// Size
@@ -197,7 +248,8 @@ int main(int argc, char ** argsv)
 			(void*)0	// Array buffer offset
 		);
 		// Draw the triangle
-		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+		//glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 		glDisableVertexAttribArray(0);
 
 		glEnableVertexAttribArray(1);
