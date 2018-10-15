@@ -10,6 +10,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
+#include "Vertex.h"
 
 typedef std::chrono::high_resolution_clock Time;
 
@@ -27,7 +28,7 @@ int main(int argc, char ** argsv)
 
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
-	SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN|SDL_WINDOW_OPENGL);
+	SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
@@ -45,7 +46,7 @@ int main(int argc, char ** argsv)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	SDL_GLContext gl_Context = SDL_GL_CreateContext(window);
-	if (gl_Context == nullptr) 
+	if (gl_Context == nullptr)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreatedContext Failed", SDL_GetError(), NULL);
 		SDL_DestroyWindow(window);
@@ -74,10 +75,11 @@ int main(int argc, char ** argsv)
 
 	// An array of 3 vectors which represents 3 verticies
 	// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-2-the-first-triangle/
-	static const GLfloat g_vertex_buffer_data[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f
+	// {x,y,z,r,g,b,a}
+	static const Vertex v[] = {
+		{-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
+		{1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+		{0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f}
 	};
 
 	//This will identify our vertex buffer
@@ -87,7 +89,7 @@ int main(int argc, char ** argsv)
 	// The following commands will talk about our 'vertexbuffer' buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Gives our vertices to OpenGL
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 3*sizeof(Vertex), v, GL_STATIC_DRAW);
 
 	// Triangle
 	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -191,12 +193,22 @@ int main(int argc, char ** argsv)
 			3,			// Size
 			GL_FLOAT,	// Type
 			GL_FALSE,	// Normalised?
-			0,			// Stride
+			sizeof(Vertex),			// Stride
 			(void*)0	// Array buffer offset
 		);
 		// Draw the triangle
 		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
 		glDisableVertexAttribArray(0);
+
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(
+			1,
+			4,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(Vertex),
+			(void*)(3 * sizeof(float))
+		);
 
 		SDL_GL_SwapWindow(window);
 	}
