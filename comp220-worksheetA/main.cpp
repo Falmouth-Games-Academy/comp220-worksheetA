@@ -77,17 +77,6 @@ int main(int argc, char ** argsv)
 	// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-2-the-first-triangle/
 	// {x,y,z,r,g,b,a}
 	static const Vertex v[] = {
-		/*
-		// Front
-		{ -0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,1.0f },
-		{ 0.5f,-0.5f,0.0f,0.0f,1.0f,0.0f,1.0f },
-		{ 0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f },
-		{ -0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f },
-
-		// Top
-		{ 0.5f,0.5f,-0.5f,0.0f,0.0f,1.0f,1.0f },
-		{ -0.5f,0.5f,-0.5f,0.0f,0.0f,1.0f,1.0f },
-		*/
 
 		// 0, 1, 1 (Top Front left)
 		{ 0.0f,1.0f,1.0f,	1.0f,0.0f,1.0f,1.0f }, // 0
@@ -115,17 +104,31 @@ int main(int argc, char ** argsv)
 	static const unsigned int indices[] =
 	{
 		// Front
-		//0,1,2,
-		//2,0,3,
+		0, 4, 6,
+		0, 6, 2,
+
+		// Back
+		1, 5, 7,
+		7, 3, 1,
 
 		// Top
 		2, 3, 1,
 		2, 1, 0,
 
-		// Front
-		0, 4, 6
+		// Bottom
+		5, 4, 6,
+		6, 7, 5,
 
+		// Left
+		1, 5, 4,
+		4, 0, 1,
+
+		// Right
+		3, 7, 6,
+		6, 2, 3
 	};
+
+	glEnable(GL_DEPTH_TEST);
 
 	//This will identify our vertex buffer
 	GLuint vertexbuffer;
@@ -139,7 +142,7 @@ int main(int argc, char ** argsv)
 	GLuint elementBuffer;
 	glGenBuffers(1, &elementBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer); // Binding an element buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 9 * sizeof(int), indices, GL_STATIC_DRAW); // GL_STATIC_DRAW as doesn't need to be updated every frame
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // GL_STATIC_DRAW as doesn't need to be updated every frame
 
 	// Triangle
 	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -187,6 +190,8 @@ int main(int argc, char ** argsv)
 	SDL_Event ev;
 	while (running)
 	{
+		// Clear depth buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Keep track of processing time
 		Time::time_point current = Time::now();
 		double elapsed = std::chrono::duration<double, std::nano>(current - previous).count();
@@ -249,7 +254,7 @@ int main(int argc, char ** argsv)
 		);
 		// Draw the triangle
 		//glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, (void*)0);
 		glDisableVertexAttribArray(0);
 
 		glEnableVertexAttribArray(1);
