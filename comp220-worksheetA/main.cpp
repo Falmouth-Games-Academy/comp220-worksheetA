@@ -183,6 +183,7 @@ int main(int argc, char ** argsv)
 	// Inspired by http://gameprogrammingpatterns.com/game-loop.html
 	Time::time_point previous = Time::now();
 	double lag = 0.0;
+	bool fullScreen = false;
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -217,6 +218,18 @@ int main(int argc, char ** argsv)
 					//Escape key
 				case SDLK_ESCAPE:
 					running = false;
+					break;
+				case SDLK_F11:
+					if (fullScreen)
+					{
+						SDL_SetWindowFullscreen(window, 0);
+						fullScreen = false;
+					}
+					else
+					{
+						SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+						fullScreen = true;
+					}
 					break;
 				}
 			}
