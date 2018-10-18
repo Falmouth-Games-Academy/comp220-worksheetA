@@ -76,7 +76,8 @@ int main(int argc, char ** argsv)
 				case SDLK_ESCAPE:
 					running = false;
 					break;
-			
+				case SDLK_f:
+					SDL_SetWindowFullscreen(window,1);
 				}
 			}
 		}
