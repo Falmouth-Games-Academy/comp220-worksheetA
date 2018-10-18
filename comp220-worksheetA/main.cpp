@@ -3,69 +3,61 @@
 
 int main(int argc, char ** argsv)
 {
-	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
-	//https://wiki.libsdl.org/SDL_Init
+	//Starting the SDL Library, using SDL_INIT_VIDEO to only run the video parts
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		//Display an error message box
-		//https://wiki.libsdl.org/SDL_ShowSimpleMessageBox
+		//If SDL failed to initialize, this error will show
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_Init failed", SDL_GetError(), NULL);
 		return 1;
 	}
 
-	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
-	//https://wiki.libsdl.org/SDL_CreateWindow
+	//Creating the window, have to remember to quit the window at the end to return the pointer by destroying it(the best way)
 	SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN);
-	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
-		//Show error
+		//Show error if SDL didnt create the window
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreateWindow failed", SDL_GetError(), NULL);
-		//Close the SDL Library
-		//https://wiki.libsdl.org/SDL_Quit
-		SDL_Quit();
+
+		SDL_Quit(); //quit SDL
 		return 1;
 	}
 
-	
-	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
+	//Running is always true as long as Escape is not pressed 
 	bool running = true;
-	//SDL Event structure, this will be checked in the while loop
+	//SDL Event structure initiation
 	SDL_Event ev;
 	while (running)
 	{
-		//Poll for the events which have happened in this frame
-		//https://wiki.libsdl.org/SDL_PollEvent
+		//Poll for the events
 		while (SDL_PollEvent(&ev))
 		{
-			//Switch case for every message we are intereted in
+			//Switch case for event type
 			switch (ev.type)
 			{
-				//QUIT Message, usually called when the window has been closed
+				//If the case is SDL_QUIT then running will be false
 			case SDL_QUIT:
 				running = false;
 				break;
-				//KEYDOWN Message, called when a key has been pressed down
+				//Checks the keydown inputs
 			case SDL_KEYDOWN:
-				//Check the actual key code of the key that has been pressed
+				//Checks which button has been pressed
 				switch (ev.key.keysym.sym)
 				{
-					//Escape key
+					//In case of ESC being pressed, the program will close
 				case SDLK_ESCAPE:
 					running = false;
 					break;
+			
 				}
 			}
 		}
 
-
 		SDL_GL_SwapWindow(window);
+		SDL_SetWindowResizable(window, SDL_TRUE);
 	}
 
-	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
-	//https://wiki.libsdl.org/SDL_DestroyWindow
+	//Clean up, deactivating the library and the window
 	SDL_DestroyWindow(window);
-	//https://wiki.libsdl.org/SDL_Quit
 	SDL_Quit();
 
 	return 0;
