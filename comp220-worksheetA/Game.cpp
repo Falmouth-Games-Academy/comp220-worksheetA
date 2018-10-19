@@ -115,7 +115,8 @@ void Game::initScene()
 	static const Vertex triangleVertices[] = {
 		{ -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }
+		{ 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+		{ -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f }
 	};
 
 	// Generate 1 buffer, put the resulting identifier in vertexbuffer
