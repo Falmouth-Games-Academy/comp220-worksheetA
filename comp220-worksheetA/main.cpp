@@ -4,9 +4,12 @@
 
 int main(int argc, char* args[])
 {
+	// Game class gets called in
 	Game game;
-	game.init();
+
+	// GameLoop function runs the game
 	game.gameLoop();
 
+	// Return 0 ends the program once gameloop has finished
 	return 0;
 }

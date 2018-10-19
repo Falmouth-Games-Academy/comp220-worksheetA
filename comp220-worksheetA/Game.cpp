@@ -11,6 +11,7 @@ Game::~Game()
 
 }
 
+// Main game Initializer
 void Game::init()
 {
 	initSDL();
@@ -20,6 +21,7 @@ void Game::init()
 	initScene();
 }
 
+// initialises SDL
 void Game::initSDL()
 {
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
@@ -33,11 +35,12 @@ void Game::initSDL()
 	}
 }
 
+// initialises the SDL Window
 void Game::initWindow()
 {
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
-	window = SDL_CreateWindow("Triangle Simulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow("Triangle Simulator - Press F to toggle fullscreen", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
@@ -50,9 +53,9 @@ void Game::initWindow()
 	}
 }
 
+// function to toggle fullscreen On and Off
 void Game::fullScreen()
 {
-	
 	if (fullScreenToggle == false)
 	{ 
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -67,6 +70,7 @@ void Game::fullScreen()
 	}
 }
 
+// initialises OpenGL
 void Game::initOpenGL()
 {
 	//requests 3.2 core OpenGL
@@ -85,6 +89,7 @@ void Game::initOpenGL()
 	}
 }
 
+// initialises Glew
 void Game::initGlew()
 {
 	//Init GLEW
@@ -100,6 +105,7 @@ void Game::initGlew()
 	}
 }
 
+// initialises the game scene and elements to be rendered
 void Game::initScene()
 {
 	glGenVertexArrays(1, &VertexArrayID);
@@ -119,6 +125,7 @@ void Game::initScene()
 	// Give our vertices to OpenGL
 	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(Vertex), triangleVertices, GL_STATIC_DRAW);
 
+	// 1st attribute buffer: Vertices
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(
 		0,
@@ -139,13 +146,14 @@ void Game::initScene()
 		sizeof(Vertex),
 		(void*)(3 * sizeof(float))
 	);
-
+	
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 rotation = glm::vec3(0.0f, 90.0f, 0.0f);
 	float rot = 0.1f;
 
 	modelMatrix = glm::translate(position);
 
+	// loads in the shaders
 	programID = LoadShaders("vert.glsl", "frag.glsl");
 	glUseProgram(programID);
 	location = glGetUniformLocation(programID, "color");
@@ -154,8 +162,11 @@ void Game::initScene()
 	ProjectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 }
 
+// The main Gameloop
 void Game::gameLoop()
 {
+	init();
+
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
 	//SDL Event structure, this will be checked in the while loop
@@ -260,6 +271,7 @@ void Game::gameLoop()
 	gameCleanUp();
 }
 
+// CleanUp function, cleans up memory when the game loop is being closed/finished
 void Game::gameCleanUp()
 {
 
@@ -275,9 +287,4 @@ void Game::gameCleanUp()
 	SDL_DestroyWindow(window);
 	//https://wiki.libsdl.org/SDL_Quit
 	SDL_Quit();
-}
-
-void Game::update(float elapsedTime)
-{
-
 }

@@ -17,27 +17,16 @@
 class Game
 {
 public:
+
 	Game();
 	virtual ~Game();
 
-	bool running = true;
-
+	// main functions to get the game running
 	virtual void init();
-
-	void initSDL();
-	void initWindow();
-	void initOpenGL();
-	void initGlew();
-
-	void initScene();
 	void gameLoop();
 	void gameCleanUp();
-
-
+	
 	SDL_Window* window;
-
-	bool fullScreenToggle = false;
-	void fullScreen();
 
 	SDL_GLContext gl_Context;
 
@@ -48,21 +37,35 @@ public:
 	GLuint vertexbuffer;
 	GLuint VertexArrayID;
 
+	// Camera to view the screen
 	Camera camera;
 
+private:
+
+	// the different initialises
+	void initSDL();
+	void initWindow();
+	void initOpenGL();
+	void initGlew();
+	void initScene();
+
+	// fullscreen toggle boolean and function
+	bool fullScreenToggle = false;
+	void fullScreen();
+
+	// Gameloop running boolean
+	bool running = true;
+
+	// secene matrix locations
 	GLuint modelMatrixLocation;
 	GLuint viewMatrixLocation;
 	GLuint ProjectionMatrixLocation;
 
-
 	glm::mat4 Projection;
 	glm::mat4 modelMatrix;
-
-private:
-
 
 
 protected:
 
-	virtual void update(float elapsedTime);
+	//virtual void update(float elapsedTime);
 };
