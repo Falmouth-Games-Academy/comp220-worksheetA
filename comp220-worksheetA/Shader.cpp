@@ -1,5 +1,28 @@
 #include "Shader.h"
 
+static const std::string SHADER_NOT_FOUND = "SHADER_NOT_FOUND";
+
+// Reads the shader from the given path
+// Returns a string containing the contents of the file or 0
+std::string ReadShaderFile(std::string path)
+{
+	// Read the Vertex Shader code from the file
+	std::string ShaderCode;
+	std::ifstream ShaderStream(path, std::ios::in);
+	if (ShaderStream.is_open()) {
+		std::stringstream sstr;
+		sstr << ShaderStream.rdbuf();
+		ShaderCode = sstr.str();
+		ShaderStream.close();
+		return ShaderCode;
+	}
+	else {
+		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", path);
+		getchar();
+		return SHADER_NOT_FOUND;
+	}
+}
+
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
 	// Create the shaders
@@ -7,28 +30,17 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Read the Vertex Shader code from the file
-	std::string VertexShaderCode;
-	std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-	if (VertexShaderStream.is_open()) {
-		std::stringstream sstr;
-		sstr << VertexShaderStream.rdbuf();
-		VertexShaderCode = sstr.str();
-		VertexShaderStream.close();
-	}
-	else {
-		printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
-		getchar();
-		return 0;
-	}
+	std::string VertexShaderCode = ReadShaderFile(vertex_file_path);
 
 	// Read the Fragment Shader code from the file
-	std::string FragmentShaderCode;
-	std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-	if (FragmentShaderStream.is_open()) {
-		std::stringstream sstr;
-		sstr << FragmentShaderStream.rdbuf();
-		FragmentShaderCode = sstr.str();
-		FragmentShaderStream.close();
+	std::string FragmentShaderCode = ReadShaderFile(fragment_file_path);
+
+	// Stop if VertexShaderCode/FragmentShaderCode files are not found
+	if (VertexShaderCode == SHADER_NOT_FOUND || FragmentShaderCode == SHADER_NOT_FOUND)
+	{
+		glDeleteShader(VertexShaderID);
+		glDeleteShader(FragmentShaderID);
+		return 0;
 	}
 
 	GLint Result = GL_FALSE;
@@ -88,6 +100,3 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 
 	return ProgramID;
 }
-
-
-Shader::

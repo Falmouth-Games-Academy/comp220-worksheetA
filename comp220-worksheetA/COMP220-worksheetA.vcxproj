@@ -163,14 +163,10 @@ copy ..\Libraries\SDL2-2.0.6\lib\x64\SDL2.dll</Command>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGLWindow.cpp" />
-    <ClCompile Include="PlayerController.cpp" />
-    <ClCompile Include="render.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenGLWindow.h" />
-    <ClInclude Include="PlayerController.h" />
-    <ClInclude Include="render.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

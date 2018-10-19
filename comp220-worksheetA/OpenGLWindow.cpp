@@ -1,6 +1,5 @@
 #include "OpenGLWindow.h";
 
-
 int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 {
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
@@ -15,7 +14,7 @@ int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
-	window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
@@ -32,7 +31,7 @@ int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	SDL_GLContext gl_Context = SDL_GL_CreateContext(window);
+	gl_Context = SDL_GL_CreateContext(window);
 	if (gl_Context == nullptr)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreatedContext Failed", SDL_GetError(), NULL);
@@ -64,7 +63,6 @@ SDL_Window * OpenGLWindow::getWindow()
 	return window;
 }
 
-
 void OpenGLWindow::fullScreen(bool enable)
 {
 	if (enable)
@@ -77,8 +75,22 @@ void OpenGLWindow::fullScreen(bool enable)
 	}
 }
 
-void OpenGLWindow::removeWindow()
+OpenGLWindow::~OpenGLWindow()
 {
+	// Delete Context
+	SDL_GL_DeleteContext(gl_Context);
 
+	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
+	//https://wiki.libsdl.org/SDL_DestroyWindow
+	SDL_DestroyWindow(window);
+	//https://wiki.libsdl.org/SDL_Quit
+	SDL_Quit();
+
+	// Remove the window pointer
+	if (window)
+	{
+		window = nullptr;
+		delete(window);
+	}
 }
 
