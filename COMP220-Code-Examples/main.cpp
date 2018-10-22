@@ -122,8 +122,10 @@ int main(int argc, char ** argsv)
 		(void*)(3*sizeof(float))            // array buffer offset
 	);
 
+	GLunit textureId = laodTextureFromFile("");
+
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("vert.glsl", "frag.glsl");
+	GLuint programID = LoadShaders("vertTextures.glsl", "fragTextures.glsl");
 
 	//Set up positions for position, rotation and scale
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -154,7 +156,7 @@ int main(int argc, char ** argsv)
 	GLuint modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	GLuint viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
-
+	//Glunit textureUniformFromLocation=glGetUniformFromLocation(program...)
 
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -191,12 +193,20 @@ int main(int argc, char ** argsv)
 
 		glUseProgram(programID);
 
+		glActiveTexture(GL_TEXTURE0);
+		GLBindTexture(GL_TEXTURE_2D, textureID);
+
+		// if want another texture
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, anotherTextureID);
+
 		glBindVertexArray(VertexArrayID);
 
 		//send the uniforms across
 		glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 		glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+		glUniform1i(textureUniformLocation, 0);
 
 		// Draw the triangle !
 		//glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -207,6 +217,7 @@ int main(int argc, char ** argsv)
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
+	glDeleteTextuers(1,&textureID)
 	//Delete Context
 	SDL_GL_DeleteContext(gl_Context);
 	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
