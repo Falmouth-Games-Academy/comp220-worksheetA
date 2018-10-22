@@ -232,7 +232,6 @@ int Game::initialise()
 int Game::getVertex()
 {
 	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
 
 	// An array of 3 vectors which represents 3 vertices
 	static const Vertex v[] = {
@@ -302,13 +301,52 @@ int Game::getVertex()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesNum * sizeof(int), indices, GL_STATIC_DRAW);
 	*/
+
 	return 0;
+}
+
+int Game::loading()
+{
+	// 1st attribute buffer : vertices
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(
+		0,					// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,					// size
+		GL_FLOAT,			// type
+		GL_FALSE,			// normalized?
+		sizeof(Vertex),		// stride -> sizeof(Vertex)
+		(void*)0			// array buffer offset
+	);
+
+	// Uses colours from the Vertex.h
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(
+		1,
+		4,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex),
+		(void*)(3 * sizeof(float))
+	);
+
+	// Load textures
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(
+		2,
+		2,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex),
+		(void*)(7 * sizeof(float))
+	);
 }
 
 int Game::getShaders()
 {
+	textureID = loadTextureFromFile("Textures\Crate.jpg");
+
 	// Create and compile our GLSL program from the shaders
-	programID = LoadShaders("vertex.glsl", "fragment.glsl");
+	programID = LoadShaders("vertexTextured.glsl", "fragmentTextured.glsl");
 
 	// Set up positions for position, rotation and scale
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -338,6 +376,7 @@ int Game::getShaders()
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
+	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
 
 	return 0;
 }
@@ -350,42 +389,26 @@ void Game::render()
 
 	glUseProgram(programID);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glBindVertexArray(VertexArrayID);
+
+	// If we want another texture do the following
+	// glActiveTexture(GL_TEXTURE1);
+	// glBindTexture(GL_TEXTURE_2D, anotherTextureID);
+
 	//send the uniforms across
 	glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-
-	// Bind buffers
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-
-	// 1st attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0,					// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,					// size
-		GL_FLOAT,			// type
-		GL_FALSE,			// normalized?
-		sizeof(Vertex),		// stride -> sizeof(Vertex)
-		(void*)0			// array buffer offset
-	);
-
-	// Uses colours from the Vertex.h
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-		1,
-		4,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(void*)(3 * sizeof(float))
-	); 
+	glUniform1i(textureUniformLocation, 0);
 
 	// Draw the triangle !
 	glDrawArrays(GL_TRIANGLES, 0, verticesNum); // Starting from vertex 0; 3 vertices total -> 1 trangle
-	//glDrawElements(GL_TRIANGLES, verticesNum, GL_UNSIGNED_INT, (void*) 0);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	//glDrawElements(GL_TRIANGLES, verticesNum, GL_UNSIGNED_INT, (void*) 0); // draw elements isntead of vertices
+	//glDisableVertexAttribArray(0); // might be not needed
+	//glDisableVertexAttribArray(1); // might be not needed
 
 	SDL_GL_SwapWindow(mainWindow);
 }
@@ -395,7 +418,9 @@ void Game::clean()
 	// Cleanup
 	std::cout << "Cleaning SDL \n";
 	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &elementbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
+	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
 	//Delete Context
 	SDL_GL_DeleteContext(gl_Context);

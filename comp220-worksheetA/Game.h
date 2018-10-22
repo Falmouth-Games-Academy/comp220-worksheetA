@@ -13,6 +13,7 @@
 
 #include "Shader.h"
 #include "Vertex.h"
+#include "Texture.h"
 
 class Game
 {
@@ -26,6 +27,7 @@ public:
 	int initialise();
 	int getVertex();
 	int getShaders();
+	int loading();
 
 	void render();
 	void clean();
@@ -39,12 +41,14 @@ private:
 	SDL_GLContext gl_Context;
 
 	GLuint VertexArrayID;
-	GLuint vertexbuffer;
 	GLuint programID;
+	GLuint textureID;
 	GLuint elementbuffer;
+	GLuint vertexbuffer;
 	GLuint modelMatrixUniformLocation;
 	GLuint viewMatrixUniformLocation;
 	GLuint projectionMatrixUniformLocation;
+	GLuint textureUniformLocation;
 
 	glm::mat4 modelMatrix;
 	glm::mat4 translationMatrix;
