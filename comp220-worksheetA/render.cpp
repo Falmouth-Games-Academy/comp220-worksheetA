@@ -1,20 +1,14 @@
 #include "render.h"
 
-class Render {
 
-	int main()
-	{
 
-	}
+void Render::TestObj(double posX, double posY, double size)
+{
 
-	void testObj(double posX, double posY, double size)
-	{
+}
 
-	}
+void Render::Draw()
+{
 
-	void draw()
-	{
+}
 
-	}
-
-};

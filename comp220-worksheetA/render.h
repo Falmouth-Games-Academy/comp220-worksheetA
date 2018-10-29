@@ -17,14 +17,14 @@
 class Render {
 
 	public:
-		void testObj(double posX, double posY, double size);
-		void draw();
+		void TestObj(double posX, double posY, double size);
+		void Draw();
 
 	private:
 		// An array of 3 vectors which represents 3 verticies
 		// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-2-the-first-triangle/
 		// {x,y,z,r,g,b,a}
-		const Vertex cubeVerticies[3] = {
+		const Vertex cubeVerticies[8] = {
 
 			// 0, 1, 1 (Top Front left)
 			{ 0.0f,1.0f,1.0f,	1.0f,0.0f,1.0f,1.0f }, // 0
@@ -44,11 +44,12 @@ class Render {
 			// 1, 0, 1 (Bottom Front right)
 			{ 1.0f,0.0f,1.0f,	1.0f,0.0f,1.0f,1.0f }, // 6
 			// 1, 0, 0 (Bottom Back right)
-			{ 1.0f,0.0f,0.0f,	0.0f,0.0f,1.0f,1.0f }, // 7
+			{ 1.0f,0.0f,0.0f,	0.0f,0.0f,1.0f,1.0f } // 7
 
 		};
+
 		// Describes the square (two triangles) anti-clockwise for front facing
-		const unsigned int cubeIndices[] = {
+		const unsigned int cubeIndices[36] = {
 			// Front
 			0, 4, 6,
 			0, 6, 2,
