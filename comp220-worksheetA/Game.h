@@ -11,6 +11,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "Vertex.h"
+#include "Input.h"
 
 
 
@@ -28,6 +29,8 @@ public:
 	
 	SDL_Window* window;
 
+	Input input;
+
 	SDL_GLContext gl_Context;
 
 	GLuint programID;
@@ -37,8 +40,15 @@ public:
 	GLuint vertexbuffer;
 	GLuint VertexArrayID;
 
+	// element buffer
+	GLuint elementbuffer;
+
 	// Camera to view the screen
 	Camera camera;
+
+	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 rotation = glm::vec3(1.0f, 1.0f, 0.0f);
+	float rot = 0.001f;
 
 private:
 

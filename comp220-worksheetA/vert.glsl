@@ -1,21 +1,24 @@
 #version 330 core
 
+// Look at GL Attribute Pointer in main.cpp
 layout(location = 0) in vec3 vertexPos;
-layout(location = 1) in vec4 vertexColor;
-
-uniform float time = 0.0f;
+layout(location = 1) in vec4 vertexColour;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+uniform mat4 projMatrix;
 
-out vec4 vertexColorOut;
+uniform mat4 MVPMatrix;
+
+out vec4 vertexColourFinal;
 
 void main()
 {
-	mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
+	//mat4 MVPMatrix = projectionMatrix * viewMatrix * modelMatrix;
 
-	gl_Position = MVP * vec4(vertexPos, 1.0);
-	vertexColorOut = vertexColor;
+	gl_Position = projMatrix * viewMatrix * modelMatrix* vec4(vertexPos, 1.0f);
 
+	//gl_Position = modelMatrix * vec4(vertexPos, 1.0f);
+	//vertColour = vertexPos;
+	vertexColourFinal = vertexColour;
 }

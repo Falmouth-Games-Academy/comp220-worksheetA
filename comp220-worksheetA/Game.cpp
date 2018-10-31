@@ -112,19 +112,69 @@ void Game::initScene()
 	glBindVertexArray(VertexArrayID);
 
 	// An Array of 3 vectors which represets 3 vertices and RGBA values for each vertex
+	/*
 	static const Vertex triangleVertices[] = {
 		{ -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
 		{ 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f },
 		{ -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f }
+	}; */
+
+	static const Vertex cubeVertexArray[] = 
+	{
+		{ -0.5f,-0.5f,0.0f,  1.0f,0.0f,1.0f,1.0f },
+		{ 0.5f,-0.5f,0.0f,  0.0f,1.0f,1.0f,1.0f },
+		{ 0.5f,0.5f,0.0f,  1.0f,1.0f,0.0f,1.0f },
+		{ -0.5f,0.5f,0.0f,  1.0f,1.0f,1.0f,1.0f },
+
+		{ -0.5f,-0.5f,-1.0f,  1.0f,0.0f,0.0f,1.0f },
+		{ 0.5f,-0.5f,-1.0f,  1.0f,1.0f,0.0f,1.0f },
+		{ 0.5f,0.5f,-1.0f,  0.0f,0.0f,1.0f,1.0f },
+		{ -0.5f,0.5f,-1.0f,  0.0f,1.0f,0.0f,1.0f }
+	};
+	
+	// Indicies must be set in anti-clockwise if on the outside of the cube order due to back-face culling
+	static const int cubeIndiciesArray[] =
+	{
+		0,1,2, // Represenative of one triangle
+		2,3,0,
+
+		6,5,4,
+		4,7,6,
+
+		7,3,2,
+		2,6,7,
+
+		6,2,1,
+		1,5,6,
+
+		3,7,4,
+		4,0,3,
+
+		1,0,5,
+		5,0,4
 	};
 
+	// Culls the clockwise facing side of the triangle
+	glEnable(GL_CULL_FACE);
+
+	// This will identify our vertex buffer
+	GLuint vertexbuffer;
 	// Generate 1 buffer, put the resulting identifier in vertexbuffer
 	glGenBuffers(1, &vertexbuffer);
-	// the following command will talk about our 'vertexbuffer' buffer
+	// The following commands will talk about our 'vertexbuffer' buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Give our vertices to OpenGL
-	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(Vertex), triangleVertices, GL_STATIC_DRAW);
+	// Give our vertices to OpenGL.
+	glBufferData(GL_ARRAY_BUFFER, (8 * sizeof(Vertex)), cubeVertexArray, GL_STATIC_DRAW);
+
+	GLuint elementbuffer;
+	// Generate 1 buffer, put the resulting identifier in elementbuffer
+	glGenBuffers(1, &elementbuffer);
+	// The following commands will talk about our 'elementbuffer' buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	// Give our elements to OpenGL.
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (36 * sizeof(int)), cubeIndiciesArray, GL_STATIC_DRAW);
+
 
 	// 1st attribute buffer: Vertices
 	glEnableVertexAttribArray(0);
@@ -147,20 +197,29 @@ void Game::initScene()
 		sizeof(Vertex),
 		(void*)(3 * sizeof(float))
 	);
-	
-	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 rotation = glm::vec3(0.0f, 90.0f, 0.0f);
-	float rot = 0.1f;
+
+	// 3rd attribute buffer: textures
+	//glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(
+	//	2,
+	//	2,
+	//	GL_FLOAT,
+	//	GL_FALSE,
+	//	sizeof(Vertex),
+	//	(void*)(7 * sizeof(float))
+	//);
 
 	modelMatrix = glm::translate(position);
 
 	// loads in the shaders
 	programID = LoadShaders("vert.glsl", "frag.glsl");
 	glUseProgram(programID);
-	location = glGetUniformLocation(programID, "color");
+	location = glGetUniformLocation(programID, "triangleColour");
+
+	// ModelMatrix setup
 	modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
-	ProjectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
+	ProjectionMatrixLocation = glGetUniformLocation(programID, "projMatrix");
 }
 
 // The main Gameloop
@@ -177,6 +236,7 @@ void Game::gameLoop()
 
 	while (running)
 	{
+		input.beginNewFrame();
 		//Poll for the events which have happened in this frame\\
 		//https://wiki.libsdl.org/SDL_PollEvent
 		while (SDL_PollEvent(&ev))
@@ -190,6 +250,8 @@ void Game::gameLoop()
 				break;
 				//KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
+				input.KeyDownEvent(ev);
+
 				//Check the actual key code of the key that has been pressed
 				switch (ev.key.keysym.sym)
 				{
@@ -197,33 +259,53 @@ void Game::gameLoop()
 				case SDLK_ESCAPE:
 					running = false;
 					break;
-				case SDLK_d:
-					//camera.Xstrafe(0.1f);
-					movementVec.x = 0.02f;
-					break;
-				case SDLK_a:
-					movementVec.x = -0.02f;
-					break;
-				case SDLK_SPACE:
-					movementVec.y = 0.02f;
-					break;
-				case SDLK_LSHIFT:
-					movementVec.y = -0.02f;
-					break;
-				case SDLK_w:
-					movementVec.z = -0.02f;
-					break;
-				case SDLK_s:
-					movementVec.z = 0.02f;
-					break;
+
 				case SDLK_f:
 					fullScreen();
 					break;
 				}
+				break;
+			case SDL_KEYUP:
+				input.KeyUpEvent(ev);
+					break;
 			}
 		}
+
+		movementVec.x = 0.0f;
+		movementVec.y = 0.0f;
+		movementVec.z = 0.0f;
+		if (input.isKeyHeld(SDL_SCANCODE_LEFT) == true || input.isKeyHeld(SDL_SCANCODE_A) == true)
+		{
+			movementVec.x -= 0.002f;
+		}
+
+		if (input.isKeyHeld(SDL_SCANCODE_RIGHT) == true || input.isKeyHeld(SDL_SCANCODE_D) == true)
+		{
+			movementVec.x += 0.002f;
+		}
+
+		if (input.isKeyHeld(SDL_SCANCODE_UP) == true || input.isKeyHeld(SDL_SCANCODE_W) == true)
+		{
+			movementVec.z -= 0.002f;
+		}
+
+		if (input.isKeyHeld(SDL_SCANCODE_DOWN) == true || input.isKeyHeld(SDL_SCANCODE_S) == true)
+		{
+			movementVec.z += 0.002f;
+		}
+
+		if (input.isKeyHeld(SDL_SCANCODE_LCTRL) == true)
+		{
+			movementVec.y -= 0.002f;
+		}
+
+		if (input.isKeyHeld(SDL_SCANCODE_SPACE) == true)
+		{
+			movementVec.y += 0.002f;
+		}
+
 		camera.Strafe(movementVec, 1.0f);
-		movementVec = glm::vec3(0.0f);
+		//movementVec = glm::vec3(0.0f);
 
 		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 		if (fullScreenToggle == false)
@@ -235,6 +317,7 @@ void Game::gameLoop()
 			Projection = glm::perspective(glm::radians(45.0f), globals::FULL_SCREEN_WIDTH / globals::FULL_SCREEN_HEIGHT, 0.1f, 100.0f);
 		}
 
+
 		// Or, for an ortho camera :
 		//Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
@@ -245,25 +328,29 @@ void Game::gameLoop()
 		/ ------------------------------ */
 
 		//Update Game and draw with OpenGL
-		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClearColor(0.2, 0.2, 0.25, 1.0);
 		glClearDepth(0.0f);
 		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
+		modelMatrix = glm::rotate(rot += 0.001f, rotation);
+
 		glUseProgram(programID);
-		//Uniform3f(location, 1, 2, 3);
+		glUniform4f(location, 0.9, 0.9, 0.9, 1.0);
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.GetTheMatrix()));
 		glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(Projection));
-
-
-		// 1st attribute buffer: vertices
 		
 		//glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glBindVertexArray(VertexArrayID);
+		//glBindVertexArray(VertexArrayID);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from Vertex 0: 3 vertices total -> 1 triangle
-		
+		// Draw the triangle
+		// Starting from Vertex 0: 3 vertices total -> 1 triangle
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// Draw the Cube
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+
 
 		// Screen Refresh
 		SDL_GL_SwapWindow(window);

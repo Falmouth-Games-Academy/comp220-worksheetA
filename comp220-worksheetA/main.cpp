@@ -10,6 +10,6 @@ int main(int argc, char* args[])
 	// GameLoop function runs the game
 	game.gameLoop();
 
-	// Return 0 ends the program once gameloop has finished
+	// Return 0 ends the application once gameloop has finished
 	return 0;
 }
