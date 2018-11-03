@@ -48,7 +48,15 @@ public:
 
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 rotation = glm::vec3(1.0f, 1.0f, 0.0f);
-	float rot = 0.001f;
+	float cubeRotateSpeed = 0.5f;
+
+	float lastTime;
+	float tickTime;
+	float deltaTime;
+	float fps;
+
+	float cameraMovSpeed = 2.5f;
+	glm::vec3 cameraMovementVec = glm::vec3(0.0f);
 
 private:
 

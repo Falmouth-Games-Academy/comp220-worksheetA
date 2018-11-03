@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <iostream>
 
 Game::Game()
 {
@@ -227,15 +228,22 @@ void Game::gameLoop()
 {
 	init();
 
-	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
-	bool running = true;
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
-	glm::vec3 movementVec = glm::vec3(0.0f);
-
 	while (running)
 	{
+		lastTime = tickTime;
+		tickTime = static_cast<float>(SDL_GetTicks()) / 1000;
+		deltaTime = (tickTime - lastTime);
+
+		fps = 1 / deltaTime;
+
+		float deltaCamSpeed = cameraMovSpeed * deltaTime;
+		
+		// prints FPS to the console
+		//std::cout << "fps:" << fps << std::endl;
+
 		input.beginNewFrame();
 		//Poll for the events which have happened in this frame\\
 		//https://wiki.libsdl.org/SDL_PollEvent
@@ -271,40 +279,40 @@ void Game::gameLoop()
 			}
 		}
 
-		movementVec.x = 0.0f;
-		movementVec.y = 0.0f;
-		movementVec.z = 0.0f;
+		cameraMovementVec.x = 0.0f;
+		cameraMovementVec.y = 0.0f;
+		cameraMovementVec.z = 0.0f;
 		if (input.isKeyHeld(SDL_SCANCODE_LEFT) == true || input.isKeyHeld(SDL_SCANCODE_A) == true)
 		{
-			movementVec.x -= 0.002f;
+			cameraMovementVec.x -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_RIGHT) == true || input.isKeyHeld(SDL_SCANCODE_D) == true)
 		{
-			movementVec.x += 0.002f;
+			cameraMovementVec.x += deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_UP) == true || input.isKeyHeld(SDL_SCANCODE_W) == true)
 		{
-			movementVec.z -= 0.002f;
+			cameraMovementVec.z -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_DOWN) == true || input.isKeyHeld(SDL_SCANCODE_S) == true)
 		{
-			movementVec.z += 0.002f;
+			cameraMovementVec.z += deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_LCTRL) == true)
 		{
-			movementVec.y -= 0.002f;
+			cameraMovementVec.y -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_SPACE) == true)
 		{
-			movementVec.y += 0.002f;
+			cameraMovementVec.y += deltaCamSpeed;
 		}
 
-		camera.Strafe(movementVec, 1.0f);
+		camera.Strafe(cameraMovementVec, 1.0f);
 		//movementVec = glm::vec3(0.0f);
 
 		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
@@ -326,13 +334,12 @@ void Game::gameLoop()
 		/* ------------------------------ /
 			RENDERING PROCESS IN LOOP
 		/ ------------------------------ */
-
 		//Update Game and draw with OpenGL
 		glClearColor(0.2, 0.2, 0.25, 1.0);
 		glClearDepth(0.0f);
 		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
-		modelMatrix = glm::rotate(rot += 0.001f, rotation);
+		modelMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation);
 
 		glUseProgram(programID);
 		glUniform4f(location, 0.9, 0.9, 0.9, 1.0);
@@ -350,7 +357,6 @@ void Game::gameLoop()
 
 		// Draw the Cube
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-
 
 		// Screen Refresh
 		SDL_GL_SwapWindow(window);
