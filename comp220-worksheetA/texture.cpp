@@ -1,6 +1,6 @@
-#include "texture.h"
+#include "Texture.h"
 
-GLuint loadTextureFromFile(const std::string & filename)
+GLuint loadTextureFromFile(const std::string& filename)
 {
 	GLuint textureID;
 
@@ -16,7 +16,7 @@ GLuint loadTextureFromFile(const std::string & filename)
 	}
 
 	GLint	nOfColors = surface->format->BytesPerPixel;
-	if (nOfColors == 4)
+	if (nOfColors == 4)					//	contains	an	alpha	channel
 	{
 		if (surface->format->Rmask == 0x000000ff) {
 			textureFormat = GL_RGBA;
@@ -27,7 +27,7 @@ GLuint loadTextureFromFile(const std::string & filename)
 			internalFormat = GL_RGBA8;
 		}
 	}
-	else if (nOfColors == 3)
+	else if (nOfColors == 3)					//	no	alpha	channel
 	{
 		if (surface->format->Rmask == 0x000000ff) {
 			textureFormat = GL_RGB;
@@ -38,10 +38,13 @@ GLuint loadTextureFromFile(const std::string & filename)
 			internalFormat = GL_RGB8;
 		}
 	}
+
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, surface->w, surface->h, 0, textureFormat, GL_UNSIGNED_BYTE, surface->pixels);
+
+
 	SDL_FreeSurface(surface);
 
 	return textureID;

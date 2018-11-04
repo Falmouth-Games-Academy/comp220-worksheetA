@@ -88,6 +88,8 @@ void Game::initOpenGL()
 		SDL_Quit();
 		//return 1;
 	}
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 // initialises Glew
@@ -111,16 +113,7 @@ void Game::initScene()
 {
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
-
-	// An Array of 3 vectors which represets 3 vertices and RGBA values for each vertex
 	/*
-	static const Vertex triangleVertices[] = {
-		{ -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-		{ -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f }
-	}; */
-
 	static const Vertex cubeVertexArray[] = 
 	{
 		{ -0.5f,-0.5f,0.0f,  1.0f,0.0f,1.0f,1.0f },
@@ -155,9 +148,10 @@ void Game::initScene()
 		1,0,5,
 		5,0,4
 	};
+	
 
 	// Culls the clockwise facing side of the triangle
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 
 	// This will identify our vertex buffer
 	GLuint vertexbuffer;
@@ -175,7 +169,37 @@ void Game::initScene()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	// Give our elements to OpenGL.
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (36 * sizeof(int)), cubeIndiciesArray, GL_STATIC_DRAW);
+	*/
 
+	//------------------ Start of model loading----------------------------//
+
+	//Load Mesh
+	tomModel = new MeshCollection();
+	loadMeshFromFile("TomModel.FBX", tomModel);
+
+	tomTextureID = loadTextureFromFile("TomTexture.png");
+
+	// Culls the clockwise facing side of the triangle
+	glEnable(GL_CULL_FACE);
+
+	// Create and compile our GLSL program from the shaders
+	GLuint programID = LoadShaders("texturedVert.glsl", "texturedFrag.glsl");
+	//Set up positions for position, rotation and scale
+	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 rotation = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
+	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	//calculate the translation, rotation and scale matrices using the above vectores
+	glm::mat4 translationMatrix = glm::translate(position);
+	glm::mat4 rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
+		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
+		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 scaleMatrix = glm::scale(scale);
+
+	//combine the above matrices into the model matrix (order is important!!!! - TRS)
+	glm::mat4 modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
+	
+	//------------------ end of model loading----------------------------//
 
 	// 1st attribute buffer: Vertices
 	glEnableVertexAttribArray(0);
@@ -200,15 +224,15 @@ void Game::initScene()
 	);
 
 	// 3rd attribute buffer: textures
-	//glEnableVertexAttribArray(2);
-	//glVertexAttribPointer(
-	//	2,
-	//	2,
-	//	GL_FLOAT,
-	//	GL_FALSE,
-	//	sizeof(Vertex),
-	//	(void*)(7 * sizeof(float))
-	//);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(
+		2,
+		2,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex),
+		(void*)(7 * sizeof(float))
+	);
 
 	modelMatrix = glm::translate(position);
 
@@ -245,22 +269,21 @@ void Game::gameLoop()
 		//std::cout << "fps:" << fps << std::endl;
 
 		input.beginNewFrame();
-		//Poll for the events which have happened in this frame\\
-		//https://wiki.libsdl.org/SDL_PollEvent
+		// Poll for the events which have happened in this frame
 		while (SDL_PollEvent(&ev))
 		{
-			//Switch case for every message we are intereted in
+			// Switch case for every message we are intereted in
 			switch (ev.type)
 			{
-				//QUIT Message, usually called when the window has been closed
+				// QUIT Message, usually called when the window has been closed
 			case SDL_QUIT:
 				running = false;
 				break;
-				//KEYDOWN Message, called when a key has been pressed down
+				// KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
 				input.KeyDownEvent(ev);
 
-				//Check the actual key code of the key that has been pressed
+				// Check the actual key code of the key that has been pressed
 				switch (ev.key.keysym.sym)
 				{
 					//Escape key
@@ -294,22 +317,22 @@ void Game::gameLoop()
 
 		if (input.isKeyHeld(SDL_SCANCODE_UP) == true || input.isKeyHeld(SDL_SCANCODE_W) == true)
 		{
-			cameraMovementVec.z -= deltaCamSpeed;
+			cameraMovementVec.y += deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_DOWN) == true || input.isKeyHeld(SDL_SCANCODE_S) == true)
 		{
-			cameraMovementVec.z += deltaCamSpeed;
+			cameraMovementVec.y -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_LCTRL) == true)
 		{
-			cameraMovementVec.y -= deltaCamSpeed;
+			cameraMovementVec.z -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_SPACE) == true)
 		{
-			cameraMovementVec.y += deltaCamSpeed;
+			cameraMovementVec.z += deltaCamSpeed;
 		}
 
 		camera.Strafe(cameraMovementVec, 1.0f);
@@ -325,38 +348,37 @@ void Game::gameLoop()
 			Projection = glm::perspective(glm::radians(45.0f), globals::FULL_SCREEN_WIDTH / globals::FULL_SCREEN_HEIGHT, 0.1f, 100.0f);
 		}
 
-
 		// Or, for an ortho camera :
 		//Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-
-		//glm::mat4 modelMatrix = glm::rotate(2.0f, rotation += rot);
 
 		/* ------------------------------ /
 			RENDERING PROCESS IN LOOP
 		/ ------------------------------ */
 		//Update Game and draw with OpenGL
 		glClearColor(0.2, 0.2, 0.25, 1.0);
-		glClearDepth(0.0f);
+		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
-		modelMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation);
+		// Rotate the cube
+		//modelMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation);
+		//modelMatrix = glm::translate(glm::vec3(0, 0, 0));
+		modelMatrix = glm::rotate( -0.95f , glm::vec3(1, 0, 0));
+		modelMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation) * modelMatrix;
 
 		glUseProgram(programID);
 		glUniform4f(location, 0.9, 0.9, 0.9, 1.0);
 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tomTextureID);
+
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.GetTheMatrix()));
 		glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(Projection));
-		
-		//glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		//glBindVertexArray(VertexArrayID);
 
-		// Draw the triangle
-		// Starting from Vertex 0: 3 vertices total -> 1 triangle
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		tomModel->render();
 
 		// Draw the Cube
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 
 		// Screen Refresh
 		SDL_GL_SwapWindow(window);

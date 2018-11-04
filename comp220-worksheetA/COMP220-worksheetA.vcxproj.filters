@@ -36,12 +36,24 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.glsl">
       <Filter>Source Files</Filter>
     </None>
     <None Include="vert.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="texturedFrag.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="texturedVert.glsl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
@@ -71,6 +83,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

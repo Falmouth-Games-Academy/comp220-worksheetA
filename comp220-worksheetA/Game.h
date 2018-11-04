@@ -12,6 +12,9 @@
 #include "camera.h"
 #include "Vertex.h"
 #include "Input.h"
+#include "texture.h"
+#include "Model.h"
+#include "Mesh.h"
 
 
 
@@ -47,7 +50,7 @@ public:
 	Camera camera;
 
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 rotation = glm::vec3(1.0f, 1.0f, 0.0f);
+	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 1.0f);
 	float cubeRotateSpeed = 0.5f;
 
 	float lastTime;
@@ -57,6 +60,9 @@ public:
 
 	float cameraMovSpeed = 2.5f;
 	glm::vec3 cameraMovementVec = glm::vec3(0.0f);
+
+	MeshCollection * tomModel;
+	GLuint tomTextureID;
 
 private:
 
