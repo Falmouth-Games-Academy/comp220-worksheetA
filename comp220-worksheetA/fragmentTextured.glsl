@@ -9,5 +9,12 @@ uniform sampler2D textureSampler;
 
 void main()
 {
-	color = texture(textureSampler, vertexTextureCoordsOut);
+	// Texture
+	// color = texture(textureSampler, vertexTextureCoordsOut);
+
+	// White color (for debugging)
+	// color = vec4(1.0f);
+
+	// Color sent in attribute pointers 
+	color = vertexColourOut;
 }

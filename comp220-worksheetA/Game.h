@@ -70,7 +70,8 @@ private:
 	float deltaTime = 0;
 
 	int verticesNum = 36;
-	int indicesNum = 6;
+	int indicesNum = 12;
+	int IDNum = 8;
 
 	bool isRunning = false;
 	bool isFullscreen = false;

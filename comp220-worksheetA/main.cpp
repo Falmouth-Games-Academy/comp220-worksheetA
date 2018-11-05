@@ -7,7 +7,6 @@ int main(int argc, char *argv[])
 
 	pGame->initialise();
 	pGame->getVertex();
-	pGame->loading();
 	pGame->getShaders();
 	pGame->loop();
 

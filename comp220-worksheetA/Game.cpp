@@ -105,11 +105,11 @@ int Game::loop()
 					std::cout << "mouse wheel down" << std::endl;
 				}
 			}
-
+			
 			modelMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // Rotates the cube in X axis
 			modelMatrix *= glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // Rotates the cube in Y axis 
 			modelMatrix *= glm::translate(position); // Translates the position of the cube
-
+			
 		}
 
 		Game::render();
@@ -226,13 +226,16 @@ int Game::initialise()
 	// Enabling OpenGL Depth function
 	glEnable(GL_DEPTH_TEST);
 
+	//glEnable(GL_CULL_FACE);
+
 	return 0;
 }
 
 int Game::getVertex()
 {
 	glGenVertexArrays(1, &VertexArrayID);
-
+	glBindVertexArray(VertexArrayID);
+	/*
 	// An array of 3 vectors which represents 3 vertices
 	static const Vertex v[] = {
 		{ -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
@@ -283,24 +286,62 @@ int Game::getVertex()
 		{ 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f }, // Bottom square
 	};
-	/*
+	*/
+	static const Vertex CubeID[] = 
+	{
+		// Upper vertices
+		{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f}, // 0 -> front-top-left
+		{-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f}, // 1 -> back-top-left
+		{0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f}, // 2 -> back-top-right
+		{0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f}, // 3 -> front-top-right
+
+		// Bottom vertices
+		{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f}, // 4 -> front-bottom-left
+		{-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f}, // 5 -> back-bottom-left
+		{0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f}, // 6 -> back-bottom-right
+		{0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f} // 7 ->  front-bottom-right
+	};
+	
 	static const int indices[] = 
 	{
-		0,1,2,
-		2,0,3
+		
+		// Top square
+		0, 2, 1,
+		0, 3, 2,
+
+		// Bottom square
+		4, 5, 6,
+		4, 6, 7,
+		
+		// Left square
+		4, 0, 1,
+		4, 1, 5,
+
+		// Right square
+		6, 3, 7,
+		6, 2, 3,
+
+		// Back square
+		5, 1, 2,
+		5, 2, 6,
+		
+		// Front square
+		0, 4, 7,
+		0, 7, 3
 	};
-	*/
+	
 	// Generate 1 buffer, put the resulting identifier in vertexbuffer
 	glGenBuffers(1, &vertexbuffer);
 	// The following commands will talk about our 'vertexbuffer' buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, verticesNum * sizeof(Vertex), v, GL_STATIC_DRAW);
-	/*
+	glBufferData(GL_ARRAY_BUFFER, IDNum * sizeof(Vertex), CubeID, GL_STATIC_DRAW);
+	
 	glGenBuffers(1, &elementbuffer);
+	// Bind element buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesNum * sizeof(int), indices, GL_STATIC_DRAW);
-	*/
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, verticesNum * sizeof(int), indices, GL_STATIC_DRAW);
+	
 
 	return 0;
 }
@@ -329,7 +370,9 @@ int Game::loading()
 		(void*)(3 * sizeof(float))
 	);
 
+	
 	// Load textures
+	/*
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(
 		2,
@@ -339,11 +382,13 @@ int Game::loading()
 		sizeof(Vertex),
 		(void*)(7 * sizeof(float))
 	);
+	*/
+	return 0;
 }
 
 int Game::getShaders()
 {
-	textureID = loadTextureFromFile("Textures\Crate.jpg");
+	// textureID = loadTextureFromFile("Textures\Crate.jpg");
 
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("vertexTextured.glsl", "fragmentTextured.glsl");
@@ -351,9 +396,9 @@ int Game::getShaders()
 	// Set up positions for position, rotation and scale
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
 	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	scaling = glm::vec3(0.5f, 0.5f, 1.0f);
+	scaling = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	//calculate the translation, rotation and scale matrices using the above vectores
+	// Calculate the translation, rotation and scale matrices using the above vectores
 	translationMatrix = glm::translate(position);
 	rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
 		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
@@ -362,21 +407,21 @@ int Game::getShaders()
 
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
-	//Set up vectors for our camera position
+	// Set up vectors for our camera position
 	cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
 	cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	//Calculate the view matrix
+	// Calculate the view matrix
 	viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
-	//Calculate our perspective matrix
+	// Calculate our perspective matrix
 	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 100.0f);
 
-	//Get the uniforms from the shader
+	// Get the uniforms from the shader
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
-	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
+	// textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
 
 	return 0;
 }
@@ -385,30 +430,32 @@ void Game::render()
 {
 	// Update Game and Draw with OpenGL
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // | GL_DEPTH_BUFFER_BIT
 
 	glUseProgram(programID);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, textureID);
 
-	glBindVertexArray(VertexArrayID);
+	// ? glBindVertexArray(VertexArrayID);
+
+	loading();
 
 	// If we want another texture do the following
 	// glActiveTexture(GL_TEXTURE1);
 	// glBindTexture(GL_TEXTURE_2D, anotherTextureID);
 
-	//send the uniforms across
+	// Send the uniforms across
 	glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniform1i(textureUniformLocation, 0);
 
 	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, verticesNum); // Starting from vertex 0; 3 vertices total -> 1 trangle
-	//glDrawElements(GL_TRIANGLES, verticesNum, GL_UNSIGNED_INT, (void*) 0); // draw elements isntead of vertices
-	//glDisableVertexAttribArray(0); // might be not needed
-	//glDisableVertexAttribArray(1); // might be not needed
+	glDrawElements(GL_TRIANGLES, verticesNum, GL_UNSIGNED_INT, (void*) 0); // draw elements instead of vertices
+	glDisableVertexAttribArray(0);
 
 	SDL_GL_SwapWindow(mainWindow);
 }
