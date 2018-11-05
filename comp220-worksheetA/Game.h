@@ -1,19 +1,6 @@
 #pragma once
 
-#include <SDL.h>
-#include <GL\glew.h>
-#include <SDL_opengl.h>
-#include <glm\glm.hpp>
-
-#define GLM_ENABLE_EXPERIMENTAL
-
-#include <glm\gtx\transform.hpp>
-#include <glm\gtc\type_ptr.hpp>
-#include <glm\gtc\matrix_transform.hpp>
-
-#include "Shader.h"
-#include "Vertex.h"
-#include "Texture.h"
+#include "Libraries.h"
 
 class Game
 {
@@ -45,10 +32,11 @@ private:
 	GLuint textureID;
 	GLuint elementbuffer;
 	GLuint vertexbuffer;
-	GLuint modelMatrixUniformLocation;
-	GLuint viewMatrixUniformLocation;
-	GLuint projectionMatrixUniformLocation;
-	GLuint textureUniformLocation;
+
+	GLint modelMatrixUniformLocation;
+	GLint viewMatrixUniformLocation;
+	GLint projectionMatrixUniformLocation;
+	GLint textureUniformLocation;
 
 	glm::mat4 modelMatrix;
 	glm::mat4 translationMatrix;
@@ -64,7 +52,7 @@ private:
 	glm::vec3 cameraTarget;
 	glm::vec3 cameraUp;
 
-	//Initialise times
+	// Initialise times
 	float lastTime = 0;
 	float tickTime = 0;
 	float deltaTime = 0;

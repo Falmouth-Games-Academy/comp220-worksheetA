@@ -1,11 +1,5 @@
-#include "stdafx.h"
-
 #include "Game.h"
 #include "Variables.h"
-
-#include <vector>
-#include <time.h>
-#include <iostream>
 
 Game::Game()
 {
@@ -201,9 +195,11 @@ void Game::SetFullscreen()
 
 int Game::initialise()
 {
-	//Initalise random seed
+	// Initialising random seed
 	std::srand(time(NULL));
 
+	// Initialising IMG library
+	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 	//Initalise the SDL components
 	if (initialiseSDL() < 0)
@@ -290,16 +286,49 @@ int Game::getVertex()
 	static const Vertex CubeID[] = 
 	{
 		// Upper vertices
-		{-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f}, // 0 -> front-top-left
-		{-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f}, // 1 -> back-top-left
-		{0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f}, // 2 -> back-top-right
-		{0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f}, // 3 -> front-top-right
+
+		// 0 -> front-top-left
+		{-0.5f, 0.5f, 0.5f, // x, y, z
+		0.0f, 0.0f, 1.0f, 1.0f, // r, g, b, a
+		0.0f, 1.0f},  // tu, tv
+
+		// 1 -> back-top-left
+		{-0.5f, 0.5f, -0.5f, // x, y, z
+		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
+		0.0f, 1.0f},  // tu, tv
+
+		// 2 -> back-top-right
+		{0.5f, 0.5f, -0.5f, // x, y, z
+		1.0f, 0.0f, 0.0f, 1.0f, // r, g, b, a
+		1.0f, 1.0f},  // tu, tv
+
+		// 3 -> front-top-right
+		{0.5f, 0.5f, 0.5f, // x, y, z
+		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
+		1.0f, 1.0f}, // tu, tv
+
 
 		// Bottom vertices
-		{-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f}, // 4 -> front-bottom-left
-		{-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f}, // 5 -> back-bottom-left
-		{0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f}, // 6 -> back-bottom-right
-		{0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f} // 7 ->  front-bottom-right
+
+		// 4 -> front-bottom-left
+		{-0.5f, -0.5f, 0.5f, // x, y, z
+		0.0f, 0.0f, 1.0f, 1.0f, // r, g, b, a
+		0.0f, 0.0f}, // tu, tv
+
+		// 5 -> back-bottom-left
+		{-0.5f, -0.5f, -0.5f, // x, y, z
+		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
+		0.0f, 0.0f}, // tu, tv
+
+		// 6 -> back-bottom-right
+		{0.5f, -0.5f, -0.5f, // x, y, z
+		1.0f, 0.0f, 0.0f, 1.0f, // r, g, b, a
+		1.0f, 0.0f}, // tu, tv
+
+		// 7 ->  front-bottom-right
+		{0.5f, -0.5f, 0.5f, // x, y, z
+		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
+		1.0f, 0.0f} // tu, tv
 	};
 	
 	static const int indices[] = 
@@ -370,9 +399,7 @@ int Game::loading()
 		(void*)(3 * sizeof(float))
 	);
 
-	
 	// Load textures
-	/*
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(
 		2,
@@ -382,13 +409,13 @@ int Game::loading()
 		sizeof(Vertex),
 		(void*)(7 * sizeof(float))
 	);
-	*/
 	return 0;
 }
 
 int Game::getShaders()
 {
-	// textureID = loadTextureFromFile("Textures\Crate.jpg");
+	// Create a texture ID
+	textureID = loadTextureFromFile("Textures/Crate.jpg");
 
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("vertexTextured.glsl", "fragmentTextured.glsl");
@@ -421,7 +448,7 @@ int Game::getShaders()
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
-	// textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
+	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
 
 	return 0;
 }
@@ -429,17 +456,20 @@ int Game::getShaders()
 void Game::render()
 {
 	// Update Game and Draw with OpenGL
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClearColor(1.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // | GL_DEPTH_BUFFER_BIT
 
 	glUseProgram(programID);
+
+	// Activating and binding texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	// Binding vertex and element buffers 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, textureID);
-
-	// ? glBindVertexArray(VertexArrayID);
+	glBindVertexArray(VertexArrayID);
 
 	loading();
 
@@ -469,8 +499,9 @@ void Game::clean()
 	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
-	//Delete Context
+	// Delete Context
 	SDL_GL_DeleteContext(gl_Context);
 	SDL_DestroyWindow(mainWindow);
+	IMG_Quit();
 	SDL_Quit();
 }
