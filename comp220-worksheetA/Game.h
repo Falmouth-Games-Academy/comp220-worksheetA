@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Libraries.h"
+#include "Model.h"
 
 class Game
 {
@@ -60,6 +61,9 @@ private:
 	int verticesNum = 36;
 	int indicesNum = 12;
 	int IDNum = 8;
+
+	unsigned int numberOfVertices = 0;
+	unsigned int numberOfIndices = 0;
 
 	bool isRunning = false;
 	bool isFullscreen = false;

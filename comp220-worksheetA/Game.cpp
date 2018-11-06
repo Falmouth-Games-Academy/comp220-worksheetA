@@ -229,6 +229,7 @@ int Game::initialise()
 
 int Game::getVertex()
 {
+	// Generate vertex array
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 	/*
@@ -283,6 +284,8 @@ int Game::getVertex()
 		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f }, // Bottom square
 	};
 	*/
+
+	/*
 	static const Vertex CubeID[] = 
 	{
 		// Upper vertices
@@ -358,19 +361,24 @@ int Game::getVertex()
 		0, 4, 7,
 		0, 7, 3
 	};
-	
+	*/
+
 	// Generate 1 buffer, put the resulting identifier in vertexbuffer
 	glGenBuffers(1, &vertexbuffer);
 	// The following commands will talk about our 'vertexbuffer' buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, IDNum * sizeof(Vertex), CubeID, GL_STATIC_DRAW);
+	// glBufferData(GL_ARRAY_BUFFER, IDNum * sizeof(Vertex), CubeID, GL_STATIC_DRAW);
 	
 	glGenBuffers(1, &elementbuffer);
 	// Bind element buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, verticesNum * sizeof(int), indices, GL_STATIC_DRAW);
-	
+	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, verticesNum * sizeof(int), indices, GL_STATIC_DRAW);
+
+	/* MODEL SECTION */
+
+	// Pass in buffers to load a model
+	loadModelFromFile("Models/Tank1.FBX", vertexbuffer, elementbuffer, numberOfVertices, numberOfIndices);
 
 	return 0;
 }
@@ -415,7 +423,7 @@ int Game::loading()
 int Game::getShaders()
 {
 	// Create a texture ID
-	textureID = loadTextureFromFile("Textures/Crate.jpg");
+	textureID = loadTextureFromFile("Textures/Tank1DF.png");
 
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("vertexTextured.glsl", "fragmentTextured.glsl");
@@ -484,7 +492,7 @@ void Game::render()
 	glUniform1i(textureUniformLocation, 0);
 
 	// Draw the triangle !
-	glDrawElements(GL_TRIANGLES, verticesNum, GL_UNSIGNED_INT, (void*) 0); // draw elements instead of vertices
+	glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, (void*) 0); // draw elements instead of vertices
 	glDisableVertexAttribArray(0);
 
 	SDL_GL_SwapWindow(mainWindow);
