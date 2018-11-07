@@ -16,7 +16,7 @@ void main()
 {
 	gl_Position = projMatrix * viewMatrix * modelMatrix* vec4(vertexPos, 1.0f);
 
-	vertexTextureCoordOut=vertexTextureCoord;
+	vertexTextureCoordOut = vertexTextureCoord;
 
 	vertexColourFinal = vertexColour;
 }

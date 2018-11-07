@@ -170,11 +170,19 @@ void Game::initScene()
 
 	//------------------ Start of model loading----------------------------//
 
-	//Load Mesh
-	tomModel = new MeshCollection();
-	loadMeshFromFile("TomModel.FBX", tomModel);
+	//MeshCollection * tankMes=loadMeshFromFile("Tank.fbx");
+	//GameObject* go=new GameObject;
+	//go->attachMesh(tankMesh);
 
-	tomTextureID = loadTextureFromFile("TomTexture.png");
+	//GameObject* go2 =new GameObject
+	//go->attachMesh(tankMesh);
+
+	//Mesh
+
+	//Load Mesh
+	model = new MeshCollection();
+	loadMeshFromFile("tomModel.FBX", model);
+	TextureID = loadTextureFromFile("tomTexture.png");
 
 	// Culls the clockwise facing side of the triangles
 	glEnable(GL_CULL_FACE);
@@ -183,35 +191,44 @@ void Game::initScene()
 	//programID = LoadShaders("vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
 
-	//Set up positions for position, rotation and scale
-	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 rotation = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
-	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-	//calculate the translation, rotation and scale matrices using the above vectores
-	glm::mat4 translationMatrix = glm::translate(position);
-	glm::mat4 rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
-		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
-		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-	glm::mat4 scaleMatrix = glm::scale(scale);
-
-	//combine the above matrices into the model matrix (order is important!!!! - TRS)
-	glm::mat4 modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
-	
-	//------------------ end of model loading----------------------------//
+	//------------------end of model loading----------------------------//
 
 	//modelMatrix = glm::translate(position);
 
 	// ModelMatrix setup
-	modelMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
-	viewMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
-	ProjectionMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
+	//modelMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
+	//viewMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
+	//ProjectionMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
+
+	//Get the uniforms from the shader
+	modelMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
+	viewMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
+	projectionMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
+	//baseTextureLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "baseTexture");
 }
 
 // The main Gameloop
 void Game::gameLoop()
 {
 	init();
+
+	GameObject* dinoGO1 = new GameObject;
+	dinoGO1->attachMesh(model);
+
+	GameObject* dinoGO2 = new GameObject;
+	dinoGO2->attachMesh(model);
+
+	GameObject* dinoGO3 = new GameObject;
+	dinoGO3->attachMesh(model);
+
+	GameObject* dinoGO4 = new GameObject;
+	dinoGO4->attachMesh(model);
+
+	std::vector<GameObject *> objs;
+	objs.push_back(dinoGO1);
+	objs.push_back(dinoGO2);
+	objs.push_back(dinoGO3);
+	objs.push_back(dinoGO4);
 
 	while (running)
 	{
@@ -317,23 +334,53 @@ void Game::gameLoop()
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
-		// Rotate the cube
-		//modelMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation);
-		//modelMatrix = glm::translate(glm::vec3(0, 0, 0));
-		modelMatrix = glm::rotate( -0.95f , glm::vec3(1, 0, 0));
-		modelMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation) * modelMatrix;
+		sceneMatrix = glm::rotate( -0.95f , glm::vec3(1, 0, 0));
+		sceneMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation) * sceneMatrix;
 
 		glUseProgram(shaderManager.GetShader("defShader"));
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, tomTextureID);
+		glBindTexture(GL_TEXTURE_2D, TextureID);
 
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
-		glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
 
-		tomModel->render();
+		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(sceneMatrix));
+		//glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+		//glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
 
+
+		//send the uniforms across
+		glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+		glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
+		//glUniform1i(baseTextureLocation, 0);
+		
+		
+		// Render gameObject
+		//model->render();
+		//glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(dinoGO1->modelMatrix));
+		//dinoGO1->update();
+
+		//glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(dinoGO2->modelMatrix));
+		//dinoGO2->position = glm::vec3(3,3,3);
+		//dinoGO2->update();
+
+		int count = 0;
+		for (GameObject * obj : objs)
+		{
+			
+			glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
+			
+			obj->rotation.z = 0.8;
+			obj->scale = glm::vec3(0.5f);
+			obj->position = glm::vec3(count, 0, 0);
+			count += 3;
+			obj->update();
+		}
+
+		//for (GameObject * obj : displayList)
+		//{
+		// 		glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
+		//		obj->update();
+		//}
 		// Draw the Cube
 		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 

@@ -8,13 +8,14 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "Globals.h"
 #include "Graphics.h"
+#include "GameObject.h"
 #include "shader.h"
 #include "camera.h"
 #include "Vertex.h"
 #include "Input.h"
-#include "texture.h"
-#include "Model.h"
-#include "Mesh.h"
+
+
+
 
 
 
@@ -37,6 +38,8 @@ public:
 	SDL_GLContext gl_Context;
 	
 	GLuint location;
+
+	GameObject gameObject;
 
 	ShaderManager shaderManager;
 
@@ -62,8 +65,9 @@ public:
 	float cameraMovSpeed = 2.5f;
 	glm::vec3 cameraMovementVec = glm::vec3(0.0f);
 
-	MeshCollection * tomModel;
-	GLuint tomTextureID;
+	
+	MeshCollection * model;
+	GLuint TextureID;
 
 private:
 
@@ -82,12 +86,12 @@ private:
 	bool running = true;
 
 	// secene matrix locations
-	GLuint modelMatrixLocation;
-	GLuint viewMatrixLocation;
-	GLuint ProjectionMatrixLocation;
+	GLuint modelMatrixUniformLocation;
+	GLuint viewMatrixUniformLocation;
+	GLuint projectionMatrixUniformLocation;
+	GLint baseTextureLocation;
 
-
-	glm::mat4 modelMatrix;
+	glm::mat4 sceneMatrix;
 
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
