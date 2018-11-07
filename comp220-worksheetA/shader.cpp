@@ -1,6 +1,17 @@
 #include "shader.h"
 
-GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
+
+
+ShaderManager::ShaderManager()
+{
+	ShaderDict = std::map<std::string, GLuint>();
+}
+
+ShaderManager::~ShaderManager()
+{
+}
+
+GLuint ShaderManager::LoadShaders(std::string ShaderName, const char * vertex_file_path, const char * fragment_file_path) {
 
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -86,5 +97,12 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
 
+	ShaderDict.insert(std::pair<std::string, GLuint>(ShaderName, ProgramID));
+
 	return ProgramID;
+}
+
+GLuint ShaderManager::GetShader(std::string name)
+{
+	return ShaderDict[name];
 }

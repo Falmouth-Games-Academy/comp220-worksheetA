@@ -66,6 +66,7 @@ void Mesh::destroy()
 
 MeshCollection::MeshCollection()
 {
+
 }
 
 MeshCollection::~MeshCollection()

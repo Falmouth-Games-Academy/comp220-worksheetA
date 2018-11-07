@@ -35,9 +35,10 @@ public:
 	Input input;
 
 	SDL_GLContext gl_Context;
-
-	GLuint programID;
+	
 	GLuint location;
+
+	ShaderManager shaderManager;
 
 	// This will Identify out vertex buffer
 	GLuint vertexbuffer;
@@ -85,8 +86,11 @@ private:
 	GLuint viewMatrixLocation;
 	GLuint ProjectionMatrixLocation;
 
-	glm::mat4 Projection;
+
 	glm::mat4 modelMatrix;
+
+	//SDL Event structure, this will be checked in the while loop
+	SDL_Event ev;
 
 
 protected:

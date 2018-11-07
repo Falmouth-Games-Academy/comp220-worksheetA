@@ -32,7 +32,6 @@ void Game::initSDL()
 		//Display an error message box
 		//https://wiki.libsdl.org/SDL_ShowSimpleMessageBox
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, SDL_GetError(), "SDL_Init failed", NULL);
-		//return 1;
 	}
 }
 
@@ -47,10 +46,7 @@ void Game::initWindow()
 	{
 		//Show error
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, SDL_GetError(), "SDL_CreateWindow failed", NULL);
-		//Close the SDL Library
-		//https://wiki.libsdl.org/SDL_Quit
 		SDL_Quit();
-		//return 1;
 	}
 }
 
@@ -104,16 +100,17 @@ void Game::initGlew()
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "GLEW Initialisation failed", (char*)glewGetErrorString(err), NULL);
 		SDL_DestroyWindow(window);
 		SDL_Quit();
-		//return 1;
 	}
 }
 
 // initialises the game scene and elements to be rendered
 void Game::initScene()
 {
+
+	/* ----------- OLD CUBE ----------------
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
-	/*
+
 	static const Vertex cubeVertexArray[] = 
 	{
 		{ -0.5f,-0.5f,0.0f,  1.0f,0.0f,1.0f,1.0f },
@@ -169,7 +166,7 @@ void Game::initScene()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	// Give our elements to OpenGL.
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (36 * sizeof(int)), cubeIndiciesArray, GL_STATIC_DRAW);
-	*/
+	  ----------- END OF OLD CUBE ----------------*/
 
 	//------------------ Start of model loading----------------------------//
 
@@ -179,11 +176,13 @@ void Game::initScene()
 
 	tomTextureID = loadTextureFromFile("TomTexture.png");
 
-	// Culls the clockwise facing side of the triangle
+	// Culls the clockwise facing side of the triangles
 	glEnable(GL_CULL_FACE);
 
-	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("texturedVert.glsl", "texturedFrag.glsl");
+	// loads in the shaders
+	//programID = LoadShaders("vert.glsl", "frag.glsl");
+	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
+
 	//Set up positions for position, rotation and scale
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 rotation = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
@@ -201,59 +200,18 @@ void Game::initScene()
 	
 	//------------------ end of model loading----------------------------//
 
-	// 1st attribute buffer: Vertices
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(void*)0
-	);
-
-	// 2nd attribute buffer: Colours
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-		1,
-		4,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(void*)(3 * sizeof(float))
-	);
-
-	// 3rd attribute buffer: textures
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(
-		2,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(void*)(7 * sizeof(float))
-	);
-
-	modelMatrix = glm::translate(position);
-
-	// loads in the shaders
-	programID = LoadShaders("vert.glsl", "frag.glsl");
-	glUseProgram(programID);
-	location = glGetUniformLocation(programID, "triangleColour");
+	//modelMatrix = glm::translate(position);
 
 	// ModelMatrix setup
-	modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
-	viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
-	ProjectionMatrixLocation = glGetUniformLocation(programID, "projMatrix");
+	modelMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
+	viewMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
+	ProjectionMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
 }
 
 // The main Gameloop
 void Game::gameLoop()
 {
 	init();
-
-	//SDL Event structure, this will be checked in the while loop
-	SDL_Event ev;
 
 	while (running)
 	{
@@ -341,11 +299,11 @@ void Game::gameLoop()
 		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 		if (fullScreenToggle == false)
 		{
-			Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 0.1f, 100.0f);
+			camera.Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 0.1f, 100.0f);
 		}
 		else
 		{
-			Projection = glm::perspective(glm::radians(45.0f), globals::FULL_SCREEN_WIDTH / globals::FULL_SCREEN_HEIGHT, 0.1f, 100.0f);
+			camera.Projection = glm::perspective(glm::radians(45.0f), globals::FULL_SCREEN_WIDTH / globals::FULL_SCREEN_HEIGHT, 0.1f, 100.0f);
 		}
 
 		// Or, for an ortho camera :
@@ -365,15 +323,14 @@ void Game::gameLoop()
 		modelMatrix = glm::rotate( -0.95f , glm::vec3(1, 0, 0));
 		modelMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation) * modelMatrix;
 
-		glUseProgram(programID);
-		glUniform4f(location, 0.9, 0.9, 0.9, 1.0);
+		glUseProgram(shaderManager.GetShader("defShader"));
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, tomTextureID);
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.GetTheMatrix()));
-		glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(Projection));
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+		glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
 
 		tomModel->render();
 
@@ -391,7 +348,7 @@ void Game::gameLoop()
 void Game::gameCleanUp()
 {
 
-	glDeleteProgram(programID);
+	glDeleteProgram(shaderManager.GetShader("defShader"));
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 
