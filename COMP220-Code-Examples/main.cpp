@@ -10,6 +10,9 @@
 
 #include "Shaders.h"
 #include "Vertex.h"
+#include "Texture.h"
+#include "Model.h"
+#include "Mesh.h"
 
 int main(int argc, char ** argsv)
 {
@@ -66,69 +69,19 @@ int main(int argc, char ** argsv)
 		return 1;
 	}
 
-	// An array of 3 vectors which represents 3 vertices
-	static const Vertex v[] = {
-		{ -0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,1.0f },
-		{ 0.5f,-0.5f,0.0f,0.0f,1.0f,0.0f,1.0f },
-		{ 0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f },
-		{ -0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f }
-	};
+	glEnable(GL_DEPTH_TEST);
 
-	static const unsigned int indices[] =
-	{
-		0,1,2,
-		2,0,3
-	};
+	//Load Mesh
+	MeshCollection * teapotMesh = new MeshCollection();
+	loadMeshFromFile("utah-teapot.fbx", teapotMesh);
 
 
-
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-
-	// This will identify our vertex buffer
-	GLuint vertexbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &vertexbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, 4*sizeof(Vertex), v, GL_STATIC_DRAW);
-
-	GLuint elementbuffer;
-	glGenBuffers(1, &elementbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), indices, GL_STATIC_DRAW);
-
-	// 1rst attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		sizeof(Vertex),                  // stride
-		(void*)0            // array buffer offset
-	);
-
-	// 1rst attribute buffer : colours
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-		1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		4,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		sizeof(Vertex),                  // stride
-		(void*)(3*sizeof(float))            // array buffer offset
-	);
-
-	GLunit textureId = laodTextureFromFile("");
+	GLuint textureID = loadTextureFromFile("Tank1DF.png");
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("vertTextures.glsl", "fragTextures.glsl");
-
+	GLuint programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
 	//Set up positions for position, rotation and scale
-	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 position = glm::vec3(0.0f, -8.0f, -50.0f);
 	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -138,12 +91,12 @@ int main(int argc, char ** argsv)
 		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
 		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::mat4 scaleMatrix = glm::scale(scale);
-	
+
 	//combine the above matrices into the model matrix (order is important!!!! - TRS)
-	glm::mat4 modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
+	glm::mat4 modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
 
 	//Set up vectors for our camera position
-	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
+	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 20.0f);
 	glm::vec3 cameraLook = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -152,11 +105,39 @@ int main(int argc, char ** argsv)
 	//Calculate our perspective matrix
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 100.0f);
 
+	//Light properties
+	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+
+
+	//Material Properties
+	glm::vec4 ambientMaterialColour = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
+	glm::vec4 diffuseMaterialColour = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
+	glm::vec4 specularMaterialColour= glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	float specularMaterialPower = 25.0f;
+
 	//Get the uniforms from the shader
 	GLuint modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	GLuint viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
-	//Glunit textureUniformFromLocation=glGetUniformFromLocation(program...)
+	GLint baseTextureLocation = glGetUniformLocation(programID, "baseTexture");
+
+	GLint ambientLightColourLocation= glGetUniformLocation(programID, "ambientLightColour");
+	GLint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour");
+	GLint specularLightColourLocation = glGetUniformLocation(programID, "specularLightColour");
+
+	GLint lightDirectionLocation= glGetUniformLocation(programID, "lightDirection");
+	GLint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
+
+
+	GLint ambientMaterialColourLocation= glGetUniformLocation(programID, "ambientMaterialColour");
+	GLint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
+	GLint specularMaterialColourLocation = glGetUniformLocation(programID, "specularMaterialColour");
+	GLint specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
+
 
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -184,9 +165,32 @@ int main(int argc, char ** argsv)
 				case SDLK_ESCAPE:
 					running = false;
 					break;
+				case SDLK_a:
+					rotation.y -= 0.1f;
+					break;
+				case SDLK_d:
+					rotation.y += 0.1f;
+					break;
+				case SDLK_w:
+					rotation.x -= 0.1f;
+					break;
+				case SDLK_s:
+					rotation.x += 0.1f;
+					break;
 				}
 			}
 		}
+
+		//update
+		translationMatrix = glm::translate(position);
+		rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
+			*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
+			*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+		scaleMatrix = glm::scale(scale);
+
+		//combine the above matrices into the model matrix (order is important!!!! - TRS)
+		modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
+
 		//Do rendering here!
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -194,30 +198,38 @@ int main(int argc, char ** argsv)
 		glUseProgram(programID);
 
 		glActiveTexture(GL_TEXTURE0);
-		GLBindTexture(GL_TEXTURE_2D, textureID);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		// if want another texture
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, anotherTextureID);
-
-		glBindVertexArray(VertexArrayID);
 
 		//send the uniforms across
 		glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 		glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-		glUniform1i(textureUniformLocation, 0);
+		glUniform1i(baseTextureLocation, 0);
 
-		// Draw the triangle !
-		//glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+		glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColour));
+		glUniform4fv(diffuseMaterialColourLocation, 1, glm::value_ptr(diffuseMaterialColour));
+		glUniform4fv(specularMaterialColourLocation, 1, glm::value_ptr(specularMaterialColour));
+		
+		glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColour));
+		glUniform4fv(diffuseLightColourLocation, 1, glm::value_ptr(diffuseLightColour));
+		glUniform4fv(specularLightColourLocation, 1, glm::value_ptr(specularLightColour));
+		glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
+
+		glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
+		glUniform3fv(cameraPositionLocation, 1, glm::value_ptr(cameraPosition));
+
+		teapotMesh->render();
+
 		SDL_GL_SwapWindow(window);
 	}
-
-	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteVertexArrays(1, &VertexArrayID);
+	if (teapotMesh)
+	{
+		delete teapotMesh;
+		teapotMesh = nullptr;
+	}
+	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
-	glDeleteTextuers(1,&textureID)
 	//Delete Context
 	SDL_GL_DeleteContext(gl_Context);
 	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
