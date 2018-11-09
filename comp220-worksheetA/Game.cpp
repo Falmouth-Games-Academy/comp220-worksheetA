@@ -106,68 +106,6 @@ void Game::initGlew()
 // initialises the game scene and elements to be rendered
 void Game::initScene()
 {
-
-	/* ----------- OLD CUBE ----------------
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-
-	static const Vertex cubeVertexArray[] = 
-	{
-		{ -0.5f,-0.5f,0.0f,  1.0f,0.0f,1.0f,1.0f },
-		{ 0.5f,-0.5f,0.0f,  0.0f,1.0f,1.0f,1.0f },
-		{ 0.5f,0.5f,0.0f,  1.0f,1.0f,0.0f,1.0f },
-		{ -0.5f,0.5f,0.0f,  1.0f,1.0f,1.0f,1.0f },
-
-		{ -0.5f,-0.5f,-1.0f,  1.0f,0.0f,0.0f,1.0f },
-		{ 0.5f,-0.5f,-1.0f,  1.0f,1.0f,0.0f,1.0f },
-		{ 0.5f,0.5f,-1.0f,  0.0f,0.0f,1.0f,1.0f },
-		{ -0.5f,0.5f,-1.0f,  0.0f,1.0f,0.0f,1.0f }
-	};
-	
-	// Indicies must be set in anti-clockwise if on the outside of the cube order due to back-face culling
-	static const int cubeIndiciesArray[] =
-	{
-		0,1,2, // Represenative of one triangle
-		2,3,0,
-
-		6,5,4,
-		4,7,6,
-
-		7,3,2,
-		2,6,7,
-
-		6,2,1,
-		1,5,6,
-
-		3,7,4,
-		4,0,3,
-
-		1,0,5,
-		5,0,4
-	};
-	
-
-	// Culls the clockwise facing side of the triangle
-	//glEnable(GL_CULL_FACE);
-
-	// This will identify our vertex buffer
-	GLuint vertexbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &vertexbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, (8 * sizeof(Vertex)), cubeVertexArray, GL_STATIC_DRAW);
-
-	GLuint elementbuffer;
-	// Generate 1 buffer, put the resulting identifier in elementbuffer
-	glGenBuffers(1, &elementbuffer);
-	// The following commands will talk about our 'elementbuffer' buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	// Give our elements to OpenGL.
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (36 * sizeof(int)), cubeIndiciesArray, GL_STATIC_DRAW);
-	  ----------- END OF OLD CUBE ----------------*/
-
 	//------------------ Start of model loading----------------------------//
 
 	//MeshCollection * tankMes=loadMeshFromFile("Tank.fbx");
@@ -196,13 +134,6 @@ void Game::initScene()
 
 	//------------------end of model loading----------------------------//
 
-	//modelMatrix = glm::translate(position);
-
-	// ModelMatrix setup
-	//modelMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
-	//viewMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
-	//ProjectionMatrixLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
-
 	//Get the uniforms from the shader
 	modelMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
@@ -229,7 +160,7 @@ void Game::gameLoop()
 	GameObject* dinoGO4 = new GameObject;
 	dinoGO4->attachMesh(dinoModel);
 
-	std::vector<GameObject *> objs;
+	
 	objs.push_back(dinoGO1);
 	objs.push_back(dinoGO2);
 	objs.push_back(dinoGO3);
@@ -237,164 +168,135 @@ void Game::gameLoop()
 
 	while (running)
 	{
+		mouseX = 0;
+		mouseY = 0;
+
+		// time calculations
 		lastTime = tickTime;
 		tickTime = static_cast<float>(SDL_GetTicks()) / 1000;
 		deltaTime = (tickTime - lastTime);
 
 		fps = 1 / deltaTime;
-
-		float deltaCamSpeed = cameraMovSpeed * deltaTime;
-
-		mouseX = 0;
-		mouseY = 0;
 		
 		// prints FPS to the console
 		//std::cout << "fps:" << fps << std::endl;
 
-		input.beginNewFrame();
-		// Poll for the events which have happened in this frame
-		while (SDL_PollEvent(&ev))
-		{
-			// Switch case for every message we are intereted in
-			switch (ev.type)
-			{
-				// QUIT Message, usually called when the window has been closed
-			case SDL_QUIT:
-				running = false;
-				break;
+		// Check for Input events
+		CheckEvents();
 
-			case SDL_MOUSEMOTION:
-				mouseX = ev.motion.xrel;
-				mouseY = ev.motion.yrel;
-				break;
+		// Update calculations and gameobjects
+		update();
 
-				// KEYDOWN Message, called when a key has been pressed down
-			case SDL_KEYDOWN:
-				input.KeyDownEvent(ev);
-
-				// Check the actual key code of the key that has been pressed
-				switch (ev.key.keysym.sym)
-				{
-					//Escape key
-				case SDLK_ESCAPE:
-					running = false;
-					break;
-
-				case SDLK_f:
-					fullScreen();
-					break;
-				}
-				break;
-			case SDL_KEYUP:
-				input.KeyUpEvent(ev);
-					break;
-			}
-		}
-
-		cameraMovementVec.x = 0.0f;
-		cameraMovementVec.y = 0.0f;
-		cameraMovementVec.z = 0.0f;
-		if (input.isKeyHeld(SDL_SCANCODE_LEFT) == true || input.isKeyHeld(SDL_SCANCODE_A) == true)
-		{
-			cameraMovementVec.z -= deltaCamSpeed;
-		}
-
-		if (input.isKeyHeld(SDL_SCANCODE_RIGHT) == true || input.isKeyHeld(SDL_SCANCODE_D) == true)
-		{
-			cameraMovementVec.z += deltaCamSpeed;
-		}
-
-		if (input.isKeyHeld(SDL_SCANCODE_UP) == true || input.isKeyHeld(SDL_SCANCODE_W) == true)
-		{
-			cameraMovementVec.x += deltaCamSpeed;
-		}
-
-		if (input.isKeyHeld(SDL_SCANCODE_DOWN) == true || input.isKeyHeld(SDL_SCANCODE_S) == true)
-		{
-			cameraMovementVec.x -= deltaCamSpeed;
-		}
-
-		if (input.isKeyHeld(SDL_SCANCODE_LCTRL) == true)
-		{
-			cameraMovementVec.y -= deltaCamSpeed;
-		}
-
-		if (input.isKeyHeld(SDL_SCANCODE_SPACE) == true)
-		{
-			cameraMovementVec.y += deltaCamSpeed;
-		}
-
-		camera.Strafe(cameraMovementVec, 1.0f);
-
-		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-		if (fullScreenToggle == false)
-		{
-			camera.Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 0.1f, 100.0f);
-		}
-		else
-		{
-			camera.Projection = glm::perspective(glm::radians(45.0f), globals::FULL_SCREEN_WIDTH / globals::FULL_SCREEN_HEIGHT, 0.1f, 100.0f);
-		}
-
-		// Or, for an ortho camera :
-		//Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-
-		/* ------------------------------ /
-			RENDERING PROCESS IN LOOP
-		/ ------------------------------ */
-		//Update Game and draw with OpenGL
-		glClearColor(0.2, 0.2, 0.25, 1.0);
-		glClearDepth(1.0f);
-		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
-
-		//sceneMatrix = glm::rotate( -0.95f , glm::vec3(1, 0, 0));
-		sceneMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation) * sceneMatrix;
-
-		glUseProgram(shaderManager.GetShader("defShader"));
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, TextureID);
-
-
-		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(sceneMatrix));
-		//glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
-		//glUniformMatrix4fv(ProjectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
-
-
-		//send the uniforms across
-		glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
-		glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
-		//glUniform1i(baseTextureLocation, 0);
+		// Render function, does all the rendering code
+		render();
 		
-
-		int count = 0;
-		for (GameObject * obj : objs)
-		{
-			
-			glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
-			
-			//obj->rotation.z = 0.8;
-			obj->scale = glm::vec3(0.1f);
-			obj->position = glm::vec3(0, 0, count);
-			count += 3;
-			obj->update();
-		}
-
-		//for (GameObject * obj : displayList)
-		//{
-		// 		glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
-		//		obj->update();
-		//}
-		// Draw the Cube
-		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-
-		camera.MouseMovement(mouseX, mouseY);
-
-		// Screen Refresh
-		SDL_GL_SwapWindow(window);
 	}
 
 	gameCleanUp();
+}
+
+void Game::CheckEvents()
+{
+	input.beginNewFrame();
+
+	// Poll for the events which have happened in this frame
+	while (SDL_PollEvent(&ev))
+	{
+		// Switch case for every message we are intereted in
+		switch (ev.type)
+		{
+			// QUIT Message, usually called when the window has been closed
+		case SDL_QUIT:
+			running = false;
+			break;
+
+		case SDL_MOUSEMOTION:
+			mouseX = ev.motion.xrel;
+			mouseY = ev.motion.yrel;
+			break;
+
+			// KEYDOWN Message, called when a key has been pressed down
+		case SDL_KEYDOWN:
+			input.KeyDownEvent(ev);
+
+			// Check the actual key code of the key that has been pressed
+			switch (ev.key.keysym.sym)
+			{
+				//Escape key
+			case SDLK_ESCAPE:
+				running = false;
+				break;
+
+			case SDLK_f:
+				fullScreen();
+				break;
+			}
+			break;
+		case SDL_KEYUP:
+			input.KeyUpEvent(ev);
+			break;
+		}
+	}
+}
+
+void Game::update()
+{
+	// Controls of camera movement
+	controls.cameraControls(input, camera, deltaTime);
+
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	if (fullScreenToggle == false)
+	{
+		camera.Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 0.1f, 100.0f);
+	}
+	else
+	{
+		camera.Projection = glm::perspective(glm::radians(45.0f), globals::FULL_SCREEN_WIDTH / globals::FULL_SCREEN_HEIGHT, 0.1f, 100.0f);
+	}
+
+	// Or, for an ortho camera :
+	//Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
+
+	int count = 0;
+	for (GameObject * obj : objs)
+	{
+		//obj->rotation.z = 0.8;
+		obj->scale = glm::vec3(0.3f);
+		obj->position = glm::vec3(0, 0, count);
+		count += 3;
+		obj->update();
+	}
+
+	camera.MouseMovement(mouseX, mouseY);
+}
+
+void Game::render()
+{
+	/* ------------------------------ /
+	RENDERING PROCESS IN LOOP
+	/ ------------------------------ */
+	//render with OpenGL
+	glClearColor(0.2, 0.2, 0.25, 1.0);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glUseProgram(shaderManager.GetShader("defShader"));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TextureID);
+
+	//send the uniforms across
+	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
+
+	for (GameObject * obj : objs)
+	{
+		glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
+		obj->render();
+	}
+
+	// Screen Refresh
+	SDL_GL_SwapWindow(window);
 }
 
 // CleanUp function, cleans up memory when the game loop is being closed/finished

@@ -13,11 +13,7 @@
 #include "camera.h"
 #include "Vertex.h"
 #include "Input.h"
-
-
-
-
-
+#include "Controls.h"
 
 class Game
 {
@@ -39,6 +35,7 @@ public:
 	
 	GLuint location;
 
+	std::vector<GameObject *> objs;
 	GameObject gameObject;
 
 	ShaderManager shaderManager;
@@ -50,24 +47,22 @@ public:
 	// element buffer
 	GLuint elementbuffer;
 
+	Controls controls;
+
 	// Camera to view the screen
 	Camera camera;
 
-	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 1.0f);
-	float cubeRotateSpeed = 0.5f;
+	// mouse x and y vars
+	int mouseX = 0;
+	int mouseY = 0;
 
+	// time vars
 	float lastTime;
 	float tickTime;
 	float deltaTime;
 	float fps;
-
-	float cameraMovSpeed = 2.5f;
-	glm::vec3 cameraMovementVec = glm::vec3(0.0f);
-
-	int mouseX = 0;
-	int mouseY = 0;
 	
+	// model and texture vars
 	MeshCollection * dinoModel;
 	MeshCollection * teaPotModel;
 	GLuint TextureID;
@@ -80,6 +75,11 @@ private:
 	void initOpenGL();
 	void initGlew();
 	void initScene();
+
+	void CheckEvents();
+	void update();
+	void render();
+
 
 	// fullscreen toggle boolean and function
 	bool fullScreenToggle = false;

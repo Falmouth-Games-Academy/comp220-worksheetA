@@ -22,8 +22,9 @@ void GameObject::update()
 
 	//combine the above matrices into the model matrix (order is important!!!! - TRS)
 	modelMatrix = translationMatrix*rotationMatrix*scaleMatrix;
-	
-	//glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	
+}
+
+void GameObject::render()
+{
 	model->render();
 }

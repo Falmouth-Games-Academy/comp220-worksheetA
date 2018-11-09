@@ -18,6 +18,7 @@ public:
 	MeshCollection * model;
 
 	void update();
+	void render();
 	void attachMesh(MeshCollection *mesh)
 	{
 		model = mesh;

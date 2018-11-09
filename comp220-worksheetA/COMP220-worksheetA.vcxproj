@@ -173,6 +173,7 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x64\*.dll "$(OutDir)\*.dll"</Co
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Controls.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Globals.cpp" />
@@ -193,6 +194,7 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x64\*.dll "$(OutDir)\*.dll"</Co
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Controls.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Globals.h" />
