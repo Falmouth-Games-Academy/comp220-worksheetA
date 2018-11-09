@@ -43,3 +43,4 @@ bool Input::isKeyHeld(SDL_Scancode key)
 {
 	return heldKeys[key];
 }
+

@@ -180,9 +180,12 @@ void Game::initScene()
 	//Mesh
 
 	//Load Mesh
-	model = new MeshCollection();
-	loadMeshFromFile("tomModel.FBX", model);
+	dinoModel = new MeshCollection();
+	loadMeshFromFile("tomModel.FBX", dinoModel);
 	TextureID = loadTextureFromFile("tomTexture.png");
+
+	teaPotModel = new MeshCollection();
+	loadMeshFromFile("teaPotModel.FBX", teaPotModel);
 
 	// Culls the clockwise facing side of the triangles
 	glEnable(GL_CULL_FACE);
@@ -205,6 +208,8 @@ void Game::initScene()
 	viewMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
 	projectionMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
 	//baseTextureLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "baseTexture");
+
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 // The main Gameloop
@@ -213,16 +218,16 @@ void Game::gameLoop()
 	init();
 
 	GameObject* dinoGO1 = new GameObject;
-	dinoGO1->attachMesh(model);
+	dinoGO1->attachMesh(teaPotModel);
 
 	GameObject* dinoGO2 = new GameObject;
-	dinoGO2->attachMesh(model);
+	dinoGO2->attachMesh(dinoModel);
 
 	GameObject* dinoGO3 = new GameObject;
-	dinoGO3->attachMesh(model);
+	dinoGO3->attachMesh(teaPotModel);
 
 	GameObject* dinoGO4 = new GameObject;
-	dinoGO4->attachMesh(model);
+	dinoGO4->attachMesh(dinoModel);
 
 	std::vector<GameObject *> objs;
 	objs.push_back(dinoGO1);
@@ -239,6 +244,9 @@ void Game::gameLoop()
 		fps = 1 / deltaTime;
 
 		float deltaCamSpeed = cameraMovSpeed * deltaTime;
+
+		mouseX = 0;
+		mouseY = 0;
 		
 		// prints FPS to the console
 		//std::cout << "fps:" << fps << std::endl;
@@ -254,6 +262,12 @@ void Game::gameLoop()
 			case SDL_QUIT:
 				running = false;
 				break;
+
+			case SDL_MOUSEMOTION:
+				mouseX = ev.motion.xrel;
+				mouseY = ev.motion.yrel;
+				break;
+
 				// KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
 				input.KeyDownEvent(ev);
@@ -282,36 +296,35 @@ void Game::gameLoop()
 		cameraMovementVec.z = 0.0f;
 		if (input.isKeyHeld(SDL_SCANCODE_LEFT) == true || input.isKeyHeld(SDL_SCANCODE_A) == true)
 		{
-			cameraMovementVec.x -= deltaCamSpeed;
+			cameraMovementVec.z -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_RIGHT) == true || input.isKeyHeld(SDL_SCANCODE_D) == true)
 		{
-			cameraMovementVec.x += deltaCamSpeed;
+			cameraMovementVec.z += deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_UP) == true || input.isKeyHeld(SDL_SCANCODE_W) == true)
 		{
-			cameraMovementVec.y += deltaCamSpeed;
+			cameraMovementVec.x += deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_DOWN) == true || input.isKeyHeld(SDL_SCANCODE_S) == true)
 		{
-			cameraMovementVec.y -= deltaCamSpeed;
+			cameraMovementVec.x -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_LCTRL) == true)
 		{
-			cameraMovementVec.z -= deltaCamSpeed;
+			cameraMovementVec.y -= deltaCamSpeed;
 		}
 
 		if (input.isKeyHeld(SDL_SCANCODE_SPACE) == true)
 		{
-			cameraMovementVec.z += deltaCamSpeed;
+			cameraMovementVec.y += deltaCamSpeed;
 		}
 
 		camera.Strafe(cameraMovementVec, 1.0f);
-		//movementVec = glm::vec3(0.0f);
 
 		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 		if (fullScreenToggle == false)
@@ -334,7 +347,7 @@ void Game::gameLoop()
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
-		sceneMatrix = glm::rotate( -0.95f , glm::vec3(1, 0, 0));
+		//sceneMatrix = glm::rotate( -0.95f , glm::vec3(1, 0, 0));
 		sceneMatrix = glm::rotate(cubeRotateSpeed * tickTime, rotation) * sceneMatrix;
 
 		glUseProgram(shaderManager.GetShader("defShader"));
@@ -353,15 +366,6 @@ void Game::gameLoop()
 		glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
 		//glUniform1i(baseTextureLocation, 0);
 		
-		
-		// Render gameObject
-		//model->render();
-		//glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(dinoGO1->modelMatrix));
-		//dinoGO1->update();
-
-		//glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(dinoGO2->modelMatrix));
-		//dinoGO2->position = glm::vec3(3,3,3);
-		//dinoGO2->update();
 
 		int count = 0;
 		for (GameObject * obj : objs)
@@ -369,9 +373,9 @@ void Game::gameLoop()
 			
 			glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
 			
-			obj->rotation.z = 0.8;
-			obj->scale = glm::vec3(0.5f);
-			obj->position = glm::vec3(count, 0, 0);
+			//obj->rotation.z = 0.8;
+			obj->scale = glm::vec3(0.1f);
+			obj->position = glm::vec3(0, 0, count);
 			count += 3;
 			obj->update();
 		}
@@ -383,6 +387,8 @@ void Game::gameLoop()
 		//}
 		// Draw the Cube
 		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+
+		camera.MouseMovement(mouseX, mouseY);
 
 		// Screen Refresh
 		SDL_GL_SwapWindow(window);

@@ -65,8 +65,11 @@ public:
 	float cameraMovSpeed = 2.5f;
 	glm::vec3 cameraMovementVec = glm::vec3(0.0f);
 
+	int mouseX = 0;
+	int mouseY = 0;
 	
-	MeshCollection * model;
+	MeshCollection * dinoModel;
+	MeshCollection * teaPotModel;
 	GLuint TextureID;
 
 private:
