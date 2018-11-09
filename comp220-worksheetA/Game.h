@@ -53,6 +53,8 @@ private:
 	glm::vec3 cameraTarget;
 	glm::vec3 cameraUp;
 
+	std::vector<Mesh*> meshes;
+
 	// Initialise times
 	float lastTime = 0;
 	float tickTime = 0;

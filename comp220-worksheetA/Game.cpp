@@ -229,9 +229,9 @@ int Game::initialise()
 
 int Game::getVertex()
 {
-	// Generate vertex array
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	// Generate vertex array SHOULD BE DELETED
+	// glGenVertexArrays(1, &VertexArrayID);
+	// glBindVertexArray(VertexArrayID);
 	/*
 	// An array of 3 vectors which represents 3 vertices
 	static const Vertex v[] = {
@@ -362,7 +362,7 @@ int Game::getVertex()
 		0, 7, 3
 	};
 	*/
-
+	/* SHOULD BE DELETED
 	// Generate 1 buffer, put the resulting identifier in vertexbuffer
 	glGenBuffers(1, &vertexbuffer);
 	// The following commands will talk about our 'vertexbuffer' buffer
@@ -374,17 +374,18 @@ int Game::getVertex()
 	// Bind element buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, verticesNum * sizeof(int), indices, GL_STATIC_DRAW);
-
+	*/
 	/* MODEL SECTION */
 
 	// Pass in buffers to load a model
-	loadModelFromFile("Models/Tank1.FBX", vertexbuffer, elementbuffer, numberOfVertices, numberOfIndices);
+	// loadModelFromFile("Models/Tank1.FBX", vertexbuffer, elementbuffer, numberOfVertices, numberOfIndices);
 
 	return 0;
 }
 
 int Game::loading()
 {
+	/* SHOULD BE DELETED
 	// 1st attribute buffer : vertices
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(
@@ -395,7 +396,7 @@ int Game::loading()
 		sizeof(Vertex),		// stride -> sizeof(Vertex)
 		(void*)0			// array buffer offset
 	);
-
+	*/
 	// Uses colours from the Vertex.h
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(
@@ -422,6 +423,8 @@ int Game::loading()
 
 int Game::getShaders()
 {
+	loadMeshesFromFile("Models/Tank1.FBX", meshes);
+
 	// Create a texture ID
 	textureID = loadTextureFromFile("Textures/Tank1DF.png");
 
@@ -429,7 +432,7 @@ int Game::getShaders()
 	programID = LoadShaders("vertexTextured.glsl", "fragmentTextured.glsl");
 
 	// Set up positions for position, rotation and scale
-	position = glm::vec3(0.0f, 0.0f, 0.0f);
+	position = glm::vec3(0.0f, 0.0f, -20.0f);
 	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	scaling = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -465,6 +468,7 @@ void Game::render()
 {
 	// Update Game and Draw with OpenGL
 	glClearColor(1.0, 0.0, 0.0, 1.0);
+	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // | GL_DEPTH_BUFFER_BIT
 
 	glUseProgram(programID);
@@ -473,9 +477,9 @@ void Game::render()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
-	// Binding vertex and element buffers 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	// Binding vertex and element buffers SHOULD BE DELETED 
+	// glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
 	glBindVertexArray(VertexArrayID);
 
@@ -491,8 +495,13 @@ void Game::render()
 	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniform1i(textureUniformLocation, 0);
 
-	// Draw the triangle !
-	glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, (void*) 0); // draw elements instead of vertices
+	for (Mesh* currentMesh : meshes)
+	{
+		currentMesh->Render();
+	}
+
+	// Draw the triangle ! SHOULD BE DELETED
+	// glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, (void*) 0); // draw elements instead of vertices
 	glDisableVertexAttribArray(0);
 
 	SDL_GL_SwapWindow(mainWindow);
@@ -502,11 +511,26 @@ void Game::clean()
 {
 	// Cleanup
 	std::cout << "Cleaning SDL \n";
-	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteBuffers(1, &elementbuffer);
-	glDeleteVertexArrays(1, &VertexArrayID);
+	// glDeleteBuffers(1, &vertexbuffer);
+	// glDeleteBuffers(1, &elementbuffer);
+	// glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
+	auto iter = meshes.begin();
+	while (iter != meshes.end())
+	{
+		if ((*iter))
+		{
+			(*iter)->Destroy();
+			delete (*iter);
+			iter = meshes.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
+	meshes.clear();
 	// Delete Context
 	SDL_GL_DeleteContext(gl_Context);
 	SDL_DestroyWindow(mainWindow);
