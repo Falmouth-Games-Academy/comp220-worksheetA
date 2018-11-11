@@ -30,6 +30,9 @@
     <ClCompile Include="OpenGLWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -47,9 +50,14 @@
     <ClInclude Include="OpenGLWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vert.glsl" />
-    <None Include="frag.glsl" />
+    <None Include="colourVert.glsl" />
+    <None Include="colourFrag.glsl" />
+    <None Include="textureVert.glsl" />
+    <None Include="textureFrag.glsl" />
   </ItemGroup>
 </Project>

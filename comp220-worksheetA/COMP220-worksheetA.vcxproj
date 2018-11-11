@@ -109,17 +109,18 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.1\lib\x64\*.dll "</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Libraries\glew-2.1.0\include;..\Libraries\SDL2_image-2.0.3\include;..\Libraries\SDL2-2.0.6\include;..\Libraries\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\glew-2.1.0\include;..\Libraries\SDL2_image-2.0.4\include;..\Libraries\SDL2-2.0.9\include;..\Libraries\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.3\lib\x64;..\Libraries\SDL2-2.0.6\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.4\lib\x64;..\Libraries\SDL2-2.0.9\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Libraries\glew-2.1.0\bin\Release\x64\glew32.dll
-copy ..\Libraries\SDL2-2.0.6\lib\x64\SDL2.dll</Command>
+      <Command>copy ..\Libraries\SDL2_image-2.0.4\lib\x64\*.dll "$(OutDir)\*.dll"
+copy ..\Libraries\SDL2-2.0.9\lib\x64\SDL2.dll "$(OutDir)\SDL2.dll"
+copy ..\Libraries\glew-2.1.0\bin\Release\x64\glew32.dll "$(OutDir)\glew32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -146,18 +147,20 @@ copy ..\Libraries\SDL2-2.0.6\lib\x64\SDL2.dll</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Libraries\glew-2.1.0\include;..\Libraries\SDL2_image-2.0.3\include;..\Libraries\SDL2-2.0.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\glew-2.1.0\include;..\Libraries\SDL2_image-2.0.4\include;..\Libraries\SDL2-2.0.9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.3\lib\x64;..\Libraries\SDL2-2.0.6\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.4\lib\x64;..\Libraries\SDL2-2.0.9\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Libraries\glew-2.1.0\bin\Release\x64\glew32.dll</Command>
+      <Command>copy ..\Libraries\SDL2_image-2.0.4\lib\x64\*.dll "$(OutDir)\*.dll"
+copy ..\Libraries\SDL2-2.0.9\lib\x64\SDL2.dll "$(OutDir)\SDL2.dll"
+copy ..\Libraries\glew-2.1.0\bin\Release\x64\glew32.dll "$(OutDir)\glew32.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -166,17 +169,21 @@ copy ..\Libraries\SDL2-2.0.6\lib\x64\SDL2.dll</Command>
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenGLWindow.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="frag.glsl" />
-    <None Include="vert.glsl" />
+    <None Include="colourFrag.glsl" />
+    <None Include="colourVert.glsl" />
+    <None Include="textureFrag.glsl" />
+    <None Include="textureVert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
