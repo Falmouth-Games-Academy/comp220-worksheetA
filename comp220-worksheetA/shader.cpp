@@ -189,11 +189,11 @@ void ShaderManager::LoadShaders(std::string ShaderName, const char * vertex_file
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
 
-	Shader s;
-	s.setProgramID(ProgramID);
-	s.discoverUniforms();
+	Shader *s=new Shader();
+	s->setProgramID(ProgramID);
+	s->discoverUniforms();
 
-	ShaderDict.insert(std::pair<std::string, Shader>(ShaderName, s));
+	ShaderDict.insert(std::pair<std::string, Shader*>(ShaderName, s));
 }
 
 /*
@@ -205,7 +205,7 @@ GLuint ShaderManager::GetShader(std::string name)
 
 Shader * ShaderManager::GetShader(std::string name)
 {
-	return &ShaderDict[name];
+	return ShaderDict[name];
 }
 
 Shader::Shader()
