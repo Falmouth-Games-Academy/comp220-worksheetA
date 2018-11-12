@@ -33,7 +33,21 @@ public:
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	glm::mat4 modelMatrix;
+
+	void setShader(std::string name)
+	{
+		shaderName = name;
+	};
+		
+
+	std::string getShader()
+	{
+		return shaderName;
+	};
+
+
 private:
 
+	std::string shaderName;
 
 };

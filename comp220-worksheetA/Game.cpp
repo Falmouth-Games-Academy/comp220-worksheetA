@@ -132,12 +132,11 @@ void Game::initScene()
 	//programID = LoadShaders("vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
 
-	//------------------end of model loading----------------------------//
 
 	//Get the uniforms from the shader
-	modelMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
-	viewMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
-	projectionMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
+	//modelMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
+	//viewMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
+	//projectionMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
 	//baseTextureLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "baseTexture");
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -150,15 +149,19 @@ void Game::gameLoop()
 
 	GameObject* dinoGO1 = new GameObject;
 	dinoGO1->attachMesh(teaPotModel);
+	dinoGO1->setShader("defShader");
 
 	GameObject* dinoGO2 = new GameObject;
 	dinoGO2->attachMesh(dinoModel);
+	dinoGO2->setShader("defShader");
 
 	GameObject* dinoGO3 = new GameObject;
 	dinoGO3->attachMesh(teaPotModel);
+	dinoGO3->setShader("defShader");
 
 	GameObject* dinoGO4 = new GameObject;
 	dinoGO4->attachMesh(dinoModel);
+	dinoGO4->setShader("defShader");
 
 	
 	objs.push_back(dinoGO1);
@@ -197,6 +200,7 @@ void Game::gameLoop()
 
 void Game::CheckEvents()
 {
+	SDL_Event ev;
 	input.beginNewFrame();
 
 	// Poll for the events which have happened in this frame
@@ -280,18 +284,20 @@ void Game::render()
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(shaderManager.GetShader("defShader"));
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TextureID);
-
-	//send the uniforms across
-	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
-	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(camera.Projection));
-
 	for (GameObject * obj : objs)
 	{
-		glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
+		Shader * currentShader = shaderManager.GetShader(obj->getShader());
+
+		glUseProgram(currentShader->getProgramID());
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, TextureID);
+
+		//send the uniforms across
+		glUniformMatrix4fv(currentShader->getUniformLocation("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+		glUniformMatrix4fv(currentShader->getUniformLocation("projMatrix"), 1, GL_FALSE, glm::value_ptr(camera.Projection));
+		glUniformMatrix4fv(currentShader->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
+		
 		obj->render();
 	}
 
@@ -303,7 +309,8 @@ void Game::render()
 void Game::gameCleanUp()
 {
 
-	glDeleteProgram(shaderManager.GetShader("defShader"));
+	//glDeleteProgram(shaderManager.GetShader("defShader"));
+	shaderManager.destroy();
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 

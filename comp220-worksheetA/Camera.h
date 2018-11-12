@@ -17,6 +17,8 @@ public:
 
 	glm::mat4 Projection;
 
+	glm::mat4 View;
+
 	glm::quat rotation = glm::identity<quat>();
 	
 	void MouseMovement(int x, int y);

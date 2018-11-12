@@ -97,7 +97,7 @@ private:
 	glm::mat4 sceneMatrix;
 
 	//SDL Event structure, this will be checked in the while loop
-	SDL_Event ev;
+
 
 
 protected:

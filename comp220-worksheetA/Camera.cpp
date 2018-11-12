@@ -12,12 +12,13 @@ Camera::~Camera()
 
 glm::mat4 Camera::CalculateViewMatrix()
 {
-	return glm::lookAt(pos, lookAt, cameraUp);
+	return View;
 }
 
 void Camera::Strafe(glm::vec3 mov, float delta)
 {
 	pos += mov * rotation * delta;
+	View =glm::lookAt(pos, lookAt, cameraUp);
 }
 
 void Camera::MouseMovement(int x, int y)
@@ -30,5 +31,7 @@ void Camera::MouseMovement(int x, int y)
 	cameraRight = globals::worldRight * rotation;
 
 	lookAt = pos + cameraForward;
+
+	View = glm::lookAt(pos, lookAt, cameraUp);
 }
 
