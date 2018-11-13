@@ -55,14 +55,15 @@ public:
 		auto shaderiter = ShaderDict.begin();
 		while (shaderiter != ShaderDict.end())
 		{
-			glDeleteProgram((*shaderiter).second.getProgramID());
+			glDeleteProgram((*shaderiter).second->getProgramID());
+			delete (*shaderiter).second;
 			shaderiter++;
 		};
 	};
 
 private:
 	//std::map<std::string, GLuint> ShaderDict;
-	std::map<std::string, Shader> ShaderDict;
+	std::map<std::string, Shader*> ShaderDict;
 
 };
 
