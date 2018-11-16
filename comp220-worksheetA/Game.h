@@ -2,6 +2,7 @@
 
 #include "Libraries.h"
 #include "Model.h"
+#include "Camera.h"
 
 class Game
 {
@@ -17,9 +18,19 @@ public:
 	int getShaders();
 	int loading();
 
+	void UpdateView();
+	void KeyPressed(const char key);
+	void MoveMouse(int x, int y, int width, int height);
+	void MousePressed(int button, int state, int x, int y);
 	void render();
 	void clean();
 	void SetFullscreen();
+
+	glm::mat4 GetViewMatrix()
+	{
+		return viewMatrix;
+	}
+	
 
 	bool SetOpenGLAttributes();
 
@@ -52,6 +63,9 @@ private:
 	glm::vec3 cameraPosition;
 	glm::vec3 cameraTarget;
 	glm::vec3 cameraUp;
+	glm::vec3 eyeVector;
+
+	glm::vec2 mousePosition;
 
 	std::vector<Mesh*> meshes;
 
@@ -59,15 +73,26 @@ private:
 	float lastTime = 0;
 	float tickTime = 0;
 	float deltaTime = 0;
+	float roll;
+	float pitch;
+	float yaw;
 
 	int verticesNum = 36;
 	int indicesNum = 12;
 	int IDNum = 8;
+	int x;
+	int y;
+	int width;
+	int height;
+	int button;
+	int state;
 
 	unsigned int numberOfVertices = 0;
 	unsigned int numberOfIndices = 0;
+	const char key;
 
 	bool isRunning = false;
 	bool isFullscreen = false;
+	bool isMousePressed = false;
 };
 

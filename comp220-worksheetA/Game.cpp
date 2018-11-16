@@ -34,12 +34,29 @@ int Game::loop()
 			case SDL_QUIT:
 				isRunning = false;
 				break;
-
+				
 			case SDL_KEYDOWN:
 
 				//Check individual keys by code (can be moved out into main switch statement if fewer keys need to be checked.)
 				switch (event.key.keysym.sym)
 				{
+					case SDLK_w:
+						key = "w";
+						Game::KeyPressed(key);
+						break;
+					case SDLK_s:
+						key = "s";
+						Game::KeyPressed(key);
+						break;
+					case SDLK_a:
+						key = "a";
+						Game::KeyPressed(key);
+						break;
+					case SDLK_d:
+						key = "d";
+						Game::KeyPressed(key);
+						break;
+					/*
 					case SDLK_ESCAPE: // Escape key
 						isRunning = false;
 						break;
@@ -79,10 +96,12 @@ int Game::loop()
 					case SDLK_F11: // Toggle fullscreen
 						SetFullscreen();
 						break;
+						*/
 				}
 				break;
+				
 			}
-
+			/*
 			if (event.type == SDL_MOUSEWHEEL) // Doesn't work right now
 			{
 				if (event.wheel.y > 0) // Scroll up
@@ -103,8 +122,11 @@ int Game::loop()
 			modelMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // Rotates the cube in X axis
 			modelMatrix *= glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // Rotates the cube in Y axis 
 			modelMatrix *= glm::translate(position); // Translates the position of the cube
-			
+			*/
 		}
+		
+		Game::MoveMouse(x, y, width, height);
+		Game::MousePressed(button, state, x, y);
 
 		Game::render();
 	}
@@ -431,6 +453,7 @@ int Game::getShaders()
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("vertexTextured.glsl", "fragmentTextured.glsl");
 
+	/*
 	// Set up positions for position, rotation and scale
 	position = glm::vec3(0.0f, 0.0f, -20.0f);
 	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -454,7 +477,7 @@ int Game::getShaders()
 	viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
 	// Calculate our perspective matrix
 	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 100.0f);
-
+	*/
 	// Get the uniforms from the shader
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
@@ -462,6 +485,100 @@ int Game::getShaders()
 	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
 
 	return 0;
+}
+
+void Game::UpdateView()
+{
+	glm::mat4 matRoll = glm::mat4(1.0f);
+	glm::mat4 matPitch = glm::mat4(1.0f);
+	glm::mat4 matYaw = glm::mat4(1.0f);
+
+	matRoll = glm::rotate(matRoll, roll, glm::vec3(0.0f, 0.0f, 1.0f));
+	matPitch = glm::rotate(matPitch, pitch, glm::vec3(1.0f, 0.0f, 0.0f));
+	matYaw = glm::rotate(matYaw, yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::mat4 rotate = matRoll * matPitch * matYaw;
+
+	glm::mat4 translate = glm::mat4(1.0f);
+	translate = glm::translate(translate, -eyeVector);
+
+	viewMatrix = rotate * translate;
+
+}
+
+void Game::KeyPressed(const char key)
+{
+	float dx = 0; // how much we strafe on x
+	float dz = 0; // how much we strafe on z
+	switch (key)
+	{
+	case 'w':
+	{
+		dz = 2;
+		break;
+	}
+	case 's':
+	{
+		dz = -2;
+		break;
+	}
+	case 'a':
+	{
+		dx = -2;
+		break;
+	}
+	case 'd':
+	{
+		dx = 2;
+		break;
+	}
+	default:
+		break;
+	}
+
+	glm::mat4 mat = GetViewMatrix();
+
+	glm::vec3 forward(mat[0][2], mat[1][2], mat[2][2]);
+	glm::vec3 strafe(mat[0][0], mat[1][0], mat[2][0]);
+
+	const float speed = 0.12f; // how fast we move
+
+	eyeVector += (-dz * forward + dx * strafe) * speed;
+
+	UpdateView();
+}
+
+void Game::MoveMouse(int x, int y, int width, int height)
+{
+	if (isMousePressed == false)
+	{
+		return;
+	}
+
+	glm::vec2 mouseDelta = glm::vec2(x, y) - mousePosition;
+
+	const float mouseXSensitivity = 0.25f;
+	const float mouseYSensitivity = 0.25f;
+
+	yaw += mouseXSensitivity * mouseDelta.x;
+	pitch += mouseYSensitivity * mouseDelta.y;
+
+	mousePosition = glm::vec2(x, y);
+	UpdateView();
+}
+
+void Game::MousePressed(int button, int state, int x, int y)
+{
+	if (state == SDL_KEYUP)
+	{
+		isMousePressed = false;
+	}
+	if (state == SDL_KEYDOWN)
+	{
+		isMousePressed = true;
+		mousePosition.x = x;
+		mousePosition.y = y;
+	}
 }
 
 void Game::render()
@@ -491,7 +608,7 @@ void Game::render()
 
 	// Send the uniforms across
 	glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	//glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	glUniform1i(textureUniformLocation, 0);
 
