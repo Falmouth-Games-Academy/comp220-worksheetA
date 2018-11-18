@@ -36,7 +36,6 @@ public:
 private:
 	GLuint programID;
 	std::map<std::string, GLint> UniformLocationDict;
-
 };
 
 class ShaderManager {

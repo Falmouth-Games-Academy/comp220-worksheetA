@@ -6,7 +6,6 @@ Game::Game()
 
 }
 
-
 Game::~Game()
 {
 
@@ -40,7 +39,7 @@ void Game::initWindow()
 {
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
-	window = SDL_CreateWindow("Triangle Simulator - Press F to toggle fullscreen", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow("Graphics Demo Aplication", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
@@ -55,14 +54,21 @@ void Game::fullScreen()
 {
 	if (fullScreenToggle == false)
 	{ 
+
+		SDL_GetCurrentDisplayMode(0, &DM);
+		auto Width = DM.w;
+		auto Height = DM.h;
+
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-		glViewport(0, 0, globals::FULL_SCREEN_WIDTH, globals::FULL_SCREEN_HEIGHT);
+		glViewport(0, 0, DM.w, DM.h);
+
 		fullScreenToggle = true;
 	}
 	else if (fullScreenToggle == true)
 	{
 		SDL_SetWindowFullscreen(window, 0);
 		glViewport(0, 0, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT);
+
 		fullScreenToggle = false;
 	}
 }
@@ -106,20 +112,9 @@ void Game::initGlew()
 // initialises the game scene and elements to be rendered
 void Game::initScene()
 {
-	//------------------ Start of model loading----------------------------//
-
-	//MeshCollection * tankMes=loadMeshFromFile("Tank.fbx");
-	//GameObject* go=new GameObject;
-	//go->attachMesh(tankMesh);
-
-	//GameObject* go2 =new GameObject
-	//go->attachMesh(tankMesh);
-
-	//Mesh
-
 	//Load Mesh
 	dinoModel = new MeshCollection();
-	loadMeshFromFile("tomModel.FBX", dinoModel);
+	loadMeshFromFile("TomModel.FBX", dinoModel);
 	TextureID = loadTextureFromFile("tomTexture.png");
 
 	teaPotModel = new MeshCollection();
@@ -131,13 +126,7 @@ void Game::initScene()
 	// loads in the shaders
 	//programID = LoadShaders("vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
-
-
-	//Get the uniforms from the shader
-	//modelMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "modelMatrix");
-	//viewMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "viewMatrix");
-	//projectionMatrixUniformLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "projMatrix");
-	//baseTextureLocation = glGetUniformLocation(shaderManager.GetShader("defShader"), "baseTexture");
+	shaderManager.LoadShaders("texturedShader", "texturedVert.glsl", "texturedFrag.glsl");
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
@@ -153,7 +142,7 @@ void Game::gameLoop()
 
 	GameObject* dinoGO2 = new GameObject;
 	dinoGO2->attachMesh(dinoModel);
-	dinoGO2->setShader("defShader");
+	dinoGO2->setShader("texturedShader");
 
 	GameObject* dinoGO3 = new GameObject;
 	dinoGO3->attachMesh(teaPotModel);
@@ -161,9 +150,11 @@ void Game::gameLoop()
 
 	GameObject* dinoGO4 = new GameObject;
 	dinoGO4->attachMesh(dinoModel);
-	dinoGO4->setShader("defShader");
+	dinoGO4->setShader("texturedShader");
 
-	
+	dinoGO1->scale = glm::vec3(0.2f);
+	dinoGO3->scale = glm::vec3(0.2f);
+
 	objs.push_back(dinoGO1);
 	objs.push_back(dinoGO2);
 	objs.push_back(dinoGO3);
@@ -255,7 +246,7 @@ void Game::update()
 	}
 	else
 	{
-		camera.Projection = glm::perspective(glm::radians(45.0f), globals::FULL_SCREEN_WIDTH / globals::FULL_SCREEN_HEIGHT, 0.1f, 100.0f);
+		camera.Projection = glm::perspective(glm::radians(45.0f), (float)DM.w / (float)DM.h, 0.1f, 100.0f);
 	}
 
 	// Or, for an ortho camera :
@@ -265,9 +256,9 @@ void Game::update()
 	for (GameObject * obj : objs)
 	{
 		//obj->rotation.z = 0.8;
-		obj->scale = glm::vec3(0.3f);
+		//obj->scale = glm::vec3(0.3f);
 		obj->position = glm::vec3(0, 0, count);
-		count += 3;
+		count += 5;
 		obj->update();
 	}
 
@@ -276,9 +267,6 @@ void Game::update()
 
 void Game::render()
 {
-	/* ------------------------------ /
-	RENDERING PROCESS IN LOOP
-	/ ------------------------------ */
 	//render with OpenGL
 	glClearColor(0.2, 0.2, 0.25, 1.0);
 	glClearDepth(1.0f);
@@ -308,6 +296,7 @@ void Game::render()
 // CleanUp function, cleans up memory when the game loop is being closed/finished
 void Game::gameCleanUp()
 {
+	objs.clear();
 
 	//glDeleteProgram(shaderManager.GetShader("defShader"));
 	shaderManager.destroy();

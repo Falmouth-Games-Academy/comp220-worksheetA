@@ -196,13 +196,6 @@ void ShaderManager::LoadShaders(std::string ShaderName, const char * vertex_file
 	ShaderDict.insert(std::pair<std::string, Shader*>(ShaderName, s));
 }
 
-/*
-GLuint ShaderManager::GetShader(std::string name)
-{
-	return ShaderDict[name];
-}
-*/
-
 Shader * ShaderManager::GetShader(std::string name)
 {
 	return ShaderDict[name];

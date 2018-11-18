@@ -1,20 +1,36 @@
 #version 330 core
 
-
-in vec4 vertexColourFinal;
+in vec4 vertexColourOut;
 in vec2 vertexTextureCoordOut;
+in vec3 vertexNormalsOut;
+in vec3 viewDirection;
 
 out vec4 colour;
 
 uniform sampler2D baseTexture;
 
+uniform vec4 ambientLightColour;
+uniform vec4 diffuseLightColour;
+uniform vec4 specularLightColour;
 
-uniform vec4 triangleColour; 
+uniform vec3 lightDirection;
+
+uniform vec4 ambientMaterialColour;
+uniform vec4 diffuseMaterialColour;
+uniform vec4 specularMaterialColour;
+uniform float specularMaterialPower;
 
 void main()
 {
-  //colour = vertexColourFinal;
+	//Diffuse
+	float nDotl=dot(vertexNormalsOut,normalize(lightDirection));
 
-  colour=texture2D(baseTexture,vertexTextureCoordOut);
+	//Specular
+	vec3 halfWay=normalize(lightDirection+viewDirection);
+	float nDoth=pow(dot(vertexNormalsOut,halfWay),specularMaterialPower);
 
+	
+	colour=(ambientLightColour*ambientMaterialColour)+(diffuseLightColour*nDotl*diffuseMaterialColour)+(specularLightColour*nDoth*specularMaterialColour);
+
+	//colour= vec4(1,1,1,1);
 }

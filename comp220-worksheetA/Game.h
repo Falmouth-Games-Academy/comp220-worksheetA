@@ -55,12 +55,6 @@ public:
 	// mouse x and y vars
 	int mouseX = 0;
 	int mouseY = 0;
-
-	// time vars
-	float lastTime;
-	float tickTime;
-	float deltaTime;
-	float fps;
 	
 	// model and texture vars
 	MeshCollection * dinoModel;
@@ -68,6 +62,8 @@ public:
 	GLuint TextureID;
 
 private:
+
+	SDL_DisplayMode DM;
 
 	// the different initialises
 	void initSDL();
@@ -80,6 +76,11 @@ private:
 	void update();
 	void render();
 
+	// time vars
+	float lastTime;
+	float tickTime;
+	float deltaTime;
+	float fps;
 
 	// fullscreen toggle boolean and function
 	bool fullScreenToggle = false;
