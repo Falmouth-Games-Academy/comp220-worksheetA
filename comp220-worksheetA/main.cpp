@@ -13,6 +13,7 @@
 #include "Vertex.h"
 
 #include "Texture.h"
+#include "Model.h"
 
 typedef std::chrono::high_resolution_clock Time;
 
@@ -82,6 +83,7 @@ int main(int argc, char ** argsv)
 	// An array of 3 vectors which represents 3 verticies
 	// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-2-the-first-triangle/
 	// {x,y,z,r,g,b,a}
+	/*
 	static const Vertex v[] = {
 
 		{ -0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,1.0f,0.0f,0.0f },
@@ -97,7 +99,7 @@ int main(int argc, char ** argsv)
 		0,1,2,
 		2,0,3
 	};
-
+	*/
 	//glEnable(GL_DEPTH_TEST);
 
 	//This will identify our vertex buffer
@@ -107,14 +109,17 @@ int main(int argc, char ** argsv)
 	// The following commands will talk about our 'vertexbuffer' buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	// Gives our vertices to OpenGL
-	glBufferData(GL_ARRAY_BUFFER, 8*sizeof(Vertex), v, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, 8*sizeof(Vertex), v, GL_STATIC_DRAW);
 
 	GLuint elementbuffer;
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer); // Binding an element buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // GL_STATIC_DRAW as doesn't need to be updated every frame
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // GL_STATIC_DRAW as doesn't need to be updated every frame
 
-
+	// Cube.nff test
+	unsigned int numberOfVerts = 0;
+	unsigned int numberofInfices = 0;
+	loadModelFromFile("Tank1.FBX", vertexbuffer, elementbuffer, numberOfVerts, numberofInfices);
 
 	// Load in a texture from a file
 	GLuint textureID = loadTextureFromFile("Crate.jpg");
@@ -264,7 +269,7 @@ int main(int argc, char ** argsv)
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(7 * sizeof(float)));
 
 		// Draw the triangle !
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, numberofInfices, GL_UNSIGNED_INT, (void*)0);
 		SDL_GL_SwapWindow(window);
 
 		/*

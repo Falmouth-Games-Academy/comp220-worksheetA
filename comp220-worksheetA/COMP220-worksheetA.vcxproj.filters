@@ -33,6 +33,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -53,11 +56,15 @@
     <ClInclude Include="Texture.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="colourVert.glsl" />
     <None Include="colourFrag.glsl" />
     <None Include="textureVert.glsl" />
     <None Include="textureFrag.glsl" />
+    <None Include="cube.nff" />
   </ItemGroup>
 </Project>
