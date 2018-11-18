@@ -76,53 +76,16 @@ int main(int argc, char ** argsv)
 		return 1;
 	}
 
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-
-	// An array of 3 vectors which represents 3 verticies
-	// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-2-the-first-triangle/
-	// {x,y,z,r,g,b,a}
-	/*
-	static const Vertex v[] = {
-
-		{ -0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,1.0f,0.0f,0.0f },
-		{ 0.5f,-0.5f,0.0f,0.0f,1.0f,0.0f,1.0f,1.0f,0.0f },
-		{ 0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f,1.0f,1.0f },
-		{ -0.5f,0.5f,0.0f,0.0f,0.0f,1.0f,1.0f ,0.0f,1.0f }
-
-	};
-
-	// Describes the square (two triangles) anti-clockwise for front facing
-	static const unsigned int indices[] =
-	{
-		0,1,2,
-		2,0,3
-	};
-	*/
-	//glEnable(GL_DEPTH_TEST);
-
-	//This will identify our vertex buffer
-	GLuint vertexbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &vertexbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Gives our vertices to OpenGL
-	//glBufferData(GL_ARRAY_BUFFER, 8*sizeof(Vertex), v, GL_STATIC_DRAW);
-
-	GLuint elementbuffer;
-	glGenBuffers(1, &elementbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer); // Binding an element buffer
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // GL_STATIC_DRAW as doesn't need to be updated every frame
+	std::vector<Mesh*> meshes;
+	loadMeshesFromFile("tank1.FBX", meshes);
 
 	// Cube.nff test
-	unsigned int numberOfVerts = 0;
-	unsigned int numberofInfices = 0;
-	loadModelFromFile("Tank1.FBX", vertexbuffer, elementbuffer, numberOfVerts, numberofInfices);
+	//unsigned int numberOfVerts = 0;
+	//unsigned int numberofInfices = 0;
+	//loadModelFromFile("Tank1.FBX", vertexbuffer, elementbuffer, numberOfVerts, numberofInfices);
 
 	// Load in a texture from a file
-	GLuint textureID = loadTextureFromFile("Crate.jpg");
+	GLuint textureID = loadTextureFromFile("Tank1DF.png");
 
 	// Triangle
 	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -139,7 +102,7 @@ int main(int argc, char ** argsv)
 	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 	// Camera
-	glm::vec3 cameraPosition = glm::vec3(2.0f, 2.0f, -2.0f);
+	glm::vec3 cameraPosition = glm::vec3(2.0f, 2.0f, -6.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -166,6 +129,8 @@ int main(int argc, char ** argsv)
 	Time::time_point previous = Time::now();
 	double lag = 0.0;
 	bool fullScreen = false;
+
+	glEnable(GL_DEPTH_TEST);
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -219,14 +184,12 @@ int main(int argc, char ** argsv)
 
 		// Update game and draw with OpenGL
 		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Active, bind, send (glUniform1i)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
 		glUseProgram(programID); // for shaders
 		glUniform4fv(fragColourLocation, 1, fragColour);
@@ -245,31 +208,12 @@ int main(int argc, char ** argsv)
 		//	= glGetUniformLocation(programID, "myColour");
 		//glUniform3f(location, 0, 1, 0);
 
-		// 1st attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-		glVertexAttribPointer(
-			0,			// Attribute 0. No particular reason for 0, but must match the Layout in the shader
-			3,			// Size
-			GL_FLOAT,	// Type
-			GL_FALSE,	// Normalised?
-			sizeof(Vertex),			// Stride
-			(void*)0	// Array buffer offset
-		);
-		// Draw the triangle
-		//glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-		//glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, (void*)0);
-		//glDisableVertexAttribArray(0);
-
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+		for (Mesh * currentMesh : meshes)
+		{
+			currentMesh->render();
+		}
 
 
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(7 * sizeof(float)));
-
-		// Draw the triangle !
-		glDrawElements(GL_TRIANGLES, numberofInfices, GL_UNSIGNED_INT, (void*)0);
 		SDL_GL_SwapWindow(window);
 
 		/*
@@ -287,14 +231,32 @@ int main(int argc, char ** argsv)
 		*/
 	}
 
+	// Iterator to the beginning of the vector
+	auto iter = meshes.begin();
+
+	while (iter != meshes.end())
+	{
+		// The mesh that the iterator is pointing to
+		if ((*iter))
+		{
+			// Destroy the object the iterator points to 
+			(*iter)->destroy();
+			delete (*iter);
+			// Remove the slot from the vector, iter will now be the next slot along
+			iter = meshes.erase(iter);
+		}
+		else
+		{
+			// If there's no object attached to the iterator, move to the next slot
+			iter++;
+		}
+	}
+
+	// Flushes the vector
+	meshes.clear();
+
 	// Delete program
 	glDeleteProgram(programID);
-
-	// Delete buffers
-	glDeleteBuffers(1, &vertexbuffer);
-	
-	// Delete vertex arrays
-	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Delete textures
 	glDeleteTextures(1, &textureID);
