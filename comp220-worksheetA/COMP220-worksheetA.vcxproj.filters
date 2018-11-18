@@ -72,5 +72,7 @@
     <None Include="textureVert.glsl" />
     <None Include="textureFrag.glsl" />
     <None Include="cube.nff" />
+    <None Include="blinnPhongVert.glsl" />
+    <None Include="blinnPhongFrag.glsl" />
   </ItemGroup>
 </Project>

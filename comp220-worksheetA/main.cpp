@@ -77,7 +77,7 @@ int main(int argc, char ** argsv)
 	}
 
 	std::vector<Mesh*> meshes;
-	loadMeshesFromFile("tank1.FBX", meshes);
+	loadMeshesFromFile("utah-teapot.fbx", meshes);
 
 	// Cube.nff test
 	//unsigned int numberOfVerts = 0;
@@ -102,7 +102,7 @@ int main(int argc, char ** argsv)
 	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 	// Camera
-	glm::vec3 cameraPosition = glm::vec3(2.0f, 2.0f, -6.0f);
+	glm::vec3 cameraPosition = glm::vec3(2.0f, 25.0f, -30.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -110,7 +110,7 @@ int main(int argc, char ** argsv)
 
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)800 / 600), 0.1f, 100.0f);
 
-	GLuint programID = LoadShaders("textureVert.glsl", "textureFrag.glsl"); // Normally would name the var what it does
+	GLuint programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl"); // Normally would name the var what it does
 
 	//glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f);
 
@@ -119,11 +119,17 @@ int main(int argc, char ** argsv)
 	// Get location from .glsl
 	static const GLfloat fragColour[] = { 0.0f,1.0f,0.0f,1.0f };
 
+	// Materials
+	glm::vec4 ambientMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	GLuint fragColourLocation = glGetUniformLocation(programID, "fragColour");
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix"); // Same name as in vert.glsl
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 	GLuint textureLocation = glGetUniformLocation(programID, "baseTexture");
+	GLuint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
+	GLuint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
 
 	// Inspired by http://gameprogrammingpatterns.com/game-loop.html
 	Time::time_point previous = Time::now();
@@ -202,6 +208,9 @@ int main(int argc, char ** argsv)
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
 		glUniform1i(textureLocation, 0);
+
+		glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColour));
+		glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColour));
 
 		// Change colour
 		//GLuint location
