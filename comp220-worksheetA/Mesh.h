@@ -23,3 +23,17 @@ private:
 	unsigned int m_NumberOfIndices;
 };
 
+class MeshCollection
+{
+public:
+	MeshCollection();
+	~MeshCollection();
+
+	void addMesh(Mesh *pMesh);
+
+	void render();
+	void destroy();
+private:
+	std::vector<Mesh*> m_Meshes;
+};
+

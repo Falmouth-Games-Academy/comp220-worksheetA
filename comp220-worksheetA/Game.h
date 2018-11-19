@@ -65,6 +65,7 @@ private:
 	glm::vec2 mousePosition;
 
 	std::vector<Mesh*> meshes;
+	std::vector<GameObject*> GameObjectList;
 
 	// Initialise times
 	float lastTime = 0;

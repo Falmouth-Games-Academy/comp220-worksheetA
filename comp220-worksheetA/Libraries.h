@@ -31,3 +31,5 @@
 #include "Vertex.h"
 #include "Texture.h"
 #include "stdafx.h"
+#include "Mesh.h"
+#include "GameObject.h"

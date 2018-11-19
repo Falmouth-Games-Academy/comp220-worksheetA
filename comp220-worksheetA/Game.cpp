@@ -42,73 +42,15 @@ int Game::loop()
 				//Check individual keys by code (can be moved out into main switch statement if fewer keys need to be checked.)
 				switch (event.key.keysym.sym)
 				{
-					/*
-					case SDLK_ESCAPE: // Escape key
-						isRunning = false;
-						break;
-
-					case SDLK_w: // Arrow key up
-						position.y += 0.05f;
-						break;
-
-					case SDLK_s: // Arrow key down
-						position.y -= 0.05f;
-						break;
-
-					case SDLK_d: // Arrow key right
-						position.x -= 0.05f;
-						break;
-
-					case SDLK_a: // Arrow key left
-						position.x += 0.05f;
-						break;
-
-					case SDLK_KP_4: // Rotate left
-						rotation.y -= 0.1f;
-						break;
-
-					case SDLK_KP_6: // Rotate right
-						rotation.y += 0.1f;
-						break;
-
-					case SDLK_KP_8: // Rotate up
-						rotation.x -= 0.1f;
-						break;
-
-					case SDLK_KP_2: // Rotate down
-						rotation.x += 0.1f;
-						break;
 
 					case SDLK_F11: // Toggle fullscreen
 						SetFullscreen();
 						break;
-						*/
+						
 				}
 				break;
 				
 			}
-			/*
-			if (event.type == SDL_MOUSEWHEEL) // Doesn't work right now
-			{
-				if (event.wheel.y > 0) // Scroll up
-				{
-					// Scale up the triangle
-					scaling = glm::vec3(1.05f, 1.05f, 1.05f);
-					std::cout << "mouse wheel up" << std::endl;
-				}
-
-				if (event.wheel.y < 0) // Scroll down
-				{
-					// Scale down the triangle
-					scaling = glm::vec3(0.95f, 0.95f, 0.95f);
-					std::cout << "mouse wheel down" << std::endl;
-				}
-			}
-			
-			modelMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // Rotates the cube in X axis
-			modelMatrix *= glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // Rotates the cube in Y axis 
-			modelMatrix *= glm::translate(position); // Translates the position of the cube
-			*/
 		}
 
 		Game::render();
@@ -428,39 +370,29 @@ int Game::loading()
 
 int Game::getShaders()
 {
-	loadMeshesFromFile("Models/Tank1.FBX", meshes);
+	// Mouse setup
+	SDL_ShowCursor(0);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	// Create a texture ID
-	textureID = loadTextureFromFile("Textures/Tank1DF.png");
+	// Hold shader programme, rename to what the ID does
+	//GLuint programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
 
-	// Create and compile our GLSL program from the shaders
-	programID = LoadShaders("vertexTextured.glsl", "fragmentTextured.glsl");
+	MeshCollection * tankMeshes = new MeshCollection();
+	loadMeshesFromFile("Tank1.FBX", meshes);
 
-	/*
-	// Set up positions for position, rotation and scale
-	position = glm::vec3(0.0f, 0.0f, -20.0f);
-	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	scaling = glm::vec3(1.0f, 1.0f, 1.0f);
+	Shader * texturedShader = new Shader();
+	texturedShader->Load("vertexTextured.glsl", "fragmentTextured.glsl");
 
-	// Calculate the translation, rotation and scale matrices using the above vectores
-	translationMatrix = glm::translate(position);
-	rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
-		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
-		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-	scaleMatrix = glm::scale(scaling);
+	GLuint textureID = loadTextureFromFile("Tank1DF.png");
 
-	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+	GameObject * tankGO = new GameObject();
+	tankGO->SetPosition(0.0f, 0.0f, -50.0f);
+	tankGO->SetMesh(tankMeshes);
+	tankGO->SetShader(texturedShader);
+	//tankGO->SetDiffuseTexture(textureID);
 
-	// Set up vectors for our camera position
-	cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
-	cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	GameObjectList.push_back(tankGO);
 
-	// Calculate the view matrix
-	viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
-	// Calculate our perspective matrix
-	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 100.0f);
-	*/
 	// Get the uniforms from the shader
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
@@ -472,49 +404,63 @@ int Game::getShaders()
 
 void Game::render()
 {
-	// Update Game and Draw with OpenGL
-	glClearColor(1.0, 0.0, 0.0, 1.0);
+	glEnable(GL_DEPTH_TEST);
+	//glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClearDepth(1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // | GL_DEPTH_BUFFER_BIT
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(programID);
+	for (GameObject * obj : GameObjectList) {
 
-	// Activating and binding texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+		Shader * currentShader = obj->GetShader();
+		currentShader->Use();
 
-	// Binding vertex and element buffers SHOULD BE DELETED 
-	// glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+		glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
 
-	glBindVertexArray(VertexArrayID);
+		glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
+		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+		//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), morphBlendAlpha);
+		//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 
-	loading();
 
-	// If we want another texture do the following
-	// glActiveTexture(GL_TEXTURE1);
-	// glBindTexture(GL_TEXTURE_2D, anotherTextureID);
-
-	// Send the uniforms across
-	glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-	//glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glUniform1i(textureUniformLocation, 0);
-
-	for (Mesh* currentMesh : meshes)
-	{
-		currentMesh->Render();
+		obj->Render();
 	}
 
-	// Draw the triangle ! SHOULD BE DELETED
-	// glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, (void*) 0); // draw elements instead of vertices
-	glDisableVertexAttribArray(0);
+	glDisable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	/*postProcessShader->Use();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, colourBufferID);
+
+	glUniform1i(postProcessShader->GetUniform("texture"), 0);
+
+	glBindVertexArray(screenVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);*/
 
 	SDL_GL_SwapWindow(mainWindow);
 }
 
 void Game::clean()
 {
+	auto iter = GameObjectList.begin();
+	while (iter != GameObjectList.end())
+	{
+		if ((*iter))
+		{
+			delete (*iter);
+			iter = GameObjectList.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
 	// Cleanup
 	std::cout << "Cleaning SDL \n";
 	// glDeleteBuffers(1, &vertexbuffer);
@@ -522,20 +468,7 @@ void Game::clean()
 	// glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
-	auto iter = meshes.begin();
-	while (iter != meshes.end())
-	{
-		if ((*iter))
-		{
-			(*iter)->Destroy();
-			delete (*iter);
-			iter = meshes.erase(iter);
-		}
-		else
-		{
-			iter++;
-		}
-	}
+	GameObjectList.clear();
 	meshes.clear();
 	// Delete Context
 	SDL_GL_DeleteContext(gl_Context);
