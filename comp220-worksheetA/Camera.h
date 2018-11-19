@@ -8,29 +8,31 @@ public:
 	Camera();
 	~Camera();
 
-	void UpdateView();
-	void KeyPressed();
-	void MoveMouse();
-	void MousePressed();
-
-	glm::mat4 GetViewMatrix()
-	{
-		return viewMatrix;
-	}
+	void KeyboardEvents(SDL_Event event);
 
 private:
-	glm::mat4 viewMatrix;
+	glm::vec3 cameraPosition;
+	glm::vec3 cameraTarget;
+	glm::vec3 cameraDirection;
+	glm::vec3 up;
+	glm::vec3 cameraRight;
+	glm::vec3 cameraUp;
+	glm::vec3 cameraFront;
+	
+	glm::mat4 view;
 
-	glm::vec3 eyeVector;
+	void ProcessInputs(SDL_Keycode key);
 
-	glm::vec2 mousePosition;
+	bool isPressed(SDL_Keycode key);
+	bool isReleased(SDL_Keycode key);
 
-	float roll;
-	float pitch;
+	float radius = 10.0f;
 	float yaw;
+	float pitch;
+	float movementSpeed;
+	float mouseSensitivity;
 
-	const unsigned char key;
+	std::map<SDL_Keycode, Uint8> keyState;
 
-	bool isMousePressed = false;
 };
 

@@ -18,10 +18,6 @@ public:
 	int getShaders();
 	int loading();
 
-	void UpdateView();
-	void KeyPressed(const char key);
-	void MoveMouse(int x, int y, int width, int height);
-	void MousePressed(int button, int state, int x, int y);
 	void render();
 	void clean();
 	void SetFullscreen();
@@ -36,6 +32,7 @@ public:
 
 private:
 	SDL_Window* mainWindow = nullptr;
+	Camera camera;
 
 	SDL_GLContext gl_Context;
 
@@ -89,7 +86,6 @@ private:
 
 	unsigned int numberOfVertices = 0;
 	unsigned int numberOfIndices = 0;
-	const char key;
 
 	bool isRunning = false;
 	bool isFullscreen = false;
