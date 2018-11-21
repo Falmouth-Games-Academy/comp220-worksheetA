@@ -8,7 +8,35 @@ public:
 	Camera();
 	~Camera();
 
-	void KeyboardEvents(SDL_Event event);
+	glm::vec3 GetCameraPosition()
+	{
+		return cameraPosition;
+	};
+	glm::vec3 GetCameraFront()
+	{
+		return cameraFront;
+	};
+	glm::vec3 GetCameraUp()
+	{
+		return cameraUp;
+	};
+
+	void SetCameraPosition(glm::vec3 newCameraPosition)
+	{
+		cameraPosition = newCameraPosition;
+	};
+	void IncreaseCameraPosition(glm::vec3 newCameraPosition)
+	{
+		cameraPosition += newCameraPosition;
+	};
+	void SetCameraFront(glm::vec3 newCameraFront)
+	{
+		cameraFront = newCameraFront;
+	};
+	float GetCameraSpeed()
+	{
+		return cameraSpeed;
+	};
 
 private:
 	glm::vec3 cameraPosition;
@@ -20,19 +48,9 @@ private:
 	glm::vec3 cameraFront;
 	
 	glm::mat4 view;
+	
+	float cameraSpeed = 0.5f;
 
-	void ProcessInputs(SDL_Keycode key);
-
-	bool isPressed(SDL_Keycode key);
-	bool isReleased(SDL_Keycode key);
-
-	float radius = 10.0f;
-	float yaw;
-	float pitch;
-	float movementSpeed;
-	float mouseSensitivity;
-
-	std::map<SDL_Keycode, Uint8> keyState;
 
 };
 

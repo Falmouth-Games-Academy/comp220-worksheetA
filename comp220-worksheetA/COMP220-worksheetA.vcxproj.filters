@@ -42,6 +42,9 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -80,6 +83,9 @@
     <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
@@ -87,5 +93,7 @@
     <None Include="fragmentTextured.glsl" />
     <None Include="vertexTextured.glsl" />
     <None Include="Cube.nff" />
+    <None Include="blinnPhongVert.glsl" />
+    <None Include="blinnPhongFrag.glsl" />
   </ItemGroup>
 </Project>

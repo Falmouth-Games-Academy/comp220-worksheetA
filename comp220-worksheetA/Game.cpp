@@ -34,10 +34,14 @@ int Game::loop()
 			case SDL_QUIT:
 				isRunning = false;
 				break;
+
+			case SDL_MOUSEMOTION:
+				player.MouseMovement(event.motion.xrel, event.motion.yrel);
 				
 			case SDL_KEYDOWN:
 
-				camera.KeyboardEvents(event);
+				player.KeyboardEvents(event);
+
 
 				//Check individual keys by code (can be moved out into main switch statement if fewer keys need to be checked.)
 				switch (event.key.keysym.sym)
@@ -52,7 +56,7 @@ int Game::loop()
 				
 			}
 		}
-
+		player.ProcessInputs(deltaTime);
 		Game::render();
 	}
 
@@ -167,7 +171,7 @@ int Game::initialise()
 	Game::initialiseGLEW();
 
 	// Enabling OpenGL Depth function
-	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_DEPTH_TEST);
 
 	//glEnable(GL_CULL_FACE);
 
@@ -231,8 +235,8 @@ int Game::getVertex()
 		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f }, // Bottom square
 	};
 	*/
-
 	/*
+	
 	static const Vertex CubeID[] = 
 	{
 		// Upper vertices
@@ -308,8 +312,8 @@ int Game::getVertex()
 		0, 4, 7,
 		0, 7, 3
 	};
-	*/
-	/* SHOULD BE DELETED
+	
+	// SHOULD BE DELETED
 	// Generate 1 buffer, put the resulting identifier in vertexbuffer
 	glGenBuffers(1, &vertexbuffer);
 	// The following commands will talk about our 'vertexbuffer' buffer
@@ -320,7 +324,7 @@ int Game::getVertex()
 	glGenBuffers(1, &elementbuffer);
 	// Bind element buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, verticesNum * sizeof(int), indices, GL_STATIC_DRAW);
+	 glBufferData(GL_ELEMENT_ARRAY_BUFFER, verticesNum * sizeof(int), indices, GL_STATIC_DRAW);
 	*/
 	/* MODEL SECTION */
 
@@ -375,63 +379,135 @@ int Game::getShaders()
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	// Hold shader programme, rename to what the ID does
-	//GLuint programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
+	//GLuint programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
 
-	MeshCollection * tankMeshes = new MeshCollection();
-	loadMeshesFromFile("Tank1.FBX", meshes);
+	//Load Mesh
+	MeshCollection * tank = new MeshCollection();
+	loadMeshesFromFile("Models/Tank1.fbx", tank);
 
-	Shader * texturedShader = new Shader();
-	texturedShader->Load("vertexTextured.glsl", "fragmentTextured.glsl");
 
 	GLuint textureID = loadTextureFromFile("Tank1DF.png");
 
-	GameObject * tankGO = new GameObject();
-	tankGO->SetPosition(0.0f, 0.0f, -50.0f);
-	tankGO->SetMesh(tankMeshes);
-	tankGO->SetShader(texturedShader);
+	//loadMeshesFromFile("Models/Tank1.fbx", tankMeshes);
+
+	//Shader * texturedShader = new Shader();
+	//texturedShader->Load("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
+
+	//GLuint textureID = loadTextureFromFile("Textures/Tank1DF.png");
+
+	//GameObject * tankGO = new GameObject();
+	//tankGO->SetPosition(0.0f, 0.0f, -50.0f);
+	//tankGO->SetMesh(tankMeshes);
+	//tankGO->SetShader(texturedShader);
 	//tankGO->SetDiffuseTexture(textureID);
 
-	GameObjectList.push_back(tankGO);
+	//GameObjectList.push_back(tankGO);
+
+	// Create and compile our GLSL program from the shaders
+	GLuint programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
+	//Set up positions for position, rotation and scale
+	position = glm::vec3(0.0f, -8.0f, -50.0f);
+	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	scaling = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	//calculate the translation, rotation and scale matrices using the above vectores
+	translationMatrix = glm::translate(position);
+	rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
+		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
+		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+	scaleMatrix = glm::scale(scaling);
+
+	//combine the above matrices into the model matrix (order is important!!!! - TRS)
+	modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
+
+	//Set up vectors for our camera position
+	cameraPosition = glm::vec3(0.0f, 0.0f, 20.0f);
+	cameraLook = glm::vec3(0.0f, 0.0f, 0.0f);
+	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	//Calculate the view matrix
+	viewMatrix = glm::lookAt(cameraPosition, cameraLook, cameraUp);
+	//Calculate our perspective matrix
+	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 100.0f);
+
+	ambientLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	ambientMaterialColor = glm::vec4(0.3f, 0.0f, 0.0f, 1.0f);
 
 	// Get the uniforms from the shader
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
 	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
+	ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColor");
+	ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColor");
 
 	return 0;
 }
 
 void Game::render()
 {
+	translationMatrix = glm::translate(position);
+	rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
+		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
+		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+	scaleMatrix = glm::scale(scaling);
+
+	//combine the above matrices into the model matrix (order is important!!!! - TRS)
+	modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
 	glEnable(GL_DEPTH_TEST);
 	//glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClearDepth(1.0f);
+	glClearColor(0.0, 1.0, 0.0, 1.0);
+	//glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (GameObject * obj : GameObjectList) {
+	for (Mesh*currentMesh : meshes)
+		{
+			currentMesh->Render();
+		}
 
-		Shader * currentShader = obj->GetShader();
-		currentShader->Use();
+	//glUseProgram(programID);
 
-		glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
+	//for (GameObject * obj : GameObjectList) {
 
-		glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
-		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-		//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), morphBlendAlpha);
-		//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
+	//	Shader * currentShader = obj->GetShader();
+	//	currentShader->Use();
+
+	//	glActiveTexture(GL_TEXTURE0);
+	//	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	//	glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
+	//	glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	//	glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	//	glUniform1i(textureUniformLocation, 0);
+	//	//glUniform4fv(ambientLightColorLocation, 1, glm::value_ptr(ambientLightColor));
+	//	//glUniform4fv(ambientMaterialColorLocation, 1, glm::value_ptr(ambientMaterialColor));
+	//	//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), morphBlendAlpha);
+	//	//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 
 
-		obj->Render();
-	}
+	//	obj->Render();
+	//}
+	glUseProgram(programID);
 
-	glDisable(GL_DEPTH_TEST);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	//send the uniforms across
+	glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	glUniform1i(textureUniformLocation, 0);
+	glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColor));
+
+	glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColor));
+
+
+	tankMeshes->render();
+
+	/*glDisable(GL_DEPTH_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
 	
 	/*postProcessShader->Use();
 

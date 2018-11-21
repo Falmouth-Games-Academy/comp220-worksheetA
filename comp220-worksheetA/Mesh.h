@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Libraries.h"
+#include "Vertex.h"
 
 class Mesh
 {

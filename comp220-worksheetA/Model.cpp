@@ -77,7 +77,7 @@ bool loadModelFromFile(const std::string& filename, GLuint VBO, GLuint EBO, unsi
 	return true;
 }
 
-bool loadMeshesFromFile(const std::string & filename, std::vector<Mesh*>& meshes)
+bool loadMeshesFromFile(const std::string& filename, MeshCollection * meshes)
 {
 	Assimp::Importer importer;
 
@@ -146,7 +146,7 @@ bool loadMeshesFromFile(const std::string & filename, std::vector<Mesh*>& meshes
 		}
 
 		ourCurrentMesh->CopyMeshData(vertices, indices);
-		meshes.push_back(ourCurrentMesh);	
+		meshes->addMesh(ourCurrentMesh);	
 
 		vertices.clear();
 		indices.clear();

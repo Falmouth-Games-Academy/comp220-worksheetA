@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Libraries.h"
+#include "Shader.h"
+#include "Mesh.h"
 
 class GameObject
 {
@@ -72,5 +74,5 @@ private:
 	Shader * ShaderProgram;
 
 	//Texture
-	GLuint DiffuseTexture;
+	// GLuint DiffuseTexture;
 };

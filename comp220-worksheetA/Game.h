@@ -3,6 +3,9 @@
 #include "Libraries.h"
 #include "Model.h"
 #include "Camera.h"
+#include "GameObject.h"
+#include "Texture.h"
+#include "Player.h"
 
 class Game
 {
@@ -33,6 +36,7 @@ public:
 private:
 	SDL_Window* mainWindow = nullptr;
 	Camera camera;
+	Player player;
 
 	SDL_GLContext gl_Context;
 
@@ -46,6 +50,8 @@ private:
 	GLint viewMatrixUniformLocation;
 	GLint projectionMatrixUniformLocation;
 	GLint textureUniformLocation;
+	GLint ambientMaterialColourLocation;
+	GLint ambientLightColourLocation;
 
 	glm::mat4 modelMatrix;
 	glm::mat4 translationMatrix;
@@ -54,6 +60,9 @@ private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 
+	glm::vec4 ambientLightColor;
+	glm::vec4 ambientMaterialColor;
+
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scaling;
@@ -61,11 +70,14 @@ private:
 	glm::vec3 cameraTarget;
 	glm::vec3 cameraUp;
 	glm::vec3 eyeVector;
+	glm::vec3 cameraLook;
 
 	glm::vec2 mousePosition;
 
 	std::vector<Mesh*> meshes;
 	std::vector<GameObject*> GameObjectList;
+
+	MeshCollection * tankMeshes = new MeshCollection();
 
 	// Initialise times
 	float lastTime = 0;
