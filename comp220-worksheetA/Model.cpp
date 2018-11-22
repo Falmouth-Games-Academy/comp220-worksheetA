@@ -21,52 +21,50 @@ bool loadModelFromFile(const std::string &filename, GLuint VBO, GLuint EBO, unsi
 	for (unsigned int m = 0; m < scene->mNumMeshes; m++)
 	{
 		// Const as not editing the mesh
-		const aiMesh* currentAIMesh = scene->mMeshes[m];
+		const aiMesh* currentMesh = scene->mMeshes[m];
 
 		// Loop through verticies within the current mesh
-		for (unsigned int v = 0; v < currentAIMesh->mNumVertices; v++)
+		for (unsigned int v = 0; v < currentMesh->mNumVertices; v++)
 		{
-			const aiVector3D currentAIPosition = currentAIMesh->mVertices[v];
-			
-			// Can be done in one line, this is for clarity
-			Vertex ourVertex;
-			ourVertex.x = currentAIPosition.x;
-			ourVertex.y = currentAIPosition.y;
-			// Colour
-			ourVertex.r = 1.0f; ourVertex.g = 1.0f; ourVertex.b = 1.0f; ourVertex.a = 1.0f;
-			// Remove garbage values
-			ourVertex.tu = 0.0f; ourVertex.tv = 0.0f;
-			ourVertex.z = currentAIPosition.z;
+			//const aiVector3D currentAIPosition = currentMesh->mVertices[v];
+
+			aiVector3D currentModelVertex = currentMesh->mVertices[v];
+			aiColor4D currentModelColour = aiColor4D(1.0f, 1.0f, 1.0f, 1.0f);
+			aiVector3D currentTextureCoordinates = aiVector3D(0.0f, 0.0f, 0.0f);
+			aiVector3D currentNormals = aiVector3D(0.0f, 0.0f, 0.0f);
 
 			// Set texture coords to 0, 0 if none otherwise use them
-			if (currentAIMesh->HasTextureCoords(0))
+			if (currentMesh->HasTextureCoords(0))
 			{
 				// Current texture coords of vertex
-				const aiVector3D currentTextureCoords = currentAIMesh->mTextureCoords[0][v];
-				// Set texture coords
-				ourVertex.tu = currentTextureCoords.x;
-				ourVertex.tv = currentTextureCoords.y;
+				const aiVector3D currentTextureCoords = currentMesh->mTextureCoords[0][v];
 			}
 			// Set colour if one exists for the current vertex
-			if (currentAIMesh->HasVertexColors(0))
+			if (currentMesh->HasVertexColors(0))
 			{
 				// Current colour of vertex
-				const aiColor4D currentColour = currentAIMesh->mColors[0][v];
-				// Set colour
-				ourVertex.r = currentColour.r;
-				ourVertex.g = currentColour.g;
-				ourVertex.b = currentColour.b;
-				ourVertex.a = currentColour.a;
+				const aiColor4D currentColour = currentMesh->mColors[0][v];
+			}
+			if (currentMesh->HasNormals())
+			{
+				currentNormals = currentMesh->mNormals[v];
 			}
 
+			Vertex currentVertex = { 
+				currentModelVertex.x, currentModelVertex.y, currentModelVertex.z,						// Vertex (xyz)
+				currentModelColour.r, currentModelColour.g, currentModelColour.b, currentModelColour.a, // Colour (rgba)
+				currentTextureCoordinates.x, currentTextureCoordinates.y,								// Texture (xy)
+				currentNormals.x, currentNormals.y, currentNormals.z									// Normals (xyz)
+			};
+
 			// Add the ourVertex to vertices
-			vertices.push_back(ourVertex);
+			vertices.push_back(currentVertex);
 		}
 
 		// Loop through faces
-		for (unsigned int f = 0; f < currentAIMesh->mNumFaces; f++)
+		for (unsigned int f = 0; f < currentMesh->mNumFaces; f++)
 		{
-			const aiFace currentFace = currentAIMesh->mFaces[f];
+			const aiFace currentFace = currentMesh->mFaces[f];
 
 			// Add indices
 			indices.push_back(currentFace.mIndices[0]);
@@ -109,56 +107,52 @@ bool loadMeshesFromFile(const std::string & filename, std::vector<Mesh*>& meshes
 	for (unsigned int m = 0; m < scene->mNumMeshes; m++)
 	{
 		// Const as not editing the mesh
-		const aiMesh* currentAIMesh = scene->mMeshes[m];
+		const aiMesh* currentMesh = scene->mMeshes[m];
 
 		// Create and initalise a mesh
 		Mesh * ourCurrentMesh = new Mesh();
 		ourCurrentMesh->init();
 
 		// Loop through verticies within the current mesh
-		for (unsigned int v = 0; v < currentAIMesh->mNumVertices; v++)
+		for (unsigned int v = 0; v < currentMesh->mNumVertices; v++)
 		{
-			const aiVector3D currentAIPosition = currentAIMesh->mVertices[v];
-
-			// Can be done in one line, this is for clarity
-			Vertex ourVertex;
-			ourVertex.x = currentAIPosition.x;
-			ourVertex.y = currentAIPosition.y;
-			// Colour
-			ourVertex.r = 1.0f; ourVertex.g = 1.0f; ourVertex.b = 1.0f; ourVertex.a = 1.0f;
-			// Remove garbage values
-			ourVertex.tu = 0.0f; ourVertex.tv = 0.0f;
-			ourVertex.z = currentAIPosition.z;
+			aiVector3D currentModelVertex = currentMesh->mVertices[v];
+			aiColor4D currentModelColour = aiColor4D(1.0f, 1.0f, 1.0f, 1.0f);
+			aiVector3D currentTextureCoordinates = aiVector3D(0.0f, 0.0f, 0.0f);
+			aiVector3D currentNormals = aiVector3D(0.0f, 0.0f, 0.0f);
 
 			// Set texture coords to 0, 0 if none otherwise use them
-			if (currentAIMesh->HasTextureCoords(0))
+			if (currentMesh->HasTextureCoords(0))
 			{
 				// Current texture coords of vertex
-				const aiVector3D currentTextureCoords = currentAIMesh->mTextureCoords[0][v];
-				// Set texture coords
-				ourVertex.tu = currentTextureCoords.x;
-				ourVertex.tv = currentTextureCoords.y;
+				const aiVector3D currentTextureCoords = currentMesh->mTextureCoords[0][v];
 			}
 			// Set colour if one exists for the current vertex
-			if (currentAIMesh->HasVertexColors(0))
+			if (currentMesh->HasVertexColors(0))
 			{
 				// Current colour of vertex
-				const aiColor4D currentColour = currentAIMesh->mColors[0][v];
-				// Set colour
-				ourVertex.r = currentColour.r;
-				ourVertex.g = currentColour.g;
-				ourVertex.b = currentColour.b;
-				ourVertex.a = currentColour.a;
+				const aiColor4D currentColour = currentMesh->mColors[0][v];
+			}
+			if (currentMesh->HasNormals())
+			{
+				currentNormals = currentMesh->mNormals[v];
 			}
 
+			Vertex currentVertex = {
+				currentModelVertex.x, currentModelVertex.y, currentModelVertex.z,						// Vertex (xyz)
+				currentModelColour.r, currentModelColour.g, currentModelColour.b, currentModelColour.a, // Colour (rgba)
+				currentTextureCoordinates.x, currentTextureCoordinates.y,								// Texture (xy)
+				currentNormals.x, currentNormals.y, currentNormals.z									// Normals (xyz)
+			};
+
 			// Add the ourVertex to vertices
-			vertices.push_back(ourVertex);
+			vertices.push_back(currentVertex);
 		}
 
 		// Loop through faces
-		for (unsigned int f = 0; f < currentAIMesh->mNumFaces; f++)
+		for (unsigned int f = 0; f < currentMesh->mNumFaces; f++)
 		{
-			const aiFace currentFace = currentAIMesh->mFaces[f];
+			const aiFace currentFace = currentMesh->mFaces[f];
 
 			// Add indices
 			indices.push_back(currentFace.mIndices[0]);
@@ -166,7 +160,7 @@ bool loadMeshesFromFile(const std::string & filename, std::vector<Mesh*>& meshes
 			indices.push_back(currentFace.mIndices[2]);
 		}
 
-		ourCurrentMesh->copyMeshData(vertices, indices);
+		ourCurrentMesh->copyBufferData(vertices.data(), vertices.size(), indices.data(), indices.size());
 		meshes.push_back(ourCurrentMesh);
 
 		vertices.clear();

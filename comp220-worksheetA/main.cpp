@@ -121,15 +121,27 @@ int main(int argc, char ** argsv)
 
 	// Materials
 	glm::vec4 ambientMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	glm::vec4 diffuseMaterialColour = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+
+	// Light
 	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 
 	GLuint fragColourLocation = glGetUniformLocation(programID, "fragColour");
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix"); // Same name as in vert.glsl
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 	GLuint textureLocation = glGetUniformLocation(programID, "baseTexture");
+
 	GLuint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
+	GLuint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
+
 	GLuint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
+	GLuint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour"); 
+
+	GLuint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
 
 	// Inspired by http://gameprogrammingpatterns.com/game-loop.html
 	Time::time_point previous = Time::now();
@@ -202,14 +214,13 @@ int main(int argc, char ** argsv)
 
 		// Send matrix to vert.glsl
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-
 		glUniform1i(textureLocation, 0);
 
 		glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColour));
+		glUniform4fv(diffuseLightColourLocation, 1, glm::value_ptr(diffuseLightColourLocation));
+
 		glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColour));
 
 		// Change colour
