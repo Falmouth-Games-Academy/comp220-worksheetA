@@ -9,21 +9,21 @@ out vec4 colour;
 
 uniform sampler2D baseTexture;
 
-uniform vec4 ambientLightColour;
-uniform vec4 diffuseLightColour;
-uniform vec4 specularLightColour;
+uniform vec4 ambientLightColour = vec4 (1.0f);
+uniform vec4 diffuseLightColour = vec4 (1.0f);
+uniform vec4 specularLightColour = vec4 (1.0f);
 
-uniform vec3 lightDirection;
+uniform vec3 lightDirection = vec3 (0.0f, 0.0f, 1.0f);
 
-uniform vec4 ambientMaterialColour;
-uniform vec4 diffuseMaterialColour;
-uniform vec4 specularMaterialColour;
-uniform float specularMaterialPower;
+uniform vec4 ambientMaterialColour = vec4 (0.4f, 0.0f, 0.0f, 1.0f);
+uniform vec4 diffuseMaterialColour = vec4 (0.8f, 0.0f, 0.0f, 1.0f);
+uniform vec4 specularMaterialColour = vec4 (1.0f);
+uniform float specularMaterialPower = 25.0f;
 
 void main()
 {
 	//Diffuse
-	float nDotl=dot(vertexNormalsOut,normalize(lightDirection));
+	float nDotl=dot(vertexNormalsOut,normalize(-lightDirection));
 
 	//Specular
 	vec3 halfWay=normalize(lightDirection+viewDirection);
@@ -32,5 +32,6 @@ void main()
 	
 	colour=(ambientLightColour*ambientMaterialColour)+(diffuseLightColour*nDotl*diffuseMaterialColour)+(specularLightColour*nDoth*specularMaterialColour);
 
-	//colour= vec4(1,1,1,1);
+	//colour = vec4 (1.0f,0.0f,0.0f, 1.0f) + (ambientLightColour*ambientMaterialColour)+(diffuseLightColour*nDotl*diffuseMaterialColour);
+	//colour=(ambientLightColour*ambientMaterialColour) +(diffuseLightColour*nDotl*diffuseMaterialColour);
 }

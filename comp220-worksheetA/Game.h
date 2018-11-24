@@ -97,11 +97,35 @@ private:
 
 	glm::mat4 sceneMatrix;
 
-	//SDL Event structure, this will be checked in the while loop
 
+	//Light properties
+	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+
+
+	//Material Properties
+	glm::vec4 ambientMaterialColour = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
+	glm::vec4 diffuseMaterialColour = glm::vec4(0.0f, 0.4f, 0.0f, 1.0f);
+	glm::vec4 specularMaterialColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	float specularMaterialPower = 50.0f;
+
+	// stuff
+	GLint ambientLightColourLocation;
+	GLint diffuseLightColourLocation;
+	GLint specularLightColourLocation;
+
+	GLint ambientMaterialColourLocation;
+	GLint diffuseMaterialColourLocation;
+	GLint specularMaterialColourLocation;
+	GLint specularMaterialPowerLocation;
+
+	GLint lightDirectionLocation;
+	GLint cameraPositionLocation;
 
 
 protected:
 
-	//virtual void update(float elapsedTime);
 };

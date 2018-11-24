@@ -7,9 +7,9 @@ layout(location=3) in vec3 vertexNormals;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+uniform mat4 projMatrix;
 
-uniform vec3 cameraPosition;
+uniform vec3 cameraPosition = vec3(-5, 0, 0);
 
 out vec4 vertexColoursOut;
 out vec2 vertexTextureCoordOut;
@@ -18,7 +18,7 @@ out vec3 viewDirection;
 
 void main(){
 	
-	mat4 mvpMatrix=projectionMatrix*viewMatrix*modelMatrix;
+	mat4 mvpMatrix=projMatrix*viewMatrix*modelMatrix;
 
 	vec4 worldPosition=modelMatrix*vec4(vertexPosition,1.0f);
 	vec4 mvpPosition=mvpMatrix*vec4(vertexPosition,1.0f);

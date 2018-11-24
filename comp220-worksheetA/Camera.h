@@ -22,11 +22,12 @@ public:
 	glm::quat rotation = glm::identity<quat>();
 	
 	void MouseMovement(int x, int y);
+	
+	vec3 pos = glm::vec3(-5, 0, 0);
 
 
 private:
 
-	vec3 pos = glm::vec3(-5, 0, 0);
 	vec3 lookAt = glm::vec3(0, 0, 0);
 
 	vec3 cameraUp = glm::vec3(0, 1, 0);

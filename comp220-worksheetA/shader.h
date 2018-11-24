@@ -11,8 +11,11 @@
 
 class Shader {
 public:
-	Shader();
+
+	Shader(std::string ShaderName);
 	~Shader();
+
+	bool IsLit = false;
 
 	void setProgramID(GLuint id)
 	{
@@ -36,6 +39,8 @@ public:
 private:
 	GLuint programID;
 	std::map<std::string, GLint> UniformLocationDict;
+
+	std::string Name;
 };
 
 class ShaderManager {
@@ -63,6 +68,5 @@ public:
 private:
 	//std::map<std::string, GLuint> ShaderDict;
 	std::map<std::string, Shader*> ShaderDict;
-
 };
 

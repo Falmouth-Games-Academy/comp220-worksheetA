@@ -6,14 +6,14 @@ layout(location=2) in vec2 vertexTextureCoord;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+uniform mat4 projMatrix;
 
 out vec4 vertexColoursOut;
 out vec2 vertexTextureCoordOut;
 
 void main(){
 	
-	mat4 mvpMatrix=projectionMatrix*viewMatrix*modelMatrix;
+	mat4 mvpMatrix=projMatrix*viewMatrix*modelMatrix;
 
 	vec4 mvpPosition=mvpMatrix*vec4(vertexPosition,1.0f);
 	

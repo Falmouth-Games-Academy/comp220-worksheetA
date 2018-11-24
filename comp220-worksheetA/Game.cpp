@@ -123,9 +123,11 @@ void Game::initScene()
 	// Culls the clockwise facing side of the triangles
 	glEnable(GL_CULL_FACE);
 
+
 	// loads in the shaders
-	//programID = LoadShaders("vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
+	shaderManager.GetShader("defShader")->IsLit = true;
+
 	shaderManager.LoadShaders("texturedShader", "texturedVert.glsl", "texturedFrag.glsl");
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -137,23 +139,23 @@ void Game::gameLoop()
 	init();
 
 	GameObject* dinoGO1 = new GameObject;
-	dinoGO1->attachMesh(teaPotModel);
+	dinoGO1->SetMesh(teaPotModel);
 	dinoGO1->setShader("defShader");
+	dinoGO1->SetScale(0.2f, 0.2f, 0.2f);
 
 	GameObject* dinoGO2 = new GameObject;
-	dinoGO2->attachMesh(dinoModel);
+	dinoGO2->SetMesh(dinoModel);
 	dinoGO2->setShader("texturedShader");
+	dinoGO2->SetRotation(3.8f, 0.0f, 1.57f);
 
 	GameObject* dinoGO3 = new GameObject;
-	dinoGO3->attachMesh(teaPotModel);
+	dinoGO3->SetMesh(teaPotModel);
 	dinoGO3->setShader("defShader");
+	dinoGO3->SetScale(0.2f, 0.2f, 0.2f);
 
 	GameObject* dinoGO4 = new GameObject;
-	dinoGO4->attachMesh(dinoModel);
-	dinoGO4->setShader("texturedShader");
-
-	dinoGO1->scale = glm::vec3(0.2f);
-	dinoGO3->scale = glm::vec3(0.2f);
+	dinoGO4->SetMesh(dinoModel);
+	dinoGO4->setShader("defShader");
 
 	objs.push_back(dinoGO1);
 	objs.push_back(dinoGO2);
@@ -255,11 +257,9 @@ void Game::update()
 	int count = 0;
 	for (GameObject * obj : objs)
 	{
-		//obj->rotation.z = 0.8;
-		//obj->scale = glm::vec3(0.3f);
-		obj->position = glm::vec3(0, 0, count);
+		obj->SetPosition(0, 0, count);
 		count += 5;
-		obj->update();
+		obj->Update(deltaTime);
 	}
 
 	camera.MouseMovement(mouseX, mouseY);
@@ -278,15 +278,28 @@ void Game::render()
 
 		glUseProgram(currentShader->getProgramID());
 
+
+
+		// send the uniforms across
+		glUniformMatrix4fv(currentShader->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
+		glUniformMatrix4fv(currentShader->getUniformLocation("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+		glUniformMatrix4fv(currentShader->getUniformLocation("projMatrix"), 1, GL_FALSE, glm::value_ptr(camera.Projection));
+		glUniform3fv(currentShader->getUniformLocation("cameraPosition"), 1, glm::value_ptr(camera.pos));
+		glUniform4fv(currentShader->getUniformLocation("ambientLightColour"), 1, glm::value_ptr(ambientLightColour));
+		glUniform4fv(currentShader->getUniformLocation("diffuseLightColour"), 1, glm::value_ptr(diffuseLightColour));
+		glUniform4fv(currentShader->getUniformLocation("specularLightColour"), 1, glm::value_ptr(specularLightColour));
+		GLint ambientLocation = currentShader->getUniformLocation("ambientMaterialColour");
+		glUniform4fv(currentShader->getUniformLocation("ambientMaterialColour"), 1, glm::value_ptr(ambientMaterialColour));
+		glUniform4fv(currentShader->getUniformLocation("diffuseMaterialColour"), 1, glm::value_ptr(diffuseMaterialColour));
+		glUniform4fv(currentShader->getUniformLocation("specularMaterialColour"), 1, glm::value_ptr(specularMaterialColour));
+		glUniform1f(currentShader->getUniformLocation("specularMaterialPower"), specularMaterialPower);
+
+		glUniform3fv(currentShader->getUniformLocation("lightDirection"), 1, glm::value_ptr(lightDirection));
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, TextureID);
 
-		//send the uniforms across
-		glUniformMatrix4fv(currentShader->getUniformLocation("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
-		glUniformMatrix4fv(currentShader->getUniformLocation("projMatrix"), 1, GL_FALSE, glm::value_ptr(camera.Projection));
-		glUniformMatrix4fv(currentShader->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->modelMatrix));
-		
-		obj->render();
+		obj->Render();
 	}
 
 	// Screen Refresh
@@ -296,6 +309,20 @@ void Game::render()
 // CleanUp function, cleans up memory when the game loop is being closed/finished
 void Game::gameCleanUp()
 {
+	auto iter = objs.begin();
+	while (iter != objs.end())
+	{
+		if ((*iter))
+		{
+			delete (*iter);
+			iter = objs.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
+	
 	objs.clear();
 
 	//glDeleteProgram(shaderManager.GetShader("defShader"));
