@@ -12,6 +12,7 @@ public:
 	int loop();
 	int initialiseSDL();
 	int initialiseGLEW();
+	int initialiseGLFW();
 	int initialise();
 	int getVertex();
 	int getShaders();
@@ -45,6 +46,7 @@ private:
 	glm::mat4 rotationMatrix;
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
+	glm::mat4 MVP;
 
 	glm::vec3 position;
 	glm::vec3 rotation;
@@ -55,7 +57,6 @@ private:
 
 	std::vector<Mesh*> meshes;
 
-	// Initialise times
 	float lastTime = 0;
 	float tickTime = 0;
 	float deltaTime = 0;

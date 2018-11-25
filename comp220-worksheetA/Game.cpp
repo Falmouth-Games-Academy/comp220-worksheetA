@@ -118,7 +118,7 @@ int Game::initialiseSDL()
 	// initialise SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 		std::cout << "SDL init success \n";
-
+		
 		// Create a window
 		mainWindow = SDL_CreateWindow(
 			variables::title,
@@ -138,7 +138,7 @@ int Game::initialiseSDL()
 			std::cout << "window failed \n";
 			return false;
 		}
-
+		
 	}
 	else {
 		std::cout << "SDL fail \n";
@@ -503,7 +503,7 @@ void Game::render()
 	// Draw the triangle ! SHOULD BE DELETED
 	// glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, (void*) 0); // draw elements instead of vertices
 	glDisableVertexAttribArray(0);
-
+	
 	SDL_GL_SwapWindow(mainWindow);
 }
 
