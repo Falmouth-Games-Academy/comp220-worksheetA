@@ -85,7 +85,8 @@ int main(int argc, char ** argsv)
 	//loadModelFromFile("Tank1.FBX", vertexbuffer, elementbuffer, numberOfVerts, numberofInfices);
 
 	// Load in a texture from a file
-	GLuint textureID = loadTextureFromFile("Tank1DF.png");
+	GLuint diffuseTextureID = loadTextureFromFile("Tank1DF.png");
+	GLuint speculartextureID = loadTextureFromFile("specMap.png");
 
 	// Triangle
 	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -121,8 +122,8 @@ int main(int argc, char ** argsv)
 
 	// Materials
 	glm::vec4 ambientMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-	glm::vec4 diffuseMaterialColour = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
-	glm::vec4 specularMaterialColour = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	glm::vec4 diffuseMaterialColour = glm::vec4(0.2f, 0.8f, 0.8f, 1.0f);
+	glm::vec4 specularMaterialColour = glm::vec4(0.8f, 0.2f, 0.8f, 1.0f);
 	float specularMaterialPower = 25.0f;
 
 	// Light
@@ -136,7 +137,8 @@ int main(int argc, char ** argsv)
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix"); // Same name as in vert.glsl
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
-	GLuint textureLocation = glGetUniformLocation(programID, "baseTexture");
+	GLuint diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
+	GLuint specularTextureLocation = glGetUniformLocation(programID, "specularTexture");
 
 	GLuint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
 	GLuint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
@@ -215,7 +217,11 @@ int main(int argc, char ** argsv)
 
 		// Active, bind, send (glUniform1i)
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, speculartextureID);
+
 
 		glUseProgram(programID); // for shaders
 		glUniform4fv(fragColourLocation, 1, fragColour);
@@ -224,7 +230,8 @@ int main(int argc, char ** argsv)
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-		glUniform1i(textureLocation, 0);
+		glUniform1i(diffuseTextureLocation, 0);
+		glUniform1i(specularTextureLocation, 1);
 
 		glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColour));
 		glUniform4fv(diffuseLightColourLocation, 1, glm::value_ptr(diffuseLightColour));
@@ -294,7 +301,8 @@ int main(int argc, char ** argsv)
 	glDeleteProgram(programID);
 
 	// Delete textures
-	glDeleteTextures(1, &textureID);
+	glDeleteTextures(1, &diffuseTextureID);
+	glDeleteTextures(1, &speculartextureID);
 
 	// Delete Context
 	SDL_GL_DeleteContext(gl_Context);
