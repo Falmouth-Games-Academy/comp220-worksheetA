@@ -20,7 +20,7 @@ uniform vec3 lightDirection;
 
 void main()
 {
-	float diffuseReflectance = dot(vertexNormalOut, lightDirection);
+	float diffuseReflectance = dot(vertexNormalOut, -lightDirection);
 
 	colour = (ambientLightColour * ambientMaterialColour) + (diffuseLightColour * diffuseReflectance * diffuseMaterialColour);
 }

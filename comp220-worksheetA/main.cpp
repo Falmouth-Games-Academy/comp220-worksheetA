@@ -219,9 +219,11 @@ int main(int argc, char ** argsv)
 		glUniform1i(textureLocation, 0);
 
 		glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColour));
-		glUniform4fv(diffuseLightColourLocation, 1, glm::value_ptr(diffuseLightColourLocation));
+		glUniform4fv(diffuseLightColourLocation, 1, glm::value_ptr(diffuseLightColour));
+		glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
 
 		glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColour));
+		glUniform4fv(diffuseMaterialColourLocation, 1, glm::value_ptr(diffuseMaterialColour));
 
 		// Change colour
 		//GLuint location

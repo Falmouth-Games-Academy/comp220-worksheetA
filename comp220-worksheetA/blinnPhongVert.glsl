@@ -18,7 +18,7 @@ void main()
 	mat4 MVPMatrix = projectionMatrix * viewMatrix * modelMatrix;
 
 	vertexColourOut = vertexColour;
-	vertetTextureCoordOut = vertetTextureCoord;
+	vertexTextureCoordOut = vertexTextureCoord;
 	vertexNormalOut = vertexNormal;
 
 	gl_Position = MVPMatrix * vec4(vertexPosition, 1.0f);
