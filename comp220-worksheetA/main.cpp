@@ -122,10 +122,13 @@ int main(int argc, char ** argsv)
 	// Materials
 	glm::vec4 ambientMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 	glm::vec4 diffuseMaterialColour = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	glm::vec4 specularMaterialColour = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	float specularMaterialPower = 25.0f;
 
 	// Light
 	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 
@@ -137,11 +140,16 @@ int main(int argc, char ** argsv)
 
 	GLuint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
 	GLuint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
+	GLuint specularMaterialColourLocation = glGetUniformLocation(programID, "specularMaterialColour");
+	GLuint specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
 
 	GLuint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
 	GLuint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour"); 
+	GLuint specularLightColourLocation = glGetUniformLocation(programID, "specularLightColour");
 
 	GLuint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
+
+	GLuint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
 
 	// Inspired by http://gameprogrammingpatterns.com/game-loop.html
 	Time::time_point previous = Time::now();
@@ -220,10 +228,15 @@ int main(int argc, char ** argsv)
 
 		glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColour));
 		glUniform4fv(diffuseLightColourLocation, 1, glm::value_ptr(diffuseLightColour));
+		glUniform4fv(specularLightColourLocation, 1, glm::value_ptr(specularLightColour));
 		glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
 
 		glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColour));
 		glUniform4fv(diffuseMaterialColourLocation, 1, glm::value_ptr(diffuseMaterialColour));
+		glUniform4fv(specularMaterialColourLocation, 1, glm::value_ptr(specularMaterialColour));
+		glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
+
+		glUniform3fv(cameraPositionLocation, 1, glm::value_ptr(cameraPosition));
 
 		// Change colour
 		//GLuint location
