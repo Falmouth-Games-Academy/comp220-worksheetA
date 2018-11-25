@@ -74,3 +74,55 @@ void Mesh::Destroy()
 	glDeleteBuffers(1, &m_VBO);
 	glDeleteBuffers(1, &m_EBO);
 }
+
+
+MeshCollection::MeshCollection()
+{
+}
+
+MeshCollection::~MeshCollection()
+{
+	destroy();
+}
+
+// add new mesh to the collection
+void MeshCollection::addMesh(Mesh * pMesh)
+{
+	m_Meshes.push_back(pMesh);
+}
+
+// loop through all meshes in the collection and call render on them
+void MeshCollection::render()
+{
+	for (Mesh *pMesh : m_Meshes)
+	{
+		pMesh->Render();
+	}
+}
+
+void MeshCollection::destroy()
+{
+	// Delete the data in meshes - can't use the standard for loop as you can't modifiy anything instide the loop
+	auto iter = m_Meshes.begin();
+	// while iter isn't the end of meshes
+	while (iter != m_Meshes.end())
+	{
+		// check iter has memory
+		if ((*iter))
+		{
+			// destroy the mesh
+			(*iter)->Destroy();
+			// delete the memory
+			delete (*iter);
+			// erase the slot in the vector and return new iter
+			iter = m_Meshes.erase(iter);
+		}
+		else
+		{
+			// if no memory move on
+			iter++;
+		}
+	}
+	// final flush of vector
+	m_Meshes.clear();
+}

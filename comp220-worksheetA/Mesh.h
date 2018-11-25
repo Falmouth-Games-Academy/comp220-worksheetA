@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Libraries.h"
+#include "Vertex.h"
 
 class Mesh
 {
@@ -21,5 +22,19 @@ private:
 
 	unsigned int m_NumberOfVertices;
 	unsigned int m_NumberOfIndices;
+};
+
+class MeshCollection
+{
+public:
+	MeshCollection();
+	~MeshCollection();
+
+	void addMesh(Mesh *pMesh);
+
+	void render();
+	void destroy();
+private:
+	std::vector<Mesh*> m_Meshes;
 };
 

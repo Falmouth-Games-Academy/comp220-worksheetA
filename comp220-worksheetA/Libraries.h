@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <time.h>
+#include <map>
 
 #include <stdio.h>
 
@@ -26,7 +27,9 @@
 #include <glm\gtc\type_ptr.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
-#include "Shader.h"
-#include "Vertex.h"
-#include "Texture.h"
-#include "stdafx.h"
+//#include "Shader.h"
+//#include "Vertex.h"
+//#include "Texture.h"
+//#include "stdafx.h"
+//#include "Mesh.h"
+//#include "GameObject.h"
