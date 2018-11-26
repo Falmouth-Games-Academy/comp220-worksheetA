@@ -14,8 +14,7 @@
 
 #include "Texture.h"
 #include "Model.h"
-
-typedef std::chrono::high_resolution_clock Time;
+#include "Timer.h"
 
 int main(int argc, char ** argsv)
 {
@@ -76,8 +75,13 @@ int main(int argc, char ** argsv)
 		return 1;
 	}
 
+	// Mesh collection(vector)
 	std::vector<Mesh*> meshes;
-	loadMeshesFromFile("utah-teapot.fbx", meshes);
+	// Teapot
+	//loadMeshesFromFile("utah-teapot.fbx", meshes);
+
+	// Water
+	loadMeshesFromFile("water.fbx", meshes);
 
 	// Cube.nff test
 	//unsigned int numberOfVerts = 0;
@@ -111,7 +115,7 @@ int main(int argc, char ** argsv)
 
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)800 / 600), 0.1f, 100.0f);
 
-	GLuint programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl"); // Normally would name the var what it does
+	GLuint programID = LoadShaders("animationVert.glsl", "textureFrag.glsl"); // Normally would name the var what it does
 
 	//glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f);
 
@@ -153,12 +157,15 @@ int main(int argc, char ** argsv)
 
 	GLuint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
 
-	// Inspired by http://gameprogrammingpatterns.com/game-loop.html
-	Time::time_point previous = Time::now();
-	double lag = 0.0;
+	GLuint currentTimeLocation = glGetUniformLocation(programID, "currentTime");
+
 	bool fullScreen = false;
 
 	glEnable(GL_DEPTH_TEST);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+
+	Timer timer;
+	timer.Start();
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -166,13 +173,7 @@ int main(int argc, char ** argsv)
 	SDL_Event ev;
 	while (running)
 	{
-		// Clear depth buffer
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// Keep track of processing time
-		Time::time_point current = Time::now();
-		double elapsed = std::chrono::duration<double, std::nano>(current - previous).count();
-		Time::time_point previous = current;
-		lag += elapsed;
+		timer.Update();
 
 		//Poll for the events which have happened in this frame
 		//https://wiki.libsdl.org/SDL_PollEvent
@@ -244,6 +245,8 @@ int main(int argc, char ** argsv)
 		glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
 
 		glUniform3fv(cameraPositionLocation, 1, glm::value_ptr(cameraPosition));
+
+		glUniform1f(currentTimeLocation, timer.GetUpdatedTime());
 
 		// Change colour
 		//GLuint location
