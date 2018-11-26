@@ -12,6 +12,7 @@ uniform mat4 projectionMatrix;
 out vec4 vertexColourOut;
 out vec2 vertexTextureCoordOut;
 out vec3 vertexNormalOut;
+out vec4 worldSpaceVertexOut;
 
 void main()
 {
@@ -22,6 +23,7 @@ void main()
 	vertexColourOut = vertexColour;
 	vertexTextureCoordOut = vertexTextureCoord;
 	vertexNormalOut = vertexNormal;
+	worldSpaceVertexOut = modelMatrix * vec4(vertexPos, 1.0f);
 
 	gl_Position = mvpPosition;
 }

@@ -6,6 +6,8 @@
 #include "GameObject.h"
 #include "Texture.h"
 #include "Player.h"
+#include "Shader.h"
+#include "Mesh.h"
 
 class Game
 {
@@ -43,6 +45,8 @@ private:
 	GLuint textureID;
 	GLuint elementbuffer;
 	GLuint vertexbuffer;
+	GLuint diffuseTextureID;
+	GLuint specularTextureID;
 
 	GLint modelMatrixUniformLocation;
 	GLint viewMatrixUniformLocation;
@@ -53,6 +57,12 @@ private:
 	GLint diffuseMaterialColorLocation;
 	GLint diffuseLightColorLocation;
 	GLint lightDirectionLocation;
+	GLint specularMaterialColorLocation;
+	GLint specularLightColorLocation;
+	GLint specularMaterialPowerLocation;
+	GLint diffuseTextureLocation;
+	GLint specularTextureLocation;
+	GLint cameraPositionLocation;
 
 	glm::mat4 modelMatrix;
 	glm::mat4 translationMatrix;
@@ -66,6 +76,8 @@ private:
 	glm::vec4 ambientMaterialColor;
 	glm::vec4 diffuseLightColor;
 	glm::vec4 diffuseMaterialColor;
+	glm::vec4 specularLightColor;
+	glm::vec4 specularMaterialColor;
 
 	glm::vec3 position = glm::vec3(0.0f);
 	glm::vec3 rotation;
@@ -90,6 +102,7 @@ private:
 	float roll;
 	float pitch;
 	float yaw;
+	float specularMaterialPower;
 
 	int verticesNum = 36;
 	int indicesNum = 12;

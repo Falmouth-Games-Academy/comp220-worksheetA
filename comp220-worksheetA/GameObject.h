@@ -41,7 +41,7 @@ public:
 	{
 		return ShaderProgram;
 	};
-/*
+
 	void SetDiffuseTexture(GLuint texture)
 	{
 		DiffuseTexture = texture;
@@ -51,28 +51,29 @@ public:
 	{
 		return DiffuseTexture;
 	};
-*/
+
 	void Render();
 
 private:
-	//Set up positions for position, rotation and scale
+	// Set up positions for position, rotation and scale
 	glm::vec3 Position;
 	glm::vec3 Rotation;
 	glm::vec3 Scale;
 
-	//calculate the translation, rotation and scale matrices using the above vectores
+	// Calculate the translation, rotation and scale matrices using the above vectores
 	glm::mat4 TranslationMatrix;
 	glm::mat4 RotationMatrix;
 	glm::mat4 ScaleMatrix;
-	//combine the above matrices into the model matrix (order is important!!!! - TRS)
+
+	// combine the above matrices into the model matrix (order is important!!!! - TRS)
 	glm::mat4 ModelMatrix;
 
-	//Mesh
+	// Mesh
 	MeshCollection * Meshes;
 
-	//Shader
+	// Shader
 	Shader * ShaderProgram;
 
-	//Texture
-	// GLuint DiffuseTexture;
+	// Texture
+	GLuint DiffuseTexture;
 };

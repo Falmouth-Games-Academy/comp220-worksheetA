@@ -178,10 +178,14 @@ int Game::initialise()
 	Game::initialiseGLEW();
 
 	// Enabling OpenGL Depth function
-	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_DEPTH_TEST);
 
 	//glEnable(GL_CULL_FACE);
 
+	SDL_ShowCursor(0);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	// Mouse setup
 	SDL_ShowCursor(0);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
@@ -190,31 +194,37 @@ int Game::initialise()
 
 int Game::getShaders()
 {
-	// Mouse setup
-	SDL_ShowCursor(0);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-
 	//Load Mesh
-	
+	MeshCollection* teapotMesh = new MeshCollection();
 	loadMeshesFromFile("Models/utah-teapot.fbx", teapotMesh);
 
-	textureID = loadTextureFromFile("Textures/Tank1DF.png");
+	diffuseTextureID = loadTextureFromFile("Textures/Tank1DF.png");
+	specularTextureID = loadTextureFromFile("Textures/specMap.png");
 
-	//Shader * texturedShader = new Shader();
-	//texturedShader->Load("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
+	/*Shader * texturedShader = new Shader();
+	texturedShader->Load("blinnPhongVert.glsl", "blinnPhongFrag.glsl");*/
 
 	programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
 
-	/*GameObject * tankGO = new GameObject();
-	tankGO->SetPosition(0.0f, 0.0f, 0.0f);
-	tankGO->SetMesh(tank);
-	tankGO->SetShader(texturedShader);*/
-	//tankGO->SetDiffuseTexture(textureID);
+	//textureID = loadTextureFromFile("Textures/Tank1DF.png");
 
-	//GameObjectList.push_back(tankGO);
+	/*GameObject * teapotGO = new GameObject();
+	teapotGO->SetPosition(0.0f, 0.0f, 0.0f);
+	teapotGO->SetMesh(teapotMesh);
+	teapotGO->SetShader(texturedShader);
+	teapotGO->SetDiffuseTexture(textureID);
 
-	//Calculate our perspective matrix
-	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 100.0f);
+	GameObjectList.push_back(teapotGO);*/
+
+	//Set up vectors for our camera position
+	//glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
+	//glm::vec3 cameraLook = glm::vec3(0.0f, 0.0f, -10.0f);
+	//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	////Calculate the view matrix
+	//viewMatrix = glm::lookAt(cameraPosition, cameraLook, cameraUp);
+	////Calculate our perspective matrix
+	//projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 1000.0f);
 
 	// Ambient
 	ambientLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -224,12 +234,18 @@ int Game::getShaders()
 	diffuseLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	diffuseMaterialColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
 
+	// Specular
+	specularMaterialColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	specularMaterialPower = 25.0f;
+
 	lightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 
 	// Get the uniforms from the shader
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
+	diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
+	specularTextureLocation = glGetUniformLocation(programID, "specularTexture");
 
 	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
 
@@ -240,6 +256,12 @@ int Game::getShaders()
 	diffuseLightColorLocation = glGetUniformLocation(programID, "diffuseLightColor");
 
 	lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
+	cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
+
+	specularMaterialColorLocation = glGetUniformLocation(programID, "specularMaterialColor");
+	specularLightColorLocation = glGetUniformLocation(programID, "specularLightColor");
+
+	specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
 
 
 	return 0;
@@ -247,6 +269,7 @@ int Game::getShaders()
 
 void Game::render()
 {
+	//glEnable(GL_DEPTH_TEST);
 	//combine the above matrices into the model matrix (order is important!!!! - TRS)
 	//modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
 	//glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
@@ -257,14 +280,17 @@ void Game::render()
 	glUseProgram(programID);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
 	modelMatrix = glm::translate(position);
 
 	viewMatrix = glm::lookAt(camera.GetCameraPosition(), camera.GetCameraPosition() + camera.GetCameraFront(), camera.GetCameraUp());
 
-	//for (GameObject * obj : GameObjectList) {
-
+	//for (GameObject * obj : GameObjectList) 
+	//{
 	//	Shader * currentShader = obj->GetShader();
 	//	currentShader->Use();
 
@@ -281,21 +307,30 @@ void Game::render()
 	//	obj->Render();
 	//}
 
-	//send the uniforms across
+	// Send the uniforms across
 	glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-	glUniform1i(textureUniformLocation, 0);
+	glUniform1i(diffuseTextureLocation, 0);
+	glUniform1i(specularTextureLocation, 1);
 
 	glUniform4fv(ambientMaterialColorLocation, 1, glm::value_ptr(ambientMaterialColor));
 	glUniform4fv(ambientLightColorLocation, 1, glm::value_ptr(ambientLightColor));
-	glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
 
 	glUniform4fv(diffuseMaterialColorLocation, 1, glm::value_ptr(diffuseMaterialColor));
 	glUniform4fv(diffuseLightColorLocation, 1, glm::value_ptr(diffuseLightColor));
 
+	glUniform4fv(specularMaterialColorLocation, 1, glm::value_ptr(specularMaterialColor));
+	glUniform4fv(specularLightColorLocation, 1, glm::value_ptr(specularLightColor));
+
+	glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
+
+	glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
+	glUniform3fv(cameraPositionLocation, 1, glm::value_ptr(cameraPosition));
+
 	teapotMesh->render();
+
 	SDL_GL_SwapWindow(mainWindow);
 }
 
@@ -308,10 +343,25 @@ void Game::clean()
 		delete teapotMesh;
 		teapotMesh = nullptr;
 	}
+	/*auto iter = GameObjectList.begin();
+	while (iter != GameObjectList.end())
+	{
+		if ((*iter))
+		{
+			delete (*iter);
+			iter = GameObjectList.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}*/
+	glDeleteTextures(1, &diffuseTextureID);
+	glDeleteTextures(1, &specularTextureID);
 	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
-	// GameObjectList.clear();
-	meshes.clear();
+	//GameObjectList.clear();
+	//meshes.clear();
 	player.ClearEvents();
 	SDL_GL_DeleteContext(gl_Context);
 	SDL_DestroyWindow(mainWindow);

@@ -13,12 +13,12 @@ GameObject::GameObject()
 
 	Meshes = nullptr;
 	ShaderProgram = nullptr;
-	//DiffuseTexture = 0;
+	DiffuseTexture = 0;
 }
 
 GameObject::~GameObject()
 {
-	//glDeleteTextures(1, &DiffuseTexture);
+	glDeleteTextures(1, &DiffuseTexture);
 
 	if (Meshes) {
 		delete Meshes;
