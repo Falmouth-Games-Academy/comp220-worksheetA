@@ -115,10 +115,18 @@ void Game::initScene()
 	//Load Mesh
 	dinoModel = new MeshCollection();
 	loadMeshFromFile("TomModel.FBX", dinoModel);
-	TextureID = loadTextureFromFile("tomTexture.png");
 
 	teaPotModel = new MeshCollection();
 	loadMeshFromFile("teaPotModel.FBX", teaPotModel);
+
+	BunnyModel = new MeshCollection();
+	loadMeshFromFile("stanfordBunny.FBX", BunnyModel);
+
+	GroundModel = new MeshCollection();
+	loadMeshFromFile("Ground.FBX", GroundModel);
+
+	TankModel = new MeshCollection();
+	loadMeshFromFile("Tank1.FBX", TankModel);
 
 	// Culls the clockwise facing side of the triangles
 	glEnable(GL_CULL_FACE);
@@ -138,29 +146,47 @@ void Game::gameLoop()
 {
 	init();
 
-	GameObject* dinoGO1 = new GameObject;
-	dinoGO1->SetMesh(teaPotModel);
-	dinoGO1->setShader("defShader");
-	dinoGO1->SetScale(0.2f, 0.2f, 0.2f);
+	GameObject* GO1 = new GameObject;
+	GO1->SetMesh(teaPotModel);
+	GO1->setShader("defShader");
+	GO1->SetScale(0.2f, 0.2f, 0.2f);
 
-	GameObject* dinoGO2 = new GameObject;
-	dinoGO2->SetMesh(dinoModel);
-	dinoGO2->setShader("texturedShader");
-	dinoGO2->SetRotation(3.8f, 0.0f, 1.57f);
+	GameObject* GO2 = new GameObject;
+	GO2->SetMesh(dinoModel);
+	GO2->SetDiffuseTexture("tomTexture.png");
+	GO2->setShader("texturedShader");
+	GO2->SetRotation(0.0f, 0.0f, 3.14f);
 
-	GameObject* dinoGO3 = new GameObject;
-	dinoGO3->SetMesh(teaPotModel);
-	dinoGO3->setShader("defShader");
-	dinoGO3->SetScale(0.2f, 0.2f, 0.2f);
+	GameObject* GO3 = new GameObject;
+	GO3->SetMesh(TankModel);
+	GO3->SetDiffuseTexture("Tank1DF.png");
+	GO3->setShader("texturedShader");
+	//GO3->SetScale(0.2f, 0.2f, 0.2f);
 
-	GameObject* dinoGO4 = new GameObject;
-	dinoGO4->SetMesh(dinoModel);
-	dinoGO4->setShader("defShader");
+	GameObject* GO4 = new GameObject;
+	GO4->SetMesh(BunnyModel);
+	GO4->setShader("defShader");
+	GO4->SetScale(0.012f, 0.012f, 0.012f);
 
-	objs.push_back(dinoGO1);
-	objs.push_back(dinoGO2);
-	objs.push_back(dinoGO3);
-	objs.push_back(dinoGO4);
+	GameObject* GO5 = new GameObject;
+	GO5->SetMesh(GroundModel);
+	GO5->setShader("defShader");
+
+	objs.push_back(GO5);
+	objs.push_back(GO4);
+	objs.push_back(GO2);
+	objs.push_back(GO1);
+	objs.push_back(GO3);
+
+
+	int count = 0;
+	for (GameObject * obj : objs)
+	{
+		objs[1]->SetPosition(0.0f, 3.0f, 0);
+		objs[2]->SetPosition(0.0f, 0.0f, 5);
+		objs[3]->SetPosition(0.0f, 0.0f, 14);
+		objs[4]->SetPosition(0.0f, 0.0f, -7);
+	}
 
 	while (running)
 	{
@@ -254,11 +280,12 @@ void Game::update()
 	// Or, for an ortho camera :
 	//Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
-	int count = 0;
+	objs[1]->SetRotation(0.0f, (0.3f * tickTime), 0.0f);
+	//objs[2]->SetRotation(0.0f, (0.3f * tickTime), (0.3f * tickTime));
+
+	// Go through each object and update them
 	for (GameObject * obj : objs)
 	{
-		obj->SetPosition(0, 0, count);
-		count += 5;
 		obj->Update(deltaTime);
 	}
 
@@ -297,7 +324,7 @@ void Game::render()
 		glUniform3fv(currentShader->getUniformLocation("lightDirection"), 1, glm::value_ptr(lightDirection));
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, TextureID);
+		glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
 
 		obj->Render();
 	}

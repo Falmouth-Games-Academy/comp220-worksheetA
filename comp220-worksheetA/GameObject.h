@@ -58,9 +58,9 @@ public:
 		return shaderName;
 	};
 
-	void SetDiffuseTexture(GLuint texture)
+	void SetDiffuseTexture(std::string texture)
 	{
-		DiffuseTexture = texture;
+		DiffuseTexture = loadTextureFromFile(texture);
 	};
 
 	GLuint GetDiffuseTexture()

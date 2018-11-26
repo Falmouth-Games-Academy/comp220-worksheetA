@@ -59,7 +59,9 @@ public:
 	// model and texture vars
 	MeshCollection * dinoModel;
 	MeshCollection * teaPotModel;
-	GLuint TextureID;
+	MeshCollection * BunnyModel;
+	MeshCollection * GroundModel;
+	MeshCollection * TankModel;
 
 private:
 
@@ -93,12 +95,12 @@ private:
 	GLuint modelMatrixUniformLocation;
 	GLuint viewMatrixUniformLocation;
 	GLuint projectionMatrixUniformLocation;
-	GLint baseTextureLocation;
-
 	glm::mat4 sceneMatrix;
+	
+	//GLint baseTextureLocation;
 
 
-	//Light properties
+	// Light properties
 	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -106,24 +108,12 @@ private:
 	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 
 
-	//Material Properties
-	glm::vec4 ambientMaterialColour = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
-	glm::vec4 diffuseMaterialColour = glm::vec4(0.0f, 0.4f, 0.0f, 1.0f);
+	// Material Properties
+	glm::vec4 Colour = glm::vec4(1.0f, 0.5f, 0.6f, 1.0f);
+	glm::vec4 ambientMaterialColour = Colour;
+	glm::vec4 diffuseMaterialColour = (Colour - 0.2f);
 	glm::vec4 specularMaterialColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	float specularMaterialPower = 50.0f;
-
-	// stuff
-	GLint ambientLightColourLocation;
-	GLint diffuseLightColourLocation;
-	GLint specularLightColourLocation;
-
-	GLint ambientMaterialColourLocation;
-	GLint diffuseMaterialColourLocation;
-	GLint specularMaterialColourLocation;
-	GLint specularMaterialPowerLocation;
-
-	GLint lightDirectionLocation;
-	GLint cameraPositionLocation;
 
 
 protected:
