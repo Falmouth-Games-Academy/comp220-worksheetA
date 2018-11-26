@@ -3,6 +3,7 @@
 layout(location = 0) in vec3 vertexPos;
 layout(location = 1) in vec4 vertexColour;
 layout(location = 2) in vec2 vertexTextureCoord;
+layout(location = 3) in vec3 vertexNormal;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -10,6 +11,7 @@ uniform mat4 projectionMatrix;
 
 out vec4 vertexColourOut;
 out vec2 vertexTextureCoordOut;
+out vec3 vertexNormalOut;
 
 void main()
 {
@@ -19,6 +21,7 @@ void main()
 
 	vertexColourOut = vertexColour;
 	vertexTextureCoordOut = vertexTextureCoord;
+	vertexNormalOut = vertexNormal;
 
 	gl_Position = mvpPosition;
 }

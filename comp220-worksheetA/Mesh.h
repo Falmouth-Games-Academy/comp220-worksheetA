@@ -9,7 +9,7 @@ public:
 	Mesh();
 	~Mesh();
 
-	void CopyMeshData(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+	void CopyBufferData(Vertex * pVerts, unsigned int numberOfVerts, unsigned int * pIndices, unsigned int numberOfIndices);
 
 	void Init();
 	void Render();

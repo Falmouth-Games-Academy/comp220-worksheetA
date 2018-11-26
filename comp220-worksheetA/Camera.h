@@ -47,9 +47,9 @@ private:
 	glm::vec3 cameraUp;
 	glm::vec3 cameraFront;
 	
-	glm::mat4 view;
+	//glm::mat4 view;
 	
-	float cameraSpeed = 0.5f;
+	float cameraSpeed = 0.01f;
 
 
 };

@@ -16,11 +16,8 @@ public:
 	int loop();
 	int initialiseSDL();
 	int initialiseGLEW();
-	int initialiseGLFW();
 	int initialise();
-	int getVertex();
 	int getShaders();
-	int loading();
 
 	void render();
 	void clean();
@@ -51,8 +48,11 @@ private:
 	GLint viewMatrixUniformLocation;
 	GLint projectionMatrixUniformLocation;
 	GLint textureUniformLocation;
-	GLint ambientMaterialColourLocation;
-	GLint ambientLightColourLocation;
+	GLint ambientMaterialColorLocation;
+	GLint ambientLightColorLocation;
+	GLint diffuseMaterialColorLocation;
+	GLint diffuseLightColorLocation;
+	GLint lightDirectionLocation;
 
 	glm::mat4 modelMatrix;
 	glm::mat4 translationMatrix;
@@ -64,8 +64,10 @@ private:
 
 	glm::vec4 ambientLightColor;
 	glm::vec4 ambientMaterialColor;
+	glm::vec4 diffuseLightColor;
+	glm::vec4 diffuseMaterialColor;
 
-	glm::vec3 position;
+	glm::vec3 position = glm::vec3(0.0f);
 	glm::vec3 rotation;
 	glm::vec3 scaling;
 	glm::vec3 cameraPosition;
@@ -73,13 +75,14 @@ private:
 	glm::vec3 cameraUp;
 	glm::vec3 eyeVector;
 	glm::vec3 cameraLook;
+	glm::vec3 lightDirection;
 
 	glm::vec2 mousePosition;
 
 	std::vector<Mesh*> meshes;
 	std::vector<GameObject*> GameObjectList;
 
-	MeshCollection * tankMeshes = new MeshCollection();
+	MeshCollection * teapotMesh = new MeshCollection();
 
 	float lastTime = 0;
 	float tickTime = 0;

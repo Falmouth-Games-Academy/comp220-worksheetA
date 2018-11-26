@@ -27,10 +27,8 @@ private:
 	glm::vec3 cameraTarget;
 	glm::vec3 cameraUp;
 
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
 	float movementSpeed; 
-	float yaw = -90.0f;
+	float yaw = 270.0f;
 	float pitch = 0.0f;
 	float lastX = 400;
 	float lastY = 320;

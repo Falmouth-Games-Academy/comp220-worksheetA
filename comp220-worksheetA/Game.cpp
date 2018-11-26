@@ -37,6 +37,7 @@ int Game::loop()
 
 			case SDL_MOUSEMOTION:
 				player.MouseMovement(event.motion.xrel, event.motion.yrel);
+				break;
 				
 			case SDL_KEYDOWN:
 
@@ -46,6 +47,9 @@ int Game::loop()
 				//Check individual keys by code (can be moved out into main switch statement if fewer keys need to be checked.)
 				switch (event.key.keysym.sym)
 				{
+					case SDLK_ESCAPE:
+						isRunning = false;
+						break;
 
 					case SDLK_F11: // Toggle fullscreen
 						SetFullscreen();
@@ -54,6 +58,9 @@ int Game::loop()
 				}
 				break;
 				
+			case SDL_KEYUP:
+				player.KeyboardEvents(event);
+				break;
 			}
 		}
 		player.ProcessInputs(deltaTime);
@@ -171,204 +178,13 @@ int Game::initialise()
 	Game::initialiseGLEW();
 
 	// Enabling OpenGL Depth function
-	// glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	//glEnable(GL_CULL_FACE);
 
-	return 0;
-}
+	SDL_ShowCursor(0);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-int Game::getVertex()
-{
-	// Generate vertex array SHOULD BE DELETED
-	// glGenVertexArrays(1, &VertexArrayID);
-	// glBindVertexArray(VertexArrayID);
-	/*
-	// An array of 3 vectors which represents 3 vertices
-	static const Vertex v[] = {
-		{ -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-
-		{ -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f }, // Front square
-
-		{ 0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-
-		{ 0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ -0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f }, // Back square
-
-		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-
-		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-		{ 0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, .0f, 1.0f }, // Right square
-
-		{ -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-
-		{ -0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f }, // Left square
-
-		{ -0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-
-		{ -0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f }, // Upper square
-
-		{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-		{ -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
-
-		{ -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
-		{ 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f }, // Bottom square
-	};
-	*/
-	/*
-	
-	static const Vertex CubeID[] = 
-	{
-		// Upper vertices
-
-		// 0 -> front-top-left
-		{-0.5f, 0.5f, 0.5f, // x, y, z
-		0.0f, 0.0f, 1.0f, 1.0f, // r, g, b, a
-		0.0f, 1.0f},  // tu, tv
-
-		// 1 -> back-top-left
-		{-0.5f, 0.5f, -0.5f, // x, y, z
-		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
-		0.0f, 1.0f},  // tu, tv
-
-		// 2 -> back-top-right
-		{0.5f, 0.5f, -0.5f, // x, y, z
-		1.0f, 0.0f, 0.0f, 1.0f, // r, g, b, a
-		1.0f, 1.0f},  // tu, tv
-
-		// 3 -> front-top-right
-		{0.5f, 0.5f, 0.5f, // x, y, z
-		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
-		1.0f, 1.0f}, // tu, tv
-
-
-		// Bottom vertices
-
-		// 4 -> front-bottom-left
-		{-0.5f, -0.5f, 0.5f, // x, y, z
-		0.0f, 0.0f, 1.0f, 1.0f, // r, g, b, a
-		0.0f, 0.0f}, // tu, tv
-
-		// 5 -> back-bottom-left
-		{-0.5f, -0.5f, -0.5f, // x, y, z
-		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
-		0.0f, 0.0f}, // tu, tv
-
-		// 6 -> back-bottom-right
-		{0.5f, -0.5f, -0.5f, // x, y, z
-		1.0f, 0.0f, 0.0f, 1.0f, // r, g, b, a
-		1.0f, 0.0f}, // tu, tv
-
-		// 7 ->  front-bottom-right
-		{0.5f, -0.5f, 0.5f, // x, y, z
-		0.0f, 1.0f, 0.0f, 1.0f, // r, g, b, a
-		1.0f, 0.0f} // tu, tv
-	};
-	
-	static const int indices[] = 
-	{
-		
-		// Top square
-		0, 2, 1,
-		0, 3, 2,
-
-		// Bottom square
-		4, 5, 6,
-		4, 6, 7,
-		
-		// Left square
-		4, 0, 1,
-		4, 1, 5,
-
-		// Right square
-		6, 3, 7,
-		6, 2, 3,
-
-		// Back square
-		5, 1, 2,
-		5, 2, 6,
-		
-		// Front square
-		0, 4, 7,
-		0, 7, 3
-	};
-	
-	// SHOULD BE DELETED
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &vertexbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Give our vertices to OpenGL.
-	// glBufferData(GL_ARRAY_BUFFER, IDNum * sizeof(Vertex), CubeID, GL_STATIC_DRAW);
-	
-	glGenBuffers(1, &elementbuffer);
-	// Bind element buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	 glBufferData(GL_ELEMENT_ARRAY_BUFFER, verticesNum * sizeof(int), indices, GL_STATIC_DRAW);
-	*/
-	/* MODEL SECTION */
-
-	// Pass in buffers to load a model
-	// loadModelFromFile("Models/Tank1.FBX", vertexbuffer, elementbuffer, numberOfVertices, numberOfIndices);
-
-	return 0;
-}
-
-int Game::loading()
-{
-	/* SHOULD BE DELETED
-	// 1st attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0,					// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,					// size
-		GL_FLOAT,			// type
-		GL_FALSE,			// normalized?
-		sizeof(Vertex),		// stride -> sizeof(Vertex)
-		(void*)0			// array buffer offset
-	);
-	*/
-	// Uses colours from the Vertex.h
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-		1,
-		4,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(void*)(3 * sizeof(float))
-	);
-
-	// Load textures
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(
-		2,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(void*)(7 * sizeof(float))
-	);
 	return 0;
 }
 
@@ -378,94 +194,74 @@ int Game::getShaders()
 	SDL_ShowCursor(0);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	// Hold shader programme, rename to what the ID does
-	//GLuint programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
-
 	//Load Mesh
-	MeshCollection * tank = new MeshCollection();
-	loadMeshesFromFile("Models/Tank1.fbx", tank);
+	
+	loadMeshesFromFile("Models/utah-teapot.fbx", teapotMesh);
 
-
-	GLuint textureID = loadTextureFromFile("Tank1DF.png");
-
-	//loadMeshesFromFile("Models/Tank1.fbx", tankMeshes);
+	textureID = loadTextureFromFile("Textures/Tank1DF.png");
 
 	//Shader * texturedShader = new Shader();
 	//texturedShader->Load("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
 
-	//GLuint textureID = loadTextureFromFile("Textures/Tank1DF.png");
+	programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
 
-	//GameObject * tankGO = new GameObject();
-	//tankGO->SetPosition(0.0f, 0.0f, -50.0f);
-	//tankGO->SetMesh(tankMeshes);
-	//tankGO->SetShader(texturedShader);
+	/*GameObject * tankGO = new GameObject();
+	tankGO->SetPosition(0.0f, 0.0f, 0.0f);
+	tankGO->SetMesh(tank);
+	tankGO->SetShader(texturedShader);*/
 	//tankGO->SetDiffuseTexture(textureID);
 
 	//GameObjectList.push_back(tankGO);
 
-	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
-	//Set up positions for position, rotation and scale
-	position = glm::vec3(0.0f, -8.0f, -50.0f);
-	rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	scaling = glm::vec3(1.0f, 1.0f, 1.0f);
-
-	//calculate the translation, rotation and scale matrices using the above vectores
-	translationMatrix = glm::translate(position);
-	rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
-		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
-		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-	scaleMatrix = glm::scale(scaling);
-
-	//combine the above matrices into the model matrix (order is important!!!! - TRS)
-	modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
-
-	//Set up vectors for our camera position
-	cameraPosition = glm::vec3(0.0f, 0.0f, 20.0f);
-	cameraLook = glm::vec3(0.0f, 0.0f, 0.0f);
-	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	//Calculate the view matrix
-	viewMatrix = glm::lookAt(cameraPosition, cameraLook, cameraUp);
 	//Calculate our perspective matrix
 	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 100.0f);
 
+	// Ambient
 	ambientLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	ambientMaterialColor = glm::vec4(0.3f, 0.0f, 0.0f, 1.0f);
+	ambientMaterialColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+
+	// Diffuse
+	diffuseLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	diffuseMaterialColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+
+	lightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 
 	// Get the uniforms from the shader
 	modelMatrixUniformLocation = glGetUniformLocation(programID, "modelMatrix");
 	viewMatrixUniformLocation = glGetUniformLocation(programID, "viewMatrix");
 	projectionMatrixUniformLocation = glGetUniformLocation(programID, "projectionMatrix");
+
 	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
-	ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColor");
-	ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColor");
+
+	ambientMaterialColorLocation = glGetUniformLocation(programID, "ambientMaterialColor");
+	ambientLightColorLocation = glGetUniformLocation(programID, "ambientLightColor");
+
+	diffuseMaterialColorLocation = glGetUniformLocation(programID, "diffuseMaterialColor");
+	diffuseLightColorLocation = glGetUniformLocation(programID, "diffuseLightColor");
+
+	lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
+
 
 	return 0;
 }
 
 void Game::render()
 {
-	translationMatrix = glm::translate(position);
-	rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
-		*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
-		*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-	scaleMatrix = glm::scale(scaling);
-
 	//combine the above matrices into the model matrix (order is important!!!! - TRS)
-	modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
-	glEnable(GL_DEPTH_TEST);
+	//modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
 	//glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
-	glClearColor(0.0, 1.0, 0.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	//glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (Mesh*currentMesh : meshes)
-		{
-			currentMesh->Render();
-		}
+	glUseProgram(programID);
 
-	//glUseProgram(programID);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	modelMatrix = glm::translate(position);
+
+	viewMatrix = glm::lookAt(camera.GetCameraPosition(), camera.GetCameraPosition() + camera.GetCameraFront(), camera.GetCameraUp());
 
 	//for (GameObject * obj : GameObjectList) {
 
@@ -478,75 +274,45 @@ void Game::render()
 	//	glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
 	//	glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	//	glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	//	glUniform1i(textureUniformLocation, 0);
-	//	//glUniform4fv(ambientLightColorLocation, 1, glm::value_ptr(ambientLightColor));
-	//	//glUniform4fv(ambientMaterialColorLocation, 1, glm::value_ptr(ambientMaterialColor));
 	//	//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), morphBlendAlpha);
-	//	//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
+	//	glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 
 
 	//	obj->Render();
 	//}
-	glUseProgram(programID);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	//send the uniforms across
 	glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glUniformMatrix4fv(viewMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniformMatrix4fv(projectionMatrixUniformLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
 	glUniform1i(textureUniformLocation, 0);
-	glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColor));
 
-	glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColor));
+	glUniform4fv(ambientMaterialColorLocation, 1, glm::value_ptr(ambientMaterialColor));
+	glUniform4fv(ambientLightColorLocation, 1, glm::value_ptr(ambientLightColor));
+	glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
 
-	
-	tankMeshes->render();
+	glUniform4fv(diffuseMaterialColorLocation, 1, glm::value_ptr(diffuseMaterialColor));
+	glUniform4fv(diffuseLightColorLocation, 1, glm::value_ptr(diffuseLightColor));
 
-	/*glDisable(GL_DEPTH_TEST);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
-	
-	/*postProcessShader->Use();
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, colourBufferID);
-
-	glUniform1i(postProcessShader->GetUniform("texture"), 0);
-
-	glBindVertexArray(screenVAO);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);*/
-
+	teapotMesh->render();
 	SDL_GL_SwapWindow(mainWindow);
 }
 
 void Game::clean()
 {
-	auto iter = GameObjectList.begin();
-	while (iter != GameObjectList.end())
-	{
-		if ((*iter))
-		{
-			delete (*iter);
-			iter = GameObjectList.erase(iter);
-		}
-		else
-		{
-			iter++;
-		}
-	}
 	// Cleanup
 	std::cout << "Cleaning SDL \n";
-	// glDeleteBuffers(1, &vertexbuffer);
-	// glDeleteBuffers(1, &elementbuffer);
-	// glDeleteVertexArrays(1, &VertexArrayID);
+	if (teapotMesh)
+	{
+		delete teapotMesh;
+		teapotMesh = nullptr;
+	}
 	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
-	GameObjectList.clear();
+	// GameObjectList.clear();
 	meshes.clear();
-	// Delete Context
+	player.ClearEvents();
 	SDL_GL_DeleteContext(gl_Context);
 	SDL_DestroyWindow(mainWindow);
 	IMG_Quit();

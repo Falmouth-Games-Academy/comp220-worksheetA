@@ -2,10 +2,13 @@
 
 bool loadModelFromFile(const std::string& filename, GLuint VBO, GLuint EBO, unsigned int& numberOfVertices, unsigned int& numberOfIndices)
 {
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+
 	Assimp::Importer importer;
 
 	// Load in a model
-	const aiScene* scene = importer.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
 
 	// Check if the model has loaded
 	if (scene == nullptr)
@@ -14,54 +17,47 @@ bool loadModelFromFile(const std::string& filename, GLuint VBO, GLuint EBO, unsi
 		return false;
 	}
 
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-
-	for (unsigned int n = 0; n < scene->mNumMeshes; n++)
+	for (int n = 0; n < scene->mNumMeshes; n++)
 	{
-		const aiMesh* currentAIMesh = scene->mMeshes[n];
-		for (unsigned int v = 0; v < currentAIMesh->mNumVertices; v++)
+		aiMesh* currentMesh = scene->mMeshes[n];
+
+		for (unsigned int v = 0; v < currentMesh->mNumVertices; v++)
 		{
-			const aiVector3D currentAIPosition = currentAIMesh->mVertices[v];
+			aiVector3D currentModelVertex = currentMesh->mVertices[v];
+			aiColor4D currentModelColour = aiColor4D(1.0, 1.0, 1.0, 1.0);
+			aiVector3D currentTextureCoordinates = aiVector3D(0.0f, 0.0f, 0.0f);
+			aiVector3D currentNormals = aiVector3D(0.0f, 0.0f, 0.0f);
 
-			Vertex ourVertex;
-			ourVertex.x = currentAIPosition.x;
-			ourVertex.y = currentAIPosition.y;
-			ourVertex.z = currentAIPosition.z;
-
-			ourVertex.r = 1.0f;
-			ourVertex.g = 1.0f;
-			ourVertex.b = 1.0f;
-			ourVertex.a = 1.0f;
-
-			ourVertex.tu = 0;
-			ourVertex.tv = 0;
-
-			if (currentAIMesh->HasTextureCoords(0))
+			if (currentMesh->HasVertexColors(0))
 			{
-				const aiVector3D currentTextureCoords = currentAIMesh->mTextureCoords[0][v];
-				ourVertex.tu = currentTextureCoords.x;
-				ourVertex.tv = currentTextureCoords.y;
-			}
-			if (currentAIMesh->HasVertexColors(0))
-			{
-				const aiColor4D currentColor = currentAIMesh->mColors[0][v];
-				ourVertex.r = currentColor.r;
-				ourVertex.g = currentColor.g;
-				ourVertex.b = currentColor.b;
-				ourVertex.a = currentColor.a;
+				currentModelColour = currentMesh->mColors[0][v];
 			}
 
-			vertices.push_back(ourVertex);
+			if (currentMesh->HasTextureCoords(0))
+			{
+				currentTextureCoordinates = currentMesh->mTextureCoords[0][v];
+			}
+
+			if (currentMesh->HasNormals())
+			{
+				currentNormals = currentMesh->mNormals[v];
+			}
+
+			Vertex currentVertex = { currentModelVertex.x,currentModelVertex.y,currentModelVertex.z,
+				currentModelColour.r,currentModelColour.g,currentModelColour.b,currentModelColour.a,
+				currentTextureCoordinates.x,currentTextureCoordinates.y,
+				currentNormals.x, currentNormals.y, currentNormals.z 
+			};
+
+			vertices.push_back(currentVertex);
 		}
 
-		for (unsigned int f = 0; f < currentAIMesh->mNumFaces; f++)
+		for (int f = 0; f < currentMesh->mNumFaces; f++)
 		{
-			const aiFace currentFace = currentAIMesh->mFaces[f];
-			
-			indices.push_back(currentFace.mIndices[0]);
-			indices.push_back(currentFace.mIndices[1]);
-			indices.push_back(currentFace.mIndices[2]);
+			aiFace currentModelFace = currentMesh->mFaces[f];
+			indices.push_back(currentModelFace.mIndices[0]);
+			indices.push_back(currentModelFace.mIndices[1]);
+			indices.push_back(currentModelFace.mIndices[2]);
 		}
 	}
 
@@ -79,10 +75,13 @@ bool loadModelFromFile(const std::string& filename, GLuint VBO, GLuint EBO, unsi
 
 bool loadMeshesFromFile(const std::string& filename, MeshCollection * meshes)
 {
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+
 	Assimp::Importer importer;
 
 	// Load in a model
-	const aiScene* scene = importer.ReadFile(filename, aiProcessPreset_TargetRealtime_Fast | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
 
 	// Check if the model has loaded
 	if (scene == nullptr)
@@ -91,63 +90,55 @@ bool loadMeshesFromFile(const std::string& filename, MeshCollection * meshes)
 		return false;
 	}
 
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-
 	for (unsigned int n = 0; n < scene->mNumMeshes; n++)
 	{
-		const aiMesh* currentAIMesh = scene->mMeshes[n];
+		aiMesh* currentMesh = scene->mMeshes[n];
 
-		Mesh* ourCurrentMesh = new Mesh();
-		ourCurrentMesh->Init();
+		Mesh *pMesh = new Mesh();
+		pMesh->Init();
 		
-		for (unsigned int v = 0; v < currentAIMesh->mNumVertices; v++)
+		for (int v = 0; v < currentMesh->mNumVertices; v++)
 		{
-			const aiVector3D currentAIPosition = currentAIMesh->mVertices[v];
+			aiVector3D currentModelVertex = currentMesh->mVertices[v];
+			aiColor4D currentModelColour = aiColor4D(1.0, 1.0, 1.0, 1.0);
+			aiVector3D currentTextureCoordinates = aiVector3D(0.0f, 0.0f, 0.0f);
+			aiVector3D currentNormals = aiVector3D(0.0f, 0.0f, 0.0f);
 
-			Vertex ourVertex;
-			ourVertex.x = currentAIPosition.x;
-			ourVertex.y = currentAIPosition.y;
-			ourVertex.z = currentAIPosition.z;
-
-			ourVertex.r = 1.0f;
-			ourVertex.g = 1.0f;
-			ourVertex.b = 1.0f;
-			ourVertex.a = 1.0f;
-
-			ourVertex.tu = 0;
-			ourVertex.tv = 0;
-
-			if (currentAIMesh->HasTextureCoords(0))
+			if (currentMesh->HasVertexColors(0))
 			{
-				const aiVector3D currentTextureCoords = currentAIMesh->mTextureCoords[0][v];
-				ourVertex.tu = currentTextureCoords.x;
-				ourVertex.tv = currentTextureCoords.y;
-			}
-			if (currentAIMesh->HasVertexColors(0))
-			{
-				const aiColor4D currentColor = currentAIMesh->mColors[0][v];
-				ourVertex.r = currentColor.r;
-				ourVertex.g = currentColor.g;
-				ourVertex.b = currentColor.b;
-				ourVertex.a = currentColor.a;
+				currentModelColour = currentMesh->mColors[0][v];
 			}
 
-			vertices.push_back(ourVertex);
+			if (currentMesh->HasTextureCoords(0))
+			{
+				currentTextureCoordinates = currentMesh->mTextureCoords[0][v];
+			}
+
+			if (currentMesh->HasNormals())
+			{
+				currentNormals = currentMesh->mNormals[v];
+			}
+
+			Vertex currentVertex = { currentModelVertex.x,currentModelVertex.y,currentModelVertex.z,
+				currentModelColour.r,currentModelColour.g,currentModelColour.b,currentModelColour.a,
+				currentTextureCoordinates.x,currentTextureCoordinates.y,
+				currentNormals.x, currentNormals.y, currentNormals.z
+			};
+
+			vertices.push_back(currentVertex);
 		}
 
-		for (unsigned int f = 0; f < currentAIMesh->mNumFaces; f++)
+		for (int f = 0; f < currentMesh->mNumFaces; f++)
 		{
-			const aiFace currentFace = currentAIMesh->mFaces[f];
-
-			indices.push_back(currentFace.mIndices[0]);
-			indices.push_back(currentFace.mIndices[1]);
-			indices.push_back(currentFace.mIndices[2]);
+			aiFace currentModelFace = currentMesh->mFaces[f];
+			indices.push_back(currentModelFace.mIndices[0]);
+			indices.push_back(currentModelFace.mIndices[1]);
+			indices.push_back(currentModelFace.mIndices[2]);
 		}
 
-		ourCurrentMesh->CopyMeshData(vertices, indices);
-		meshes->addMesh(ourCurrentMesh);	
+		pMesh->CopyBufferData(vertices.data(), vertices.size(), indices.data(), indices.size());
 
+		meshes->addMesh(pMesh);
 		vertices.clear();
 		indices.clear();
 	}

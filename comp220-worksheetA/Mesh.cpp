@@ -17,13 +17,16 @@ Mesh::~Mesh()
 	Destroy();
 }
 
-void Mesh::CopyMeshData(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+void Mesh::CopyBufferData(Vertex * pVerts, unsigned int numberOfVerts, unsigned int * pIndices, unsigned int numberOfIndices)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, numberOfVerts * sizeof(Vertex), pVerts, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices * sizeof(unsigned int), pIndices, GL_STATIC_DRAW);
+	
+	m_NumberOfIndices = numberOfIndices;
+	m_NumberOfVertices = numberOfVerts;
 
 	glBindVertexArray(m_VAO);
 
@@ -38,13 +41,34 @@ void Mesh::CopyMeshData(std::vector<Vertex>& vertices, std::vector<unsigned int>
 		(void*)0			// array buffer offset
 	);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(
+		1, 
+		4, 
+		GL_FLOAT, 
+		GL_FALSE, 
+		sizeof(Vertex), 
+		(void*)(3 * sizeof(float))
+	);
 
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(7 * sizeof(float)));
+	glVertexAttribPointer(
+		2, 
+		2, 
+		GL_FLOAT,
+		GL_FALSE, 
+		sizeof(Vertex), 
+		(void*)(7 * sizeof(float))
+	);
 
-	m_NumberOfVertices = vertices.size();
-	m_NumberOfIndices = indices.size();
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(
+		3,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(Vertex),
+		(void*)(9 * sizeof(float))
+	);
 }
 
 void Mesh::Init()
@@ -86,7 +110,7 @@ MeshCollection::~MeshCollection()
 }
 
 // add new mesh to the collection
-void MeshCollection::addMesh(Mesh * pMesh)
+void MeshCollection::addMesh(Mesh *pMesh)
 {
 	m_Meshes.push_back(pMesh);
 }
@@ -114,6 +138,7 @@ void MeshCollection::destroy()
 			(*iter)->Destroy();
 			// delete the memory
 			delete (*iter);
+			(*iter) = nullptr;
 			// erase the slot in the vector and return new iter
 			iter = m_Meshes.erase(iter);
 		}

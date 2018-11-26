@@ -89,7 +89,7 @@ void Player::MouseMovement(float xPos, float yPos)
 
 	glm::vec3 front;
 	front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-	front.y = sin(glm::radians(pitch));
+	front.y = -sin(glm::radians(pitch));
 	front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
 	camera.SetCameraFront(glm::normalize(front));
 }
