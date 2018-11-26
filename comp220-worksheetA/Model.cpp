@@ -43,9 +43,10 @@ bool loadModelFromFile(const std::string& filename, GLuint VBO, GLuint EBO, unsi
 				currentNormals = currentMesh->mNormals[v];
 			}
 
-			Vertex currentVertex = { currentModelVertex.x,currentModelVertex.y,currentModelVertex.z,
-				currentModelColour.r,currentModelColour.g,currentModelColour.b,currentModelColour.a,
-				currentTextureCoordinates.x,currentTextureCoordinates.y,
+			Vertex currentVertex = { 
+				currentModelVertex.x, currentModelVertex.y, currentModelVertex.z,
+				currentModelColour.r, currentModelColour.g, currentModelColour.b, currentModelColour.a,
+				currentTextureCoordinates.x, currentTextureCoordinates.y,
 				currentNormals.x, currentNormals.y, currentNormals.z 
 			};
 

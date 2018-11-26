@@ -19,7 +19,7 @@ public:
 	int initialiseSDL();
 	int initialiseGLEW();
 	int initialise();
-	int getShaders();
+	void getShaders();
 
 	void render();
 	void clean();
@@ -51,7 +51,6 @@ private:
 	GLint modelMatrixUniformLocation;
 	GLint viewMatrixUniformLocation;
 	GLint projectionMatrixUniformLocation;
-	GLint textureUniformLocation;
 	GLint ambientMaterialColorLocation;
 	GLint ambientLightColorLocation;
 	GLint diffuseMaterialColorLocation;
@@ -79,7 +78,7 @@ private:
 	glm::vec4 specularLightColor;
 	glm::vec4 specularMaterialColor;
 
-	glm::vec3 position = glm::vec3(0.0f);
+	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scaling;
 	glm::vec3 cameraPosition;
@@ -94,7 +93,8 @@ private:
 	std::vector<Mesh*> meshes;
 	std::vector<GameObject*> GameObjectList;
 
-	MeshCollection * teapotMesh = new MeshCollection();
+	MeshCollection* teapotMesh = new MeshCollection();
+	Shader* texturedShader = new Shader();
 
 	float lastTime = 0;
 	float tickTime = 0;

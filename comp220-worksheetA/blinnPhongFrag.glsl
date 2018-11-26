@@ -7,7 +7,8 @@ in vec4 worldSpaceVertexOut;
 
 out vec4 color;
 
-uniform sampler2D textureSampler;
+uniform sampler2D diffuseTexture;
+uniform sampler2D specularTexture;
 
 uniform vec4 ambientMaterialColor;
 uniform vec4 ambientLightColor;
@@ -26,7 +27,7 @@ uniform float specularPower = 25.0f;
 void main()
 {
 	// Texture
-	// color = texture2D(textureSampler, vertexTextureCoordOut);
+	// color = texture2D(diffuseTexture, vertexTextureCoordOut);
 
 	// White color (for debugging)
 	// color = vec4(1.0f);
@@ -42,5 +43,10 @@ void main()
 	vec3 halfWay = normalize(-lightDirection + viewDirection);
 	float nDoth = pow(clamp(dot(vertexNormalOut, halfWay), 0, 1), specularPower);
 
-	color = (ambientLightColor * ambientMaterialColor) + (diffuseLightColor * nDotl * diffuseMaterialColor) + (specularLightColor * nDoth * specularMaterialColor);
+	vec4 diffuseTextureColor = texture(diffuseTexture, vertexTextureCoordOut);
+	vec4 specularTextureColor = texture(specularTexture, vertexTextureCoordOut);
+
+	color = (ambientLightColor * ambientMaterialColor) + 
+			(diffuseLightColor * nDotl * diffuseMaterialColor * diffuseTextureColor) + 
+			(specularLightColor * nDoth * specularMaterialColor * specularTextureColor);
 }

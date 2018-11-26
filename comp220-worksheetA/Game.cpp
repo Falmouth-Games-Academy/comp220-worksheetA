@@ -178,12 +178,10 @@ int Game::initialise()
 	Game::initialiseGLEW();
 
 	// Enabling OpenGL Depth function
-	// glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
-	//glEnable(GL_CULL_FACE);
-
-	SDL_ShowCursor(0);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	// Enabling Culling Face
+	glEnable(GL_CULL_FACE);
 
 	// Mouse setup
 	SDL_ShowCursor(0);
@@ -192,16 +190,15 @@ int Game::initialise()
 	return 0;
 }
 
-int Game::getShaders()
+void Game::getShaders()
 {
 	//Load Mesh
-	MeshCollection* teapotMesh = new MeshCollection();
 	loadMeshesFromFile("Models/utah-teapot.fbx", teapotMesh);
 
 	diffuseTextureID = loadTextureFromFile("Textures/Tank1DF.png");
 	specularTextureID = loadTextureFromFile("Textures/specMap.png");
 
-	/*Shader * texturedShader = new Shader();
+	/*texturedShader = new Shader();
 	texturedShader->Load("blinnPhongVert.glsl", "blinnPhongFrag.glsl");*/
 
 	programID = LoadShaders("blinnPhongVert.glsl", "blinnPhongFrag.glsl");
@@ -216,7 +213,23 @@ int Game::getShaders()
 
 	GameObjectList.push_back(teapotGO);*/
 
-	//Set up vectors for our camera position
+	//Set up positions for position, rotation and scale
+	position = glm::vec3(0.0f, -8.0f, -50.0f);
+	//rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	//scaling = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	////calculate the translation, rotation and scale matrices using the above vectores
+	//translationMatrix = glm::translate(position);
+	//rotationMatrix = glm::rotate(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
+	//	*glm::rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
+	//	*glm::rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+	//scaleMatrix = glm::scale(scaling);
+
+	////combine the above matrices into the model matrix (order is important!!!! - TRS)
+	//glm::mat4 modelMatrix = translationMatrix * rotationMatrix*scaleMatrix;
+
+
+	////Set up vectors for our camera position
 	//glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
 	//glm::vec3 cameraLook = glm::vec3(0.0f, 0.0f, -10.0f);
 	//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -224,18 +237,28 @@ int Game::getShaders()
 	////Calculate the view matrix
 	//viewMatrix = glm::lookAt(cameraPosition, cameraLook, cameraUp);
 	////Calculate our perspective matrix
-	//projectionMatrix = glm::perspective(glm::radians(45.0f), (float)800 / (float)640, 0.1f, 1000.0f);
+	//
+
+	modelMatrix = glm::translate(position);
+
+	projectionMatrix = glm::perspective(
+		glm::radians(45.0f),
+		(float)800 / (float)640,
+		0.1f,
+		1000.0f
+	);
 
 	// Ambient
 	ambientLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	ambientMaterialColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	ambientMaterialColor = glm::vec4(0.1f, 0.0f, 0.0f, 1.0f);
 
 	// Diffuse
 	diffuseLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	diffuseMaterialColor = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	diffuseMaterialColor = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
 
 	// Specular
 	specularMaterialColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	specularLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	specularMaterialPower = 25.0f;
 
 	lightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -247,24 +270,25 @@ int Game::getShaders()
 	diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
 	specularTextureLocation = glGetUniformLocation(programID, "specularTexture");
 
-	textureUniformLocation = glGetUniformLocation(programID, "textureSampler");
-
+	// Ambient location
 	ambientMaterialColorLocation = glGetUniformLocation(programID, "ambientMaterialColor");
 	ambientLightColorLocation = glGetUniformLocation(programID, "ambientLightColor");
 
+	// Diffuse Location
 	diffuseMaterialColorLocation = glGetUniformLocation(programID, "diffuseMaterialColor");
 	diffuseLightColorLocation = glGetUniformLocation(programID, "diffuseLightColor");
 
+	// Light and camera location
 	lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
 	cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
 
+	// Specular location
 	specularMaterialColorLocation = glGetUniformLocation(programID, "specularMaterialColor");
 	specularLightColorLocation = glGetUniformLocation(programID, "specularLightColor");
-
+	
+	// Specular power location
 	specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
 
-
-	return 0;
 }
 
 void Game::render()
@@ -285,9 +309,15 @@ void Game::render()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
-	modelMatrix = glm::translate(position);
+	
 
-	viewMatrix = glm::lookAt(camera.GetCameraPosition(), camera.GetCameraPosition() + camera.GetCameraFront(), camera.GetCameraUp());
+	viewMatrix = glm::lookAt(
+		camera.GetCameraPosition(), 
+		camera.GetCameraPosition() + camera.GetCameraFront(), 
+		camera.GetCameraUp()
+	);
+
+	
 
 	//for (GameObject * obj : GameObjectList) 
 	//{
@@ -358,7 +388,6 @@ void Game::clean()
 	}*/
 	glDeleteTextures(1, &diffuseTextureID);
 	glDeleteTextures(1, &specularTextureID);
-	glDeleteTextures(1, &textureID);
 	glDeleteProgram(programID);
 	//GameObjectList.clear();
 	//meshes.clear();

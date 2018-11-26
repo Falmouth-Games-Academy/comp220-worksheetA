@@ -6,7 +6,7 @@ Camera::Camera()
 {
 	cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	cameraTarget = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	cameraDirection = glm::normalize(cameraPosition - cameraTarget);
 
@@ -16,7 +16,7 @@ Camera::Camera()
 
 	cameraUp = glm::cross(cameraDirection, cameraRight);
 
-	//cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	cameraFront = glm::normalize(cameraDirection);
 
 	//view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
