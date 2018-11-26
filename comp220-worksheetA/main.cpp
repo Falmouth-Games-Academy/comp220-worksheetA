@@ -121,9 +121,9 @@ int main(int argc, char ** argsv)
 	static const GLfloat fragColour[] = { 0.0f,1.0f,0.0f,1.0f };
 
 	// Materials
-	glm::vec4 ambientMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-	glm::vec4 diffuseMaterialColour = glm::vec4(0.2f, 0.8f, 0.8f, 1.0f);
-	glm::vec4 specularMaterialColour = glm::vec4(0.8f, 0.2f, 0.8f, 1.0f);
+	glm::vec4 ambientMaterialColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	glm::vec4 diffuseMaterialColour = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
+	glm::vec4 specularMaterialColour = glm::vec4(1.f, 1.f, 1.f, 1.0f);
 	float specularMaterialPower = 25.0f;
 
 	// Light

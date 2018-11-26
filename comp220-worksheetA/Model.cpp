@@ -125,13 +125,13 @@ bool loadMeshesFromFile(const std::string & filename, std::vector<Mesh*>& meshes
 			if (currentMesh->HasTextureCoords(0))
 			{
 				// Current texture coords of vertex
-				const aiVector3D currentTextureCoords = currentMesh->mTextureCoords[0][v];
+				currentTextureCoordinates = currentMesh->mTextureCoords[0][v];
 			}
 			// Set colour if one exists for the current vertex
 			if (currentMesh->HasVertexColors(0))
 			{
 				// Current colour of vertex
-				const aiColor4D currentColour = currentMesh->mColors[0][v];
+				currentModelColour = currentMesh->mColors[0][v];
 			}
 			if (currentMesh->HasNormals())
 			{
