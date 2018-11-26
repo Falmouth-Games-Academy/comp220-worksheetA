@@ -66,8 +66,16 @@ void Player::ClearEvents()
 
 void Player::MouseMovement(float xPos, float yPos)
 {
+	if (firstMouse)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+
 	float xOffset = xPos - lastX;
 	float yOffset = lastY - yPos;
+
 	lastX = xPos;
 	lastY = yPos;
 
