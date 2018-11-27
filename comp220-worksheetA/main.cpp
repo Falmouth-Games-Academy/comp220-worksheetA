@@ -15,6 +15,7 @@
 #include "Texture.h"
 #include "Model.h"
 #include "Timer.h"
+#include "GameObject.h"
 
 int main(int argc, char ** argsv)
 {
@@ -76,21 +77,64 @@ int main(int argc, char ** argsv)
 	}
 
 	// Mesh collection(vector)
-	std::vector<Mesh*> meshes;
+	//std::vector<Mesh*> meshes;
 	// Teapot
 	//loadMeshesFromFile("utah-teapot.fbx", meshes);
+	std::vector<GameObject*> GameObjectList;
 
-	// Water
-	loadMeshesFromFile("water.fbx", meshes);
+	Vertex verts[] =
+	{
 
-	// Cube.nff test
-	//unsigned int numberOfVerts = 0;
-	//unsigned int numberofInfices = 0;
-	//loadModelFromFile("Tank1.FBX", vertexbuffer, elementbuffer, numberOfVerts, numberofInfices);
+		{ -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
+		{ -0.5f, -0.5f, 0.5f,-0.5f, -0.5f, 0.5f, 1.0f },
+		{ 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 1.0f },
+		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
 
-	// Load in a texture from a file
-	GLuint diffuseTextureID = loadTextureFromFile("Tank1DF.png");
-	GLuint speculartextureID = loadTextureFromFile("specMap.png");
+		{ -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 1.0f },
+		{ -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
+		{ 0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
+		{ 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 1.0f }
+	};
+
+	//Define triangles in the cube
+	unsigned int indices[] =
+	{
+		1, 0 , 4,
+		4, 0, 5,
+
+		7, 2, 1,
+		7, 1, 4,
+
+		1, 2, 3,
+		1, 3, 0,
+
+		5, 0, 3,
+		5, 3, 6,
+
+		6, 3, 7,
+		7, 3, 2,
+
+		7, 4, 5,
+		7, 5, 6
+	};
+
+	Mesh * morphMesh = new Mesh();
+	morphMesh->init();
+	morphMesh->copyBufferData(verts, 8, indices, 36);
+	MeshCollection* morphMeshes = new MeshCollection();
+	morphMeshes->addMesh(morphMesh);
+
+	// Create and compile our GLSL program from the shader
+	Shader * morphShader = new Shader();
+	morphShader->Load("vert.glsl", "frag.glsl");
+
+	GameObject * cubeGO = new GameObject();
+	cubeGO->SetPosition(0.0f, 0.0f, 1.0f);
+	cubeGO->SetMesh(morphMeshes);
+	cubeGO->SetShader(morphShader);
+
+	GameObjectList.push_back(cubeGO);
+
 
 	// Triangle
 	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -115,54 +159,11 @@ int main(int argc, char ** argsv)
 
 	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)800 / 600), 0.1f, 100.0f);
 
-	GLuint programID = LoadShaders("animationVert.glsl", "textureFrag.glsl"); // Normally would name the var what it does
-
-	//glm::vec3 position = glm::vec3(0.0f, 0.5f, 0.0f);
-
-	//glm::mat4 modelMatrix = glm::translate(position);
-
-	// Get location from .glsl
-	static const GLfloat fragColour[] = { 0.0f,1.0f,0.0f,1.0f };
-
-	// Materials
-	glm::vec4 ambientMaterialColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	glm::vec4 diffuseMaterialColour = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-	glm::vec4 specularMaterialColour = glm::vec4(1.f, 1.f, 1.f, 1.0f);
-	float specularMaterialPower = 25.0f;
-
-	// Light
-	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, -1.0f);
-
-	GLuint fragColourLocation = glGetUniformLocation(programID, "fragColour");
-	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix"); // Same name as in vert.glsl
-	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
-	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
-	GLuint diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
-	GLuint specularTextureLocation = glGetUniformLocation(programID, "specularTexture");
-
-	GLuint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
-	GLuint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
-	GLuint specularMaterialColourLocation = glGetUniformLocation(programID, "specularMaterialColour");
-	GLuint specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
-
-	GLuint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
-	GLuint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour"); 
-	GLuint specularLightColourLocation = glGetUniformLocation(programID, "specularLightColour");
-
-	GLuint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
-
-	GLuint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
-
-	GLuint currentTimeLocation = glGetUniformLocation(programID, "currentTime");
-
 	bool fullScreen = false;
 
 	glEnable(GL_DEPTH_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+
 
 	Timer timer;
 	timer.Start();
@@ -211,101 +212,58 @@ int main(int argc, char ** argsv)
 			}
 		}
 
+		//update
+		for (GameObject * obj : GameObjectList)
+		{
+			obj->Update(timer.GetDeltaTime());
+		}
+
 		// Update game and draw with OpenGL
-		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-		glClearDepth(1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		//glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Active, bind, send (glUniform1i)
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+		for (GameObject * obj : GameObjectList) {
 
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, speculartextureID);
+			Shader * currentShader = obj->GetShader();
+			currentShader->Use();
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
+
+			glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
+			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+			glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
+			glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 
 
-		glUseProgram(programID); // for shaders
-		glUniform4fv(fragColourLocation, 1, fragColour);
-
-		// Send matrix to vert.glsl
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-		glUniform1i(diffuseTextureLocation, 0);
-		glUniform1i(specularTextureLocation, 1);
-
-		glUniform4fv(ambientLightColourLocation, 1, glm::value_ptr(ambientLightColour));
-		glUniform4fv(diffuseLightColourLocation, 1, glm::value_ptr(diffuseLightColour));
-		glUniform4fv(specularLightColourLocation, 1, glm::value_ptr(specularLightColour));
-		glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
-
-		glUniform4fv(ambientMaterialColourLocation, 1, glm::value_ptr(ambientMaterialColour));
-		glUniform4fv(diffuseMaterialColourLocation, 1, glm::value_ptr(diffuseMaterialColour));
-		glUniform4fv(specularMaterialColourLocation, 1, glm::value_ptr(specularMaterialColour));
-		glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
-
-		glUniform3fv(cameraPositionLocation, 1, glm::value_ptr(cameraPosition));
-
-		glUniform1f(currentTimeLocation, timer.GetUpdatedTime());
-
-		// Change colour
-		//GLuint location
-		//	= glGetUniformLocation(programID, "myColour");
-		//glUniform3f(location, 0, 1, 0);
-
-		for (Mesh * currentMesh : meshes)
-		{
-			currentMesh->render();
+			obj->Render();
 		}
 
 
 		SDL_GL_SwapWindow(window);
 
-		/*
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(
-			1,
-			4,
-			GL_FLOAT,
-			GL_FALSE,
-			sizeof(Vertex),
-			(void*)(3 * sizeof(float))
-		);
-
-		SDL_GL_SwapWindow(window);
-		*/
 	}
 
 	// Iterator to the beginning of the vector
-	auto iter = meshes.begin();
+	auto iter = GameObjectList.begin();
 
-	while (iter != meshes.end())
+	while (iter != GameObjectList.end())
 	{
-		// The mesh that the iterator is pointing to
 		if ((*iter))
 		{
-			// Destroy the object the iterator points to 
-			(*iter)->destroy();
 			delete (*iter);
-			// Remove the slot from the vector, iter will now be the next slot along
-			iter = meshes.erase(iter);
+			iter = GameObjectList.erase(iter);
 		}
 		else
 		{
-			// If there's no object attached to the iterator, move to the next slot
 			iter++;
 		}
 	}
 
 	// Flushes the vector
-	meshes.clear();
-
-	// Delete program
-	glDeleteProgram(programID);
-
-	// Delete textures
-	glDeleteTextures(1, &diffuseTextureID);
-	glDeleteTextures(1, &speculartextureID);
+	GameObjectList.clear();
 
 	// Delete Context
 	SDL_GL_DeleteContext(gl_Context);

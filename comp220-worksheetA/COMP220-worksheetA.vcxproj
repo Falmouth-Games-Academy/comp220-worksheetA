@@ -172,8 +172,7 @@ copy ..\Libraries\assimp-4.1.0\bin\x64\assimp-vc140-mt.dll "$(OutDir)\assimp-vc1
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="OpenGLWindow.cpp" />
     <ClCompile Include="PlayerController.cpp" />
-    <ClCompile Include="render.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
@@ -183,8 +182,7 @@ copy ..\Libraries\assimp-4.1.0\bin\x64\assimp-vc140-mt.dll "$(OutDir)\assimp-vc1
     <ClInclude Include="Model.h" />
     <ClInclude Include="OpenGLWindow.h" />
     <ClInclude Include="PlayerController.h" />
-    <ClInclude Include="render.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Shaders.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
@@ -196,8 +194,10 @@ copy ..\Libraries\assimp-4.1.0\bin\x64\assimp-vc140-mt.dll "$(OutDir)\assimp-vc1
     <None Include="colourFrag.glsl" />
     <None Include="colourVert.glsl" />
     <None Include="cube.nff" />
+    <None Include="frag.glsl" />
     <None Include="textureFrag.glsl" />
     <None Include="textureVert.glsl" />
+    <None Include="vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

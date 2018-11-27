@@ -3,7 +3,7 @@
 GameObject::GameObject()
 {
 	Position = glm::vec3(0.0f);
-	Scale = glm::vec3(1.0f);
+	Scale = glm::vec3(20.0f); // Set scale back to 1.0f later
 	Rotation = glm::vec3(0.0f);
 
 	TranslationMatrix = glm::mat4(0.0f);
