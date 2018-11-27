@@ -11,7 +11,7 @@
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Shader.h"
+#include "Shaders.h"
 #include "Vertex.h"
 
 class Render {

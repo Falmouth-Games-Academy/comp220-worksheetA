@@ -72,3 +72,46 @@ void Mesh::render()
 
 	glDrawElements(GL_TRIANGLES, m_NumberOfIndices, GL_UNSIGNED_INT, (void*)0);
 }
+
+MeshCollection::MeshCollection()
+{
+}
+
+MeshCollection::~MeshCollection()
+{
+	destroy();
+}
+
+void MeshCollection::addMesh(Mesh * pMesh)
+{
+	m_Meshes.push_back(pMesh);
+}
+
+void MeshCollection::render()
+{
+	for (Mesh *pMesh : m_Meshes)
+	{
+		pMesh->render();
+	}
+}
+
+void MeshCollection::destroy()
+{
+	auto iter = m_Meshes.begin();
+	while (iter != m_Meshes.end())
+	{
+		if (*iter)
+		{
+			(*iter)->destroy();
+			delete (*iter);
+			(*iter) = nullptr;
+			iter = m_Meshes.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
+
+	m_Meshes.clear();
+}

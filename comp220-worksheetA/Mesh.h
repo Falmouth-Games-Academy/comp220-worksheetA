@@ -28,3 +28,16 @@ private:
 	GLuint m_VAO; // Vertex array object
 };
 
+class MeshCollection
+{
+public:
+	MeshCollection();
+	~MeshCollection();
+
+	void addMesh(Mesh *pMesh);
+
+	void render();
+	void destroy();
+private:
+	std::vector<Mesh*> m_Meshes;
+};
