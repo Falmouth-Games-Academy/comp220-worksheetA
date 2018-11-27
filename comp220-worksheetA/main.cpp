@@ -20,8 +20,11 @@
 
 int main(int argc, char ** argsv)
 {
+	unsigned int windowWidth = 600;
+	unsigned int windowHeight = 800;
+
 	OpenGLWindow *openGLWindow = new OpenGLWindow();
-	bool success = openGLWindow->createWindow(800, 600);
+	bool success = openGLWindow->createWindow(windowWidth, windowHeight);
 	SDL_Window *window = openGLWindow->getWindow();
 
 	if (!success)
@@ -79,7 +82,7 @@ int main(int argc, char ** argsv)
 
 	// Create and compile our GLSL program from the shader
 	Shader * morphShader = new Shader();
-	morphShader->Load("vert.glsl", "frag.glsl");
+	morphShader->Load("morphVert.glsl", "frag.glsl");
 
 	GameObject * cubeGO = new GameObject();
 	cubeGO->SetPosition(0.0f, 0.0f, 1.0f);
@@ -90,9 +93,9 @@ int main(int argc, char ** argsv)
 
 
 	// Triangle
-	glm::vec3 trianglePosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 trianglePosition = glm::vec3(0.0f, -7.0f, -60.0f);
 	glm::vec3 triangleScale = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 trinagleRotation = glm::uvec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 trinagleRotation = glm::vec3(glm::radians(10.0f), 0.0f, 0.0f);
 
 	// View
 	glm::mat4 translationMatrix = glm::translate(trianglePosition);
@@ -104,15 +107,17 @@ int main(int argc, char ** argsv)
 	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
 	// Camera
-	glm::vec3 cameraPosition = glm::vec3(2.0f, 25.0f, -30.0f);
-	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, -10.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
 
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)800 / 600), 0.1f, 100.0f);
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), ((float)windowWidth / windowHeight), 0.1f, 100.0f);
 
 	bool fullScreen = false;
+
+	float morphBlendFactor = 0.0f;
 
 	glEnable(GL_DEPTH_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
@@ -150,20 +155,21 @@ int main(int argc, char ** argsv)
 					running = false;
 					break;
 				case SDLK_F11:
-					if (fullScreen)
-					{
-						SDL_SetWindowFullscreen(window, 0);
-						fullScreen = false;
-					}
-					else
-					{
-						SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-						fullScreen = true;
-					}
+					openGLWindow->fullScreen(!fullScreen);
+					fullScreen = !fullScreen;
+					break;
+				case SDLK_UP:
+					morphBlendFactor += 0.1f;
+					break;
+				case SDLK_DOWN:
+					morphBlendFactor -= 0.1f;
 					break;
 				}
 			}
 		}
+
+		morphBlendFactor += timer.GetDeltaTime();
+		morphBlendFactor = glm::clamp(morphBlendFactor, 0.0f, 1.0f);
 
 		//update
 		for (GameObject * obj : GameObjectList)
@@ -189,6 +195,7 @@ int main(int argc, char ** argsv)
 			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 			glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
 			glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
+			glUniform1f(currentShader->GetUniform("morphBlendFactor"), morphBlendFactor);
 
 
 			obj->Render();

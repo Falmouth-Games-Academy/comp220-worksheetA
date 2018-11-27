@@ -83,5 +83,6 @@
     <None Include="animationVert.glsl" />
     <None Include="frag.glsl" />
     <None Include="vert.glsl" />
+    <None Include="morphVert.glsl" />
   </ItemGroup>
 </Project>
