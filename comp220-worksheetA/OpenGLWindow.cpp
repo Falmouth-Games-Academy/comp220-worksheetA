@@ -1,7 +1,6 @@
-#include "OpenGLWindow.h";
+#include "OpenGLWindow.h"
 
-
-int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
+bool OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 {
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
 	//https://wiki.libsdl.org/SDL_Init
@@ -10,7 +9,7 @@ int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 		//Display an error message box
 		//https://wiki.libsdl.org/SDL_ShowSimpleMessageBox
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_Init failed", SDL_GetError(), NULL);
-		return -1;
+		return false;
 	}
 
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
@@ -24,7 +23,7 @@ int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 		//Close the SDL Library
 		//https://wiki.libsdl.org/SDL_Quit
 		SDL_Quit();
-		return -1;
+		return false;
 	}
 
 	// Request 3.2 Core OpenGL
@@ -32,14 +31,14 @@ int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	SDL_GLContext gl_Context = SDL_GL_CreateContext(window);
+	gl_Context = SDL_GL_CreateContext(window);
 	if (gl_Context == nullptr)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreatedContext Failed", SDL_GetError(), NULL);
 		SDL_DestroyWindow(window);
 		SDL_Quit();
 
-		return -1;
+		return false;
 	}
 
 	// Init GLEW
@@ -53,15 +52,20 @@ int OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 		SDL_DestroyWindow(window);
 		SDL_Quit();
 
-		return -1;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 SDL_Window * OpenGLWindow::getWindow()
 {
 	return window;
+}
+
+OpenGLWindow::~OpenGLWindow()
+{
+	removeWindow();
 }
 
 
@@ -79,6 +83,19 @@ void OpenGLWindow::fullScreen(bool enable)
 
 void OpenGLWindow::removeWindow()
 {
+	if (window)
+	{
+		//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
+		//https://wiki.libsdl.org/SDL_DestroyWindow
+		SDL_DestroyWindow(window);
 
+		delete window;
+		window = nullptr;
+	}
+
+	if (gl_Context)
+	{
+		SDL_GL_DeleteContext(gl_Context);
+	}
 }
 
