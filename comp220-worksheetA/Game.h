@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "Vertex.h"
 #include "Input.h"
+#include "Timer.h"
 #include "Controls.h"
 
 class Game
@@ -30,6 +31,8 @@ public:
 	SDL_Window* window;
 
 	Input input;
+
+	Timer time;
 
 	SDL_GLContext gl_Context;
 	
@@ -62,6 +65,7 @@ public:
 	MeshCollection * BunnyModel;
 	MeshCollection * GroundModel;
 	MeshCollection * TankModel;
+	MeshCollection * GrassModel;
 
 private:
 
@@ -78,11 +82,7 @@ private:
 	void update();
 	void render();
 
-	// time vars
-	float lastTime;
-	float tickTime;
-	float deltaTime;
-	float fps;
+	float fps;	
 
 	// fullscreen toggle boolean and function
 	bool fullScreenToggle = false;
@@ -114,6 +114,10 @@ private:
 	glm::vec4 diffuseMaterialColour = (Colour - 0.2f);
 	glm::vec4 specularMaterialColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	float specularMaterialPower = 50.0f;
+
+	// Time Properties
+	float alphaTime = 0;
+	GLint deltaTimeLocation = time.GetDeltaTime();
 
 
 protected:

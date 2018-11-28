@@ -128,15 +128,20 @@ void Game::initScene()
 	TankModel = new MeshCollection();
 	loadMeshFromFile("Tank1.FBX", TankModel);
 
+	GrassModel = new MeshCollection();
+	loadMeshFromFile("Grass.obj", GrassModel);
+	
+
 	// Culls the clockwise facing side of the triangles
 	glEnable(GL_CULL_FACE);
 
 
 	// loads in the shaders
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
-	shaderManager.GetShader("defShader")->IsLit = true;
 
 	shaderManager.LoadShaders("texturedShader", "texturedVert.glsl", "texturedFrag.glsl");
+
+	shaderManager.LoadShaders("VertexShader", "VertexAnimation.glsl", "texturedFrag.glsl");
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
@@ -145,6 +150,7 @@ void Game::initScene()
 void Game::gameLoop()
 {
 	init();
+	time.Start();
 
 	GameObject* GO1 = new GameObject;
 	GO1->SetMesh(teaPotModel);
@@ -161,7 +167,6 @@ void Game::gameLoop()
 	GO3->SetMesh(TankModel);
 	GO3->SetDiffuseTexture("Tank1DF.png");
 	GO3->setShader("texturedShader");
-	//GO3->SetScale(0.2f, 0.2f, 0.2f);
 
 	GameObject* GO4 = new GameObject;
 	GO4->SetMesh(BunnyModel);
@@ -172,11 +177,18 @@ void Game::gameLoop()
 	GO5->SetMesh(GroundModel);
 	GO5->setShader("defShader");
 
+	GameObject* GO6 = new GameObject;
+	GO6->SetMesh(GrassModel);
+	GO6->SetDiffuseTexture("texturegrass.png");
+	GO6->setShader("VertexShader");
+
+
 	objs.push_back(GO5);
 	objs.push_back(GO4);
 	objs.push_back(GO2);
 	objs.push_back(GO1);
 	objs.push_back(GO3);
+	objs.push_back(GO6);
 
 
 	int count = 0;
@@ -186,6 +198,7 @@ void Game::gameLoop()
 		objs[2]->SetPosition(0.0f, 0.0f, 5);
 		objs[3]->SetPosition(0.0f, 0.0f, 14);
 		objs[4]->SetPosition(0.0f, 0.0f, -7);
+		objs[5]->SetPosition(-8.0f, 0.0f, 0.0f);
 	}
 
 	while (running)
@@ -193,15 +206,10 @@ void Game::gameLoop()
 		mouseX = 0;
 		mouseY = 0;
 
-		// time calculations
-		lastTime = tickTime;
-		tickTime = static_cast<float>(SDL_GetTicks()) / 1000;
-		deltaTime = (tickTime - lastTime);
-
-		fps = 1 / deltaTime;
+		//fps = 1 / time.GetDeltaTime;
 		
 		// prints FPS to the console
-		//std::cout << "fps:" << fps << std::endl;
+		//std::cout << "fps:" << fps << std::endl;		
 
 		// Check for Input events
 		CheckEvents();
@@ -264,8 +272,10 @@ void Game::CheckEvents()
 
 void Game::update()
 {
+	time.Update();
+
 	// Controls of camera movement
-	controls.cameraControls(input, camera, deltaTime);
+	controls.cameraControls(input, camera, time.GetDeltaTime());
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	if (fullScreenToggle == false)
@@ -280,13 +290,13 @@ void Game::update()
 	// Or, for an ortho camera :
 	//Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 
-	objs[1]->SetRotation(0.0f, (0.3f * tickTime), 0.0f);
+	objs[1]->SetRotation(0.0f, (0.3f * time.GetUpdatedTime()), 0.0f);
 	//objs[2]->SetRotation(0.0f, (0.3f * tickTime), (0.3f * tickTime));
 
 	// Go through each object and update them
 	for (GameObject * obj : objs)
 	{
-		obj->Update(deltaTime);
+		obj->Update(time.GetDeltaTime());
 	}
 
 	camera.MouseMovement(mouseX, mouseY);
@@ -304,8 +314,6 @@ void Game::render()
 		Shader * currentShader = shaderManager.GetShader(obj->getShader());
 
 		glUseProgram(currentShader->getProgramID());
-
-
 
 		// send the uniforms across
 		glUniformMatrix4fv(currentShader->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
@@ -325,6 +333,10 @@ void Game::render()
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
+
+		alphaTime += 0.2 * time.GetDeltaTime();
+		glUniform1f(currentShader->getUniformLocation("currentTime"), alphaTime);
+		glUniform1f(currentShader->getUniformLocation("deltaTime"), deltaTimeLocation);
 
 		obj->Render();
 	}

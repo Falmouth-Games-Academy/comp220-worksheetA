@@ -15,8 +15,6 @@ public:
 	Shader(std::string ShaderName);
 	~Shader();
 
-	bool IsLit = false;
-
 	void setProgramID(GLuint id)
 	{
 		programID = id;
@@ -26,6 +24,8 @@ public:
 	{
 		return programID;
 	};
+
+	std::string GetName() { return Name; }
 
 	void discoverUniforms();
 
