@@ -15,4 +15,4 @@
 
 bool loadModelFromFile(const std::string&, GLuint V30, GLuint B30, unsigned int& numberofVerts, unsigned int& numberIndices);
 
-bool loadMeshesFromFile(const std::string& filename, std::vector<Mesh*>& meshes);
+bool loadMeshFromFile(const std::string & filename, MeshCollection * pMeshCollection);

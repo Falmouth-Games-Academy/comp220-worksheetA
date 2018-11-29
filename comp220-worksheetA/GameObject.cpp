@@ -3,7 +3,7 @@
 GameObject::GameObject()
 {
 	Position = glm::vec3(0.0f);
-	Scale = glm::vec3(1.0f); // Set scale back to 1.0f later
+	Scale = glm::vec3(1.0f);
 	Rotation = glm::vec3(0.0f);
 
 	TranslationMatrix = glm::mat4(0.0f);
@@ -20,7 +20,8 @@ GameObject::~GameObject()
 {
 	glDeleteTextures(1, &DiffuseTexture);
 
-	if (Meshes) {
+	if (Meshes) 
+	{
 		delete Meshes;
 	}
 	if (ShaderProgram)

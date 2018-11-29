@@ -84,12 +84,29 @@ int main(int argc, char ** argsv)
 	Shader * morphShader = new Shader();
 	morphShader->Load("morphVert.glsl", "frag.glsl");
 
+	// Make a function which takes Mesh file, shader files and texture file and returns a game obj.
+
 	GameObject * cubeGO = new GameObject();
 	cubeGO->SetPosition(0.0f, 0.0f, 1.0f);
 	cubeGO->SetMesh(morphMeshes);
 	cubeGO->SetShader(morphShader);
 
+	MeshCollection * teapotMeshes = new MeshCollection();
+	loadMeshFromFile("utah-teapot.fbx", teapotMeshes);
+
+	Shader * texturedShader = new Shader();
+	texturedShader->Load("textureVert.glsl", "textureFrag.glsl");
+
+	GLuint textureID = loadTextureFromFile("brick_D.png");
+
+	GameObject * teapotGO = new GameObject();
+	teapotGO->SetPosition(0.0f, 0.0f, -100.0f);
+	teapotGO->SetMesh(teapotMeshes);
+	teapotGO->SetShader(texturedShader);
+	teapotGO->SetDiffuseTexture(textureID);
+
 	GameObjectList.push_back(cubeGO);
+	GameObjectList.push_back(teapotGO);
 
 
 	// Triangle
@@ -113,14 +130,14 @@ int main(int argc, char ** argsv)
 
 	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
 
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), ((float)windowWidth / windowHeight), 0.1f, 100.0f);
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), ((float)windowWidth / windowHeight), 0.1f, 1000.0f);
 
 	bool fullScreen = false;
 
 	float morphBlendFactor = 0.0f;
 
 	glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 
 
 	Timer timer;
@@ -184,6 +201,7 @@ int main(int argc, char ** argsv)
 
 		for (GameObject * obj : GameObjectList) {
 
+			// Centralise information passing
 			Shader * currentShader = obj->GetShader();
 			currentShader->Use();
 
