@@ -49,7 +49,7 @@ private:
 	
 	//glm::mat4 view;
 	
-	float cameraSpeed = 0.01f;
+	float cameraSpeed = 0.05f;
 
 
 };

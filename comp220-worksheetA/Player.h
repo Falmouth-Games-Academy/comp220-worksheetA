@@ -10,7 +10,7 @@ public:
 	~Player();
 
 	void KeyboardEvents(SDL_Event event);
-	void ProcessInputs(float deltaTime);
+	void ProcessInputs(float deltaTime, SDL_Event event);
 	void ClearEvents();
 	void MouseMovement(float xPos, float yPos);
 

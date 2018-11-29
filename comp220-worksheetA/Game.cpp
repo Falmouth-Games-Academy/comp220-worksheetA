@@ -63,7 +63,7 @@ int Game::loop()
 				break;
 			}
 		}
-		player.ProcessInputs(deltaTime);
+		player.ProcessInputs(deltaTime, event);
 		Game::render();
 	}
 

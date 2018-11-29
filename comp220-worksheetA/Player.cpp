@@ -26,36 +26,65 @@ bool Player::isReleased(SDL_Keycode key)
 	return keyState[key] = SDL_RELEASED;
 }
 
-void Player::ProcessInputs(float deltaTime)
+void Player::ProcessInputs(float deltaTime, SDL_Event event)
 {
 	cameraPosition = camera.GetCameraPosition();
 	cameraTarget = camera.GetCameraFront();
 	cameraUp = camera.GetCameraUp();
 	movementSpeed = camera.GetCameraSpeed() * deltaTime;
+
+	/*if (SDL_PollEvent(&event))
+	{
+		switch (event.type)
+		{
+		case SDL_KEYDOWN:
+
+			switch (event.key.keysym.sym)
+			{
+			case SDLK_w:
+				camera.IncreaseCameraPosition(movementSpeed * cameraTarget);
+
+			case SDLK_s:
+				camera.IncreaseCameraPosition(-movementSpeed * cameraTarget);
+
+			case SDLK_a:
+				camera.IncreaseCameraPosition(-glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
+
+			case SDLK_d:
+				camera.IncreaseCameraPosition(glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
+
+			case SDLK_SPACE:
+				camera.IncreaseCameraPosition(glm::vec3(0, camera.GetCameraSpeed(), 0) * movementSpeed);
+
+			case SDLK_LSHIFT:
+				camera.IncreaseCameraPosition(glm::vec3(0, -camera.GetCameraSpeed(), 0) * movementSpeed);
+			}
+		}
+	}*/
 	if (isPressed(SDLK_w))
 	{
-		camera.IncreaseCameraPosition(movementSpeed * cameraTarget);
+		cameraPosition += movementSpeed * cameraTarget;
 	}
 	if (isPressed(SDLK_s))
 	{
-		camera.IncreaseCameraPosition(-movementSpeed * cameraTarget);
+		cameraPosition -= movementSpeed * cameraTarget;
 	}
 	if (isPressed(SDLK_a))
 	{
-		camera.IncreaseCameraPosition(-glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
+		cameraPosition -= glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed;
 	}
 	if (isPressed(SDLK_d))
 	{
-		camera.IncreaseCameraPosition(glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
+		cameraPosition += glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed;
 	}
-	if (isPressed(SDLK_SPACE))
+	/*if (isPressed(SDLK_SPACE))
 	{
 		camera.IncreaseCameraPosition(glm::vec3(0, camera.GetCameraSpeed(), 0) * movementSpeed);
 	}
 	if (isPressed(SDLK_LSHIFT))
 	{
 		camera.IncreaseCameraPosition(glm::vec3(0, -camera.GetCameraSpeed(), 0) * movementSpeed);
-	}
+	}*/
 
 }
 
