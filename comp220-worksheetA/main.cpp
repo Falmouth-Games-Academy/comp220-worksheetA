@@ -5,7 +5,7 @@
 int main(int argc, char* args[])
 {
 	// Game class gets called in
-	Game game;
+	GraphicsApplication game;
 
 	// GameLoop function runs the game
 	game.gameLoop();

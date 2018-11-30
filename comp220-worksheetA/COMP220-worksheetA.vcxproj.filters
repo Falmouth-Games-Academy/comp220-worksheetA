@@ -57,6 +57,9 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.glsl">
@@ -72,6 +75,12 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="VertexAnimation.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertSkybox.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragSkybox.glsl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
@@ -119,6 +128,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

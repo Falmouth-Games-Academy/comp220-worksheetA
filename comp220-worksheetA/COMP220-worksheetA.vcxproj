@@ -178,6 +178,7 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x64\*.dll "$(OutDir)\*.dll"</Co
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="GraphicsApplication.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -189,10 +190,12 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x64\*.dll "$(OutDir)\*.dll"</Co
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.glsl" />
+    <None Include="fragSkybox.glsl" />
     <None Include="texturedFrag.glsl" />
     <None Include="texturedVert.glsl" />
     <None Include="vert.glsl" />
     <None Include="VertexAnimation.glsl" />
+    <None Include="vertSkybox.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -201,6 +204,7 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x64\*.dll "$(OutDir)\*.dll"</Co
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="GraphicsApplication.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Mesh.h" />

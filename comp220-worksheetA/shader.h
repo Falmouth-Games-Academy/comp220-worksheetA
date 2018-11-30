@@ -29,6 +29,8 @@ public:
 
 	void discoverUniforms();
 
+	void Use();
+
 	GLint getUniformLocation(std::string name)
 	{
 		// Find function in map

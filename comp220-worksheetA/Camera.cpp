@@ -23,7 +23,7 @@ void Camera::Strafe(glm::vec3 mov, float delta)
 
 void Camera::MouseMovement(int x, int y)
 {
-	
+
 	rotation = rotation * glm::angleAxis(x * 0.001f, globals::worldUp);
 	rotation = rotation * glm::angleAxis(y * 0.001f, cameraRight);
 	

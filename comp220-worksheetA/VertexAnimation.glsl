@@ -26,12 +26,6 @@ void main(){
 	vec3 adjustedVertexPosition=vertexPosition;
 	adjustedVertexPosition.x+=(sin(currentTime+adjustedVertexPosition.y)*vertexPosition.y)*0.1;
 	adjustedVertexPosition.z+=(sin(currentTime+adjustedVertexPosition.y)*vertexPosition.y)*0.1;
-	
-	float X = adjustedVertexPosition.x;
-	float Z = adjustedVertexPosition.z;
-
-	//adjustedVertexPosition.x += step(0,vertexPosition.y - 0.5f) * X * 0.5f;
-	//adjustedVertexPosition.z += step(0,vertexPosition.y - 0.5f) * Z * 0.5f;
 
 	vec4 worldPosition=modelMatrix*vec4(adjustedVertexPosition,1.0f);
 	vec4 mvpPosition=mvpMatrix*vec4(adjustedVertexPosition,1.0f);
