@@ -15,6 +15,7 @@ public:
 	void Use();
 
 	bool Load(const std::string& vertexShaderFilename, const std::string& fragmentShaderFilename);
+
 private:
 	void InitialiseUniforms();
 	GLuint ShaderProgramID;

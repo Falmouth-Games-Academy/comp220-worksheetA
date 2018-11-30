@@ -110,7 +110,7 @@ MeshCollection::~MeshCollection()
 }
 
 // add new mesh to the collection
-void MeshCollection::addMesh(Mesh *pMesh)
+void MeshCollection::addMesh(Mesh* pMesh)
 {
 	m_Meshes.push_back(pMesh);
 }

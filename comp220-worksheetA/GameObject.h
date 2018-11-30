@@ -11,10 +11,36 @@ public:
 	~GameObject();
 
 	void Update(float deltaTime);
+	void Render();
 
 	void SetPosition(float x, float y, float z)
 	{
 		Position = glm::vec3(x, y, z);
+	};
+
+	void SetRotation(float x, float y, float z)
+	{
+		Rotation = glm::vec3(x, y, z);
+	};
+
+	void SetScale(float x, float y, float z)
+	{
+		Scale = glm::vec3(x, y, z);
+	};
+
+	void SetMesh(MeshCollection* meshes)
+	{
+		Meshes = meshes;
+	};
+
+	void SetShader(Shader* shader)
+	{
+		ShaderProgram = shader;
+	};
+
+	void SetDiffuseTexture(GLuint texture)
+	{
+		DiffuseTexture = texture;
 	};
 
 	glm::vec3& GetPosition()
@@ -27,32 +53,15 @@ public:
 		return ModelMatrix;
 	};
 
-	void SetMesh(MeshCollection * meshes)
-	{
-		Meshes = meshes;
-	};
-
-	void SetShader(Shader * shader)
-	{
-		ShaderProgram = shader;
-	};
-
-	Shader * GetShader()
+	Shader* GetShader()
 	{
 		return ShaderProgram;
-	};
-
-	void SetDiffuseTexture(GLuint texture)
-	{
-		DiffuseTexture = texture;
 	};
 
 	GLuint GetDiffuseTexture()
 	{
 		return DiffuseTexture;
 	};
-
-	void Render();
 
 private:
 	// Set up positions for position, rotation and scale
@@ -69,10 +78,10 @@ private:
 	glm::mat4 ModelMatrix;
 
 	// Mesh
-	MeshCollection * Meshes;
+	MeshCollection* Meshes;
 
 	// Shader
-	Shader * ShaderProgram;
+	Shader* ShaderProgram;
 
 	// Texture
 	GLuint DiffuseTexture;

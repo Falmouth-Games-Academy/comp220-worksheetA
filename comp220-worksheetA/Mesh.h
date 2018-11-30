@@ -30,7 +30,7 @@ public:
 	MeshCollection();
 	~MeshCollection();
 
-	void addMesh(Mesh *pMesh);
+	void addMesh(Mesh* pMesh);
 
 	void render();
 	void destroy();

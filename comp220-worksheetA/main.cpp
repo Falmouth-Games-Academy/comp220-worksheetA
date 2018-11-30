@@ -5,9 +5,9 @@ int main(int argc, char *argv[])
 {
 	Game * pGame = new Game();
 
-	pGame->initialise();
-	pGame->getShaders();
-	pGame->loop();
+	pGame->Initialise();
+	pGame->LoadingScene();
+	pGame->Loop();
 
 	return 0;
 }
