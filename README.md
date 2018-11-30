@@ -4,7 +4,7 @@ List of things to add:
 - Shift button press speedx2
 - easy model laoding (lots of code refactoring)
 - easy shader asignment (lots of code refactoring)
-- Vertex animation shader (for grass and leaves) -- Done
+- Vertex animation shader (for grass and leaves) -- Done for grass
 - Sky box
 - Collision Detection
 - find and or make 3D models for the scene -- Almost Done
@@ -20,5 +20,12 @@ Resources used to get the grass shader working:
 - https://twitter.com/minionsart/status/894576554411470848
 - https://lindenreid.wordpress.com/2018/01/07/waving-grass-shader-in-unity/
 
-Grass gif:
+Grass shader gif:
 ![Image](Screenshots/GrassGif.gif)
+
+
+Plan for the next Iteration:
+- Make a skybox handled by it's own class
+- Make a new vertex shader that works on the leaves of a tree model
+- further refactoring of the code that handles textures and models
+- Add more models to construct a small forest to move around in
