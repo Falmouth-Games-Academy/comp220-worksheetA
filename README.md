@@ -19,3 +19,6 @@ More assets I'm planning on using: https://assetstore.unity.com/packages/3d/envi
 Resources used to get the grass shader working:
 - https://twitter.com/minionsart/status/894576554411470848
 - https://lindenreid.wordpress.com/2018/01/07/waving-grass-shader-in-unity/
+
+Grass gif:
+![Image](Screenshots/GrassGif.gif)
