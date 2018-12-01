@@ -74,6 +74,7 @@ int main(int argc, char ** argsv)
 		7, 5, 6
 	};
 
+	/*
 	Mesh * morphMesh = new Mesh();
 	morphMesh->init();
 	morphMesh->copyBufferData(verts, 8, indices, 36);
@@ -83,9 +84,11 @@ int main(int argc, char ** argsv)
 	// Create and compile our GLSL program from the shader
 	Shader * morphShader = new Shader();
 	morphShader->Load("morphVert.glsl", "frag.glsl");
+	*/
 
 	// Make a function which takes Mesh file, shader files and texture file and returns a game obj.
 
+	/*
 	GameObject * cubeGO = new GameObject();
 	cubeGO->SetPosition(0.0f, 0.0f, 1.0f);
 	cubeGO->SetMesh(morphMeshes);
@@ -107,6 +110,23 @@ int main(int argc, char ** argsv)
 
 	GameObjectList.push_back(cubeGO);
 	GameObjectList.push_back(teapotGO);
+	*/
+
+	MeshCollection * waterMesh = new MeshCollection();
+	loadMeshFromFile("water.fbx", waterMesh);
+
+	Shader * texturedShader = new Shader();
+	texturedShader->Load("animationVert.glsl", "textureFrag.glsl");
+
+	GLuint textureID = loadTextureFromFile("waterTexture.png");
+
+	GameObject * waterGO = new GameObject();
+	waterGO->SetPosition(0.0f, -20.0f, -50.0f);
+	waterGO->SetMesh(waterMesh);
+	waterGO->SetShader(texturedShader);
+	waterGO->SetDiffuseTexture(textureID);
+
+	GameObjectList.push_back(waterGO);
 
 
 	// Triangle
@@ -130,7 +150,7 @@ int main(int argc, char ** argsv)
 
 	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
 
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), ((float)windowWidth / windowHeight), 0.1f, 1000.0f);
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)windowWidth / windowHeight), 0.1f, 1000.0f);
 
 	bool fullScreen = false;
 
@@ -142,6 +162,9 @@ int main(int argc, char ** argsv)
 
 	Timer timer;
 	timer.Start();
+
+	// Capture mouse
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -182,6 +205,10 @@ int main(int argc, char ** argsv)
 					morphBlendFactor -= 0.1f;
 					break;
 				}
+			// If the mouse is being moved
+			case SDL_MOUSEMOTION:
+				//std::cout << ev.motion.xrel << " | " << ev.motion.yrel << std::endl;
+				break;
 			}
 		}
 
@@ -211,9 +238,10 @@ int main(int argc, char ** argsv)
 			glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
 			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
 			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-			glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
-			glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
-			glUniform1f(currentShader->GetUniform("morphBlendFactor"), morphBlendFactor);
+			//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
+			//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
+			glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
+			//glUniform1f(currentShader->GetUniform("morphBlendFactor"), morphBlendFactor);
 
 
 			obj->Render();

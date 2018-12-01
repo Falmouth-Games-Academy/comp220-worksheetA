@@ -1,7 +1,7 @@
 #version 330 core
 
 layout(location = 0) in vec3 vertexPosition;
-layout(location = 1) in vec4 vertexColours; // IS vertexColour in some other vert files here
+layout(location = 1) in vec4 vertexColour; // IS vertexColour in some other vert files here
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -9,7 +9,7 @@ uniform mat4 projectionMatrix;
 
 uniform float currentTime;
 
-out vec4 vertexColoursOut;
+out vec4 vertexColourOut;
 
 void main(){
 
@@ -26,7 +26,7 @@ void main(){
 
 	vec4 mvpPosition=mvpMatrix*vec4(animatedPosition,1.0f);
 	
-	vertexColoursOut=vertexColours;
+	vertexColourOut=vertexColour;
 
 	gl_Position=mvpPosition;
 }
