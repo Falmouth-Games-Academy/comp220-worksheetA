@@ -17,7 +17,7 @@ So far I have only scratched the surface of profiling, looking at the frame rate
 ![alt text](profile_1.png)
 
 ## Plan
-I need to separate the video tutoruals/stuff done in lessons more from the worksheet through better use of branches and also catchup with generally. 
+I need to separate the video tutoruals/stuff done in lessons more from the worksheet through better use of branches and also catchup with work generally. 
 
 ### Todo
 - Get a light reflection off of a static water texture
