@@ -25,6 +25,9 @@ I need to separate the video tutoruals/stuff done in lessons more from the works
 - Refactor code
 - Look into more realist wave simulation and apply it to the project
 - Add a skybox
+### Stretch
+- Give the water alpha transparency
+- Refract the light going through water
 - Add physics collisions to the waves so the camera can bob on top
 
 
