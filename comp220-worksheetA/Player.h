@@ -9,8 +9,10 @@ public:
 	Player();
 	~Player();
 
+	Camera camera;
+
 	void KeyboardEvents(SDL_Event event);
-	void ProcessInputs(float deltaTime, SDL_Event event);
+	void ProcessInputs(float deltaTime);
 	void ClearEvents();
 	void MouseMovement(float xPos, float yPos);
 
@@ -21,8 +23,6 @@ private:
 
 	std::map<SDL_Keycode, Uint8> keyState;
 
-	Camera camera;
-
 	glm::vec3 cameraPosition;
 	glm::vec3 cameraTarget;
 	glm::vec3 cameraUp;
@@ -30,8 +30,6 @@ private:
 	float movementSpeed; 
 	float yaw = 270.0f;
 	float pitch = 0.0f;
-	float lastX = 400;
-	float lastY = 320;
 
 	bool firstMouse = true;
 };

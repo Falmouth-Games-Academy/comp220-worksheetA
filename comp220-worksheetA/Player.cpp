@@ -18,73 +18,45 @@ void Player::KeyboardEvents(SDL_Event event)
 
 bool Player::isPressed(SDL_Keycode key)
 {
-	return keyState[key] = SDL_PRESSED;
+	return keyState[key] == SDL_PRESSED;
 }
 
 bool Player::isReleased(SDL_Keycode key)
 {
-	return keyState[key] = SDL_RELEASED;
+	return keyState[key] == SDL_RELEASED;
 }
 
-void Player::ProcessInputs(float deltaTime, SDL_Event event)
+void Player::ProcessInputs(float deltaTime)
 {
 	cameraPosition = camera.GetCameraPosition();
 	cameraTarget = camera.GetCameraFront();
 	cameraUp = camera.GetCameraUp();
 	movementSpeed = camera.GetCameraSpeed() * deltaTime;
 
-	/*if (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_KEYDOWN:
-
-			switch (event.key.keysym.sym)
-			{
-			case SDLK_w:
-				camera.IncreaseCameraPosition(movementSpeed * cameraTarget);
-
-			case SDLK_s:
-				camera.IncreaseCameraPosition(-movementSpeed * cameraTarget);
-
-			case SDLK_a:
-				camera.IncreaseCameraPosition(-glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
-
-			case SDLK_d:
-				camera.IncreaseCameraPosition(glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
-
-			case SDLK_SPACE:
-				camera.IncreaseCameraPosition(glm::vec3(0, camera.GetCameraSpeed(), 0) * movementSpeed);
-
-			case SDLK_LSHIFT:
-				camera.IncreaseCameraPosition(glm::vec3(0, -camera.GetCameraSpeed(), 0) * movementSpeed);
-			}
-		}
-	}*/
 	if (isPressed(SDLK_w))
 	{
-		cameraPosition += movementSpeed * cameraTarget;
+		camera.IncreaseCameraPosition(movementSpeed * cameraTarget);
 	}
 	if (isPressed(SDLK_s))
 	{
-		cameraPosition -= movementSpeed * cameraTarget;
+		camera.IncreaseCameraPosition(-movementSpeed * cameraTarget);
 	}
 	if (isPressed(SDLK_a))
 	{
-		cameraPosition -= glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed;
+		camera.IncreaseCameraPosition(-glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
 	}
 	if (isPressed(SDLK_d))
 	{
-		cameraPosition += glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed;
+		camera.IncreaseCameraPosition(glm::normalize(glm::cross(cameraTarget, cameraUp)) * movementSpeed);
 	}
-	/*if (isPressed(SDLK_SPACE))
+	if (isPressed(SDLK_SPACE))
 	{
-		camera.IncreaseCameraPosition(glm::vec3(0, camera.GetCameraSpeed(), 0) * movementSpeed);
+		camera.IncreaseCameraPosition(glm::vec3(0, 1, 0) * movementSpeed);
 	}
 	if (isPressed(SDLK_LSHIFT))
 	{
-		camera.IncreaseCameraPosition(glm::vec3(0, -camera.GetCameraSpeed(), 0) * movementSpeed);
-	}*/
+		camera.IncreaseCameraPosition(glm::vec3(0, -1, 0) * movementSpeed);
+	}
 
 }
 
@@ -95,25 +67,12 @@ void Player::ClearEvents()
 
 void Player::MouseMovement(float xPos, float yPos)
 {
-	if (firstMouse)
-	{
-		lastX = xPos;
-		lastY = yPos;
-		firstMouse = false;
-	}
-
-	float xOffset = xPos - lastX;
-	float yOffset = lastY - yPos;
-
-	lastX = xPos;
-	lastY = yPos;
-
 	float sensitivity = 0.05f;
-	xOffset *= sensitivity;
-	yOffset *= sensitivity;
+	xPos *= sensitivity;
+	yPos *= sensitivity;
 
-	yaw += xOffset;
-	pitch += yOffset;
+	yaw += xPos;
+	pitch += yPos;
 
 	if (pitch > 89.0f)
 	{
@@ -125,8 +84,10 @@ void Player::MouseMovement(float xPos, float yPos)
 	}
 
 	glm::vec3 front;
+
 	front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
 	front.y = -sin(glm::radians(pitch));
 	front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+
 	camera.SetCameraFront(glm::normalize(front));
 }

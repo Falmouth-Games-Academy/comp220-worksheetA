@@ -182,7 +182,7 @@ int Game::Loop()
 				break;
 			}
 		}
-		player.ProcessInputs(deltaTime, event);
+		player.ProcessInputs(deltaTime);
 		Game::Render();
 	}
 
@@ -206,7 +206,7 @@ void Game::LoadingScene()
 	teapotGO->SetPosition(-2.0f, -8.0f, -50.0f);
 	teapotGO->SetMesh(teapotMesh);
 	teapotGO->SetShader(texturedShader);
-	teapotGO->SetDiffuseTexture(textureID);
+	teapotGO->SetDiffuseTexture(diffuseTextureID);
 
 	GameObjectList.push_back(teapotGO);
 
@@ -216,14 +216,14 @@ void Game::LoadingScene()
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	// Calculate the view matrix and projection matrix
-	viewMatrix = glm::lookAt(cameraPosition, cameraLook, cameraUp);
+	/*viewMatrix = glm::lookAt(cameraPosition, cameraLook, cameraUp);
 
 	projectionMatrix = glm::perspective(
 		glm::radians(45.0f),
 		(float)800 / (float)640,
 		0.1f,
 		1000.0f
-	);
+	);*/
 
 	// Ambient
 	ambientLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -250,6 +250,15 @@ void Game::Render()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	//glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Calculate the view matrix and projection matrix
+	viewMatrix = player.camera.GetViewMatrix();
+	projectionMatrix = glm::perspective(
+		glm::radians(45.0f),
+		(float)800 / (float)640,
+		0.1f,
+		1000.0f
+	);
 
 	// Getting shaders
 	Shader* currentShader = teapotGO->GetShader();
@@ -292,11 +301,11 @@ void Game::Render()
 	glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
 	// Setting view matrix for camera movement (currently not working)
-	viewMatrix = glm::lookAt(
+	/*viewMatrix = glm::lookAt(
 		camera.GetCameraPosition(), 
 		camera.GetCameraPosition() + camera.GetCameraFront(), 
 		camera.GetCameraUp()
-	);
+	);*/
 
 	teapotGO->Render();
 
@@ -314,7 +323,6 @@ void Game::Clean()
 	}
 	glDeleteTextures(1, &diffuseTextureID);
 	glDeleteTextures(1, &specularTextureID);
-	delete teapotGO;
 	player.ClearEvents();
 	SDL_GL_DeleteContext(gl_Context);
 	SDL_DestroyWindow(mainWindow);

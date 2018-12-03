@@ -21,6 +21,11 @@ public:
 		return cameraUp;
 	};
 
+	glm::mat4 GetViewMatrix()
+	{
+		return glm::lookAt(this->cameraPosition, this->cameraPosition + this->cameraFront, this->cameraUp);
+	};
+
 	void SetCameraPosition(glm::vec3 newCameraPosition)
 	{
 		cameraPosition = newCameraPosition;
@@ -37,6 +42,7 @@ public:
 	{
 		return cameraSpeed;
 	};
+
 
 private:
 	glm::vec3 cameraPosition;
