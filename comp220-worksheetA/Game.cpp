@@ -125,6 +125,8 @@ int Game::Initialise()
 	SDL_ShowCursor(0);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
+	skybox = new Skybox();
+
 	return 0;
 }
 
@@ -259,6 +261,9 @@ void Game::Render()
 		0.1f,
 		1000.0f
 	);
+
+	// Draw skybox
+	skybox->RenderSkybox(viewMatrix, projectionMatrix);
 
 	// Getting shaders
 	Shader* currentShader = teapotGO->GetShader();

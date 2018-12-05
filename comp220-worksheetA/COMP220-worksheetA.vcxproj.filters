@@ -45,6 +45,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -86,6 +89,9 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
@@ -95,5 +101,7 @@
     <None Include="Cube.nff" />
     <None Include="blinnPhongVert.glsl" />
     <None Include="blinnPhongFrag.glsl" />
+    <None Include="skyboxFragment.glsl" />
+    <None Include="skyboxVertex.glsl" />
   </ItemGroup>
 </Project>

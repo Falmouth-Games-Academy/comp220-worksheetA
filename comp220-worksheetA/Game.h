@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Shader.h"
 #include "Mesh.h"
+#include "Skybox.h"
 
 class Game
 {
@@ -40,7 +41,7 @@ private:
 
 	SDL_GLContext gl_Context;
 
-	GLuint textureID;
+	//GLuint textureID;
 	GLuint diffuseTextureID;
 	GLuint specularTextureID;
 
@@ -61,6 +62,7 @@ private:
 
 	std::vector<GameObject*> GameObjectList;
 
+	Skybox* skybox;
 	MeshCollection* teapotMesh = new MeshCollection();
 	Shader* texturedShader = new Shader();
 	GameObject* teapotGO = new GameObject();
