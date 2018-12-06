@@ -47,12 +47,12 @@ float skyboxVertices[] = {
 
 std::vector<std::string> skyboxFaces
 {
-	"Skybox/lakes_rt.tga",
-	"Skybox/lakes_lf.tga",
-	"Skybox/lakes_up.tga",
-	"Skybox/lakes_dn.tga",
-	"Skybox/lakes_ft.tga",
-	"Skybox/lakes_bk.tga"
+	"Skybox/Right1.png",
+	"Skybox/Left1.png",
+	"Skybox/Up1.png",
+	"Skybox/Down1.png",
+	"Skybox/Back1.png",
+	"Skybox/Front1.png"
 };
 
 Skybox::Skybox()
