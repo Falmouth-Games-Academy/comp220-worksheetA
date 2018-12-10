@@ -18,7 +18,6 @@ void Game::init()
 	initWindow();
 	initOpenGL();
 	initGlew();
-	initScene();
 }
 
 // initialises SDL
@@ -54,7 +53,6 @@ void Game::fullScreen()
 {
 	if (fullScreenToggle == false)
 	{ 
-
 		SDL_GetCurrentDisplayMode(0, &DM);
 		auto Width = DM.w;
 		auto Height = DM.h;
@@ -109,13 +107,6 @@ void Game::initGlew()
 	}
 }
 
-// initialises the game scene and elements to be rendered
-void Game::initScene()
-{
-
-
-}
-
 // The main Gameloop
 void Game::gameLoop()
 {
@@ -157,11 +148,12 @@ void Game::CheckEvents()
 		// Switch case for every message we are intereted in
 		switch (ev.type)
 		{
-			// QUIT Message, usually called when the window has been closed
+			// when SDL window is QUIT set running to false to end the gameloop
 		case SDL_QUIT:
 			running = false;
 			break;
 
+			// checks mouse movement
 		case SDL_MOUSEMOTION:
 			mouseX = ev.motion.xrel;
 			mouseY = ev.motion.yrel;
@@ -179,6 +171,7 @@ void Game::CheckEvents()
 				running = false;
 				break;
 
+				// fullscreen toggle key
 			case SDLK_f:
 				fullScreen();
 				break;
@@ -203,11 +196,11 @@ void Game::update()
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	if (fullScreenToggle == false)
 	{
-		camera.Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 0.1f, 100.0f);
+		camera.Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 1.0f, 1000.0f);
 	}
 	else
 	{
-		camera.Projection = glm::perspective(glm::radians(45.0f), (float)DM.w / (float)DM.h, 0.1f, 100.0f);
+		camera.Projection = glm::perspective(glm::radians(45.0f), (float)DM.w / (float)DM.h, 1.0f, 1000.0f);
 	}
 
 	// Or, for an ortho camera :

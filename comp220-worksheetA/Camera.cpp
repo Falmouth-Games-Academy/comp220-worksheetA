@@ -15,12 +15,14 @@ glm::mat4 Camera::CalculateViewMatrix()
 	return View;
 }
 
+
 void Camera::Strafe(glm::vec3 mov, float delta)
 {
 	pos += mov * rotation * delta;
 	View = glm::lookAt(pos, lookAt, cameraUp);
 }
 
+// moves the camera by mouse input
 void Camera::MouseMovement(int x, int y)
 {
 	rotation = rotation * glm::angleAxis(y * 0.001f, cameraRight);

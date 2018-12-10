@@ -68,7 +68,6 @@ private:
 	void initWindow();
 	void initOpenGL();
 	void initGlew();
-	void initScene();
 
 	float fps;
 

@@ -1,5 +1,7 @@
 #include "Model.h"
 
+#define AI_CONFIG_PP_PTV_NORMALIZE
+
 bool loadModelFromFile(const std::string& filename, GLuint VBO, GLuint EBO, unsigned int& numVerts, unsigned int& numIndices)
 {
 	std::vector<Vertex> vertices;

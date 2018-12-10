@@ -9,5 +9,8 @@ uniform sampler2D baseTexture;
 
 void main()
 {
-	colour=texture2D(baseTexture,vertexTextureCoordOut);
+ vec4 texel = texture(baseTexture, vertexTextureCoordOut);
+  if(texel.a < 0.5)
+    discard;
+  colour = texel;
 }
