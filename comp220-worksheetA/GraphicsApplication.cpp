@@ -16,6 +16,9 @@ void GraphicsApplication::init()
 	// -------- INIT GAMEOBJECTS AND SHADERS ------- //
 
 	//Load Mesh
+	skyboxModel = new MeshCollection();
+	loadMeshFromFile("Skybox\\box.FBX", skyboxModel);
+
 	dinoModel = new MeshCollection();
 	loadMeshFromFile("TomModel.FBX", dinoModel);
 
@@ -42,12 +45,24 @@ void GraphicsApplication::init()
 	//glEnable(GL_CULL_FACE);
 
 	// load in the shaders
+	shaderManager.LoadShaders("skyboxShader", "vertSkybox.glsl", "fragSkybox.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("texturedShader", "texturedVert.glsl", "texturedFrag.glsl");
 	shaderManager.LoadShaders("VertexShader", "VertexAnimation.glsl", "texturedFrag.glsl");
 
+	
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
+	// INIT SKYBOX
+	//skybox = Skybox();
+	//skybox.Init();
+	skybox->Init();
+	skybox->SetMesh(skyboxModel);
+	skybox->setShader("skyboxShader");
+	skybox->SetScale(40.0f, 40.0f, 40.0f);
+	skybox->SetPosition(0.0f, -5.0f, 0.0f);
+
+
 	// Create each seperate new GameObject
 	GameObject* GO1 = new GameObject;
 	GO1->SetMesh(teaPotModel);
@@ -94,6 +109,9 @@ void GraphicsApplication::init()
 	objs.push_back(GO6);
 	objs.push_back(GO7);
 
+	objs.push_back(skybox);
+
+
 	// Set the position for each GameObject in the list
 	int count = 0;
 	for (GameObject * obj : objs)
@@ -111,6 +129,8 @@ void GraphicsApplication::init()
 void GraphicsApplication::update()
 {
 	Game::update();
+
+	//sky->Update(time.GetDeltaTime());
 
 	objs[1]->SetRotation(0.0f, (0.3f * time.GetUpdatedTime()), 0.0f);
 

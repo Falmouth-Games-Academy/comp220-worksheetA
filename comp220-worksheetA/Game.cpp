@@ -196,11 +196,11 @@ void Game::update()
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	if (fullScreenToggle == false)
 	{
-		camera.Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 1.0f, 1000.0f);
+		camera.Projection = glm::perspective(glm::radians(45.0f), globals::SCREEN_WIDTH / globals::SCREEN_HEIGHT, 0.2f, 1000.0f);
 	}
 	else
 	{
-		camera.Projection = glm::perspective(glm::radians(45.0f), (float)DM.w / (float)DM.h, 1.0f, 1000.0f);
+		camera.Projection = glm::perspective(glm::radians(45.0f), (float)DM.w / (float)DM.h, 0.2f, 1000.0f);
 	}
 
 	// Or, for an ortho camera :

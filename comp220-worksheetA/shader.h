@@ -50,7 +50,7 @@ public:
 	ShaderManager();
 	~ShaderManager();
 
-	//GLuint LoadShaders(std::string ShaderName, const char * vertex_file_path, const char * fragment_file_path);
+	//GLuint loadShaders(std::string ShaderName, const char * vertex_file_path, const char * fragment_file_path);
 	void LoadShaders(std::string ShaderName, const char * vertex_file_path, const char * fragment_file_path);
 
 	//GLuint GetShader(std::string name);

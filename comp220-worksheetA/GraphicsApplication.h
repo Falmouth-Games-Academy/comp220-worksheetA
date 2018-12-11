@@ -1,5 +1,6 @@
 #pragma once
 #include "Game.h"
+#include "Skybox.h"
 
 class GraphicsApplication : public Game {
 public:
@@ -12,7 +13,11 @@ public:
 
 private:
 
+	Skybox* skybox = new Skybox;
+
 	// model vars
+	MeshCollection * skyboxModel;
+
 	MeshCollection * dinoModel;
 	MeshCollection * teaPotModel;
 	MeshCollection * BunnyModel;

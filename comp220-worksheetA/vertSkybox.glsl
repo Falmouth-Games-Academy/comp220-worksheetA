@@ -1,15 +1,21 @@
 #version 330 core
 
-// location matches the location in the vertex pointer from main.cpp
-layout(location = 0) in vec3 vertexPos;
+layout(location = 0) in vec3 vertexPosition;
 
-uniform mat4 view;
-uniform mat4 proj;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projMatrix;
 
-out vec3 texCoords;
+out vec3 textureCoords;
 
 void main()
 {
-	texCoords = vertexPos;
-    gl_Position = proj * view * vec4(vertexPos, 1.0);
+	mat4 mvpMatrix=projMatrix*viewMatrix*modelMatrix;
+
+	vec4 mvpPosition=mvpMatrix*vec4(vertexPosition,1.0f);
+	mvpPosition = modelMatrix * vec4(vertexPosition, 1.0f);
+	mvpPosition = viewMatrix * vec4(mvpPosition.xyz, 0.0f);
+	mvpPosition = projMatrix * vec4(mvpPosition.xyz, 1.0f);
+	textureCoords = vertexPosition;
+    gl_Position = mvpPosition;
 }
