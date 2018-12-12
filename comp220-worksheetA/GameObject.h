@@ -17,6 +17,7 @@ public:
 
 	void Update(float deltaTime);
 
+	// Position Rotation and Scale
 	void SetPosition(float x, float y, float z)
 	{
 		Position = glm::vec3(x, y, z);
@@ -37,6 +38,12 @@ public:
 		return Position;
 	};
 
+	// Mesh
+	MeshCollection * GetMeshes() 
+	{
+		return Meshes;
+	};
+
 	glm::mat4& GetModelTransformation()
 	{
 		return ModelMatrix;
@@ -47,6 +54,7 @@ public:
 		Meshes = meshes;
 	};
 
+	// Shader
 	void setShader(std::string name)
 	{
 		shaderName = name;
@@ -58,19 +66,46 @@ public:
 		return shaderName;
 	};
 
+	// Textures
 	void SetDiffuseTexture(std::string texture)
 	{
-		DiffuseTexture = loadTextureFromFile(texture);
+		diffuseTexture = loadTextureFromFile(texture);
 	};
 
 	GLuint GetDiffuseTexture()
 	{
-		return DiffuseTexture;
+		return diffuseTexture;
+	};
+
+	void SetDiffuseTextures(std::string texture)
+	{
+		diffuseTexture = loadTextureFromFile(texture);
+		textureList.push_back(diffuseTexture);
+	};
+
+	void SetActiveTexture(int textureNum)
+	{
+		diffuseTexture = textureList[textureNum];
+	};
+
+	// GameObject Name
+	void setName(std::string gameObjectName)
+	{
+		Name = gameObjectName;
+	};
+
+	std::string getName()
+	{
+		return Name;
 	};
 
 	void Render();
 
 private:
+
+	// the name of the gameobject
+	std::string Name;
+
 	//Set up positions for position, rotation and scale
 	glm::vec3 Position;
 	glm::vec3 Rotation;
@@ -90,5 +125,8 @@ private:
 	std::string shaderName;
 
 	//Texture
-	GLuint DiffuseTexture;
+	GLuint diffuseTexture;
+	GLuint activeDiffuseTexture;
+	std::vector<GLuint> textureList;
+
 };

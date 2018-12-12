@@ -28,6 +28,9 @@ private:
 
 	// SHADER VARS //
 
+	// uses and send the shader uniform variables across for the chosen object
+	void useShader(Shader * currentShader, GameObject * obj);
+
 	// secene matrix locations
 	GLuint modelMatrixUniformLocation;
 	GLuint viewMatrixUniformLocation;
@@ -42,7 +45,9 @@ private:
 	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	// Material Properties
-	glm::vec4 Colour = glm::vec4(0.5f, 0.7f, 0.9f, 1.0f);
+	//glm::vec4 Colour = glm::vec4(0.5f, 0.7f, 0.9f, 1.0f);
+	glm::vec4 Colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
 	glm::vec4 ambientMaterialColour = Colour;
 	glm::vec4 diffuseMaterialColour = (Colour - 0.2f);
 	glm::vec4 specularMaterialColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -51,5 +56,9 @@ private:
 	// Time Properties
 	float alphaTime = 0;
 	GLint deltaTimeLocation = time.GetDeltaTime();
+
+	// WindShader Properties
+	GLfloat windForce = 0.06;
+	GLfloat treeWindForce = 0.01;
 
 };

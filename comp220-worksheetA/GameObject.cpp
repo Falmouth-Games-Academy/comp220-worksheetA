@@ -13,12 +13,12 @@ GameObject::GameObject()
 
 	Meshes = nullptr;
 	//ShaderProgram = nullptr;
-	DiffuseTexture = 0;
+	diffuseTexture = 0;
 }
 
 GameObject::~GameObject()
 {
-	glDeleteTextures(1, &DiffuseTexture);
+	glDeleteTextures(1, &diffuseTexture);
 }
 
 void GameObject::Update(float deltaTime)

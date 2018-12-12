@@ -33,6 +33,7 @@ public:
 	void addMesh(Mesh *pMesh);
 
 	void render();
+	void RenderIndex(int i =0);
 	void destroy();
 private:
 	std::vector<Mesh*> m_Meshes;

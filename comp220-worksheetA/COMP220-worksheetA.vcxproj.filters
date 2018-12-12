@@ -89,6 +89,12 @@
     <None Include="vertSkybox.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="groundFrag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="groundVert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">

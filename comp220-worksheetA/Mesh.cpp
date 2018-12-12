@@ -89,6 +89,12 @@ void MeshCollection::render()
 	}
 }
 
+void MeshCollection::RenderIndex(int i)
+{
+	//GET RID OF ME
+		m_Meshes[i]->render();
+}
+
 void MeshCollection::destroy()
 {
 	auto iter = m_Meshes.begin();

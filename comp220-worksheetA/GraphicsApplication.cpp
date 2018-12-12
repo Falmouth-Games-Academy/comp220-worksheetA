@@ -29,7 +29,7 @@ void GraphicsApplication::init()
 	loadMeshFromFile("stanfordBunny.FBX", BunnyModel);
 
 	GroundModel = new MeshCollection();
-	loadMeshFromFile("Ground.FBX", GroundModel);
+	loadMeshFromFile("FBXmodels\\Ground.FBX", GroundModel);
 
 	TreeModel = new MeshCollection();
 	loadMeshFromFile("FBXmodels\\Tree1.FBX", TreeModel);
@@ -49,13 +49,11 @@ void GraphicsApplication::init()
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("texturedShader", "texturedVert.glsl", "texturedFrag.glsl");
 	shaderManager.LoadShaders("VertexShader", "VertexAnimation.glsl", "texturedFrag.glsl");
-
+	shaderManager.LoadShaders("GroundShader", "groundVert.glsl", "groundFrag.glsl");
 	
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
 	// INIT SKYBOX
-	//skybox = Skybox();
-	//skybox.Init();
 	skybox->Init();
 	skybox->SetMesh(skyboxModel);
 	skybox->setShader("skyboxShader");
@@ -77,8 +75,9 @@ void GraphicsApplication::init()
 
 	GameObject* GO3 = new GameObject;
 	GO3->SetMesh(TreeModel);
-	GO3->SetDiffuseTexture("FBXmodels\\Textures\\TreeTexture.tga");
-	GO3->SetDiffuseTexture("FBXmodels\\Textures\\Birch_leaves.tga");
+	GO3->setName("TreeModel");
+	GO3->SetDiffuseTextures("FBXmodels\\Textures\\Birch_leaves.tga");
+	GO3->SetDiffuseTextures("FBXmodels\\Textures\\TreeTexture.tga");
 	GO3->setShader("VertexShader");
 
 	GameObject* GO4 = new GameObject;
@@ -88,7 +87,10 @@ void GraphicsApplication::init()
 
 	GameObject* GO5 = new GameObject;
 	GO5->SetMesh(GroundModel);
-	GO5->setShader("defShader");
+	GO5->SetDiffuseTexture("FBXmodels\\Textures\\ground_grass.tga");
+	GO5->setShader("GroundShader");
+	GO5->SetRotation(-1.5708f, 0.0f, 0.0f);
+	GO5->SetPosition(-30.0f, -5.0f, -30.0f);
 
 	GameObject* GO6 = new GameObject;
 	GO6->SetMesh(GrassModel);
@@ -130,8 +132,6 @@ void GraphicsApplication::update()
 {
 	Game::update();
 
-	//sky->Update(time.GetDeltaTime());
-
 	objs[1]->SetRotation(0.0f, (0.3f * time.GetUpdatedTime()), 0.0f);
 
 	// Go through each object in the scene and update them
@@ -151,34 +151,57 @@ void GraphicsApplication::render()
 	{
 		Shader * currentShader = shaderManager.GetShader(obj->getShader());
 
-		glUseProgram(currentShader->getProgramID());
+		useShader(currentShader, obj);
 
-		// send the uniforms across
-		glUniformMatrix4fv(currentShader->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
-		glUniformMatrix4fv(currentShader->getUniformLocation("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
-		glUniformMatrix4fv(currentShader->getUniformLocation("projMatrix"), 1, GL_FALSE, glm::value_ptr(camera.Projection));
-		glUniform3fv(currentShader->getUniformLocation("cameraPosition"), 1, glm::value_ptr(camera.pos));
-		glUniform4fv(currentShader->getUniformLocation("ambientLightColour"), 1, glm::value_ptr(ambientLightColour));
-		glUniform4fv(currentShader->getUniformLocation("diffuseLightColour"), 1, glm::value_ptr(diffuseLightColour));
-		glUniform4fv(currentShader->getUniformLocation("specularLightColour"), 1, glm::value_ptr(specularLightColour));
-		GLint ambientLocation = currentShader->getUniformLocation("ambientMaterialColour");
-		glUniform4fv(currentShader->getUniformLocation("ambientMaterialColour"), 1, glm::value_ptr(ambientMaterialColour));
-		glUniform4fv(currentShader->getUniformLocation("diffuseMaterialColour"), 1, glm::value_ptr(diffuseMaterialColour));
-		glUniform4fv(currentShader->getUniformLocation("specularMaterialColour"), 1, glm::value_ptr(specularMaterialColour));
-		glUniform1f(currentShader->getUniformLocation("specularMaterialPower"), specularMaterialPower);
+		if (obj->getName() == "TreeModel")
+		{
+			MeshCollection * m = obj->GetMeshes();
+			glUniform1f(currentShader->getUniformLocation("windForce"), treeWindForce);
+			obj->SetActiveTexture(1);
+			m->RenderIndex(1);
 
-		glUniform3fv(currentShader->getUniformLocation("lightDirection"), 1, glm::value_ptr(lightDirection));
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
-
-		alphaTime += 0.2 * time.GetDeltaTime();
-		glUniform1f(currentShader->getUniformLocation("currentTime"), alphaTime);
-		glUniform1f(currentShader->getUniformLocation("deltaTime"), deltaTimeLocation);
-
-		obj->Render();
+			//USE SHADER PROGRAM Bark
+			currentShader = shaderManager.GetShader("texturedShader");
+			useShader(currentShader, obj);
+			obj->SetActiveTexture(0);
+			m->RenderIndex(0);
+		}
+		else
+			obj->Render();
 	}
 
 	Game::endRender();
 }
 
+
+void GraphicsApplication::useShader(Shader * currentShader, GameObject * obj)
+{
+	glUseProgram(currentShader->getProgramID());
+
+	// send the uniforms across
+	glUniformMatrix4fv(currentShader->getUniformLocation("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
+	glUniformMatrix4fv(currentShader->getUniformLocation("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.CalculateViewMatrix()));
+	glUniformMatrix4fv(currentShader->getUniformLocation("projMatrix"), 1, GL_FALSE, glm::value_ptr(camera.Projection));
+
+	glUniform3fv(currentShader->getUniformLocation("cameraPosition"), 1, glm::value_ptr(camera.pos));
+	glUniform4fv(currentShader->getUniformLocation("ambientLightColour"), 1, glm::value_ptr(ambientLightColour));
+	glUniform4fv(currentShader->getUniformLocation("diffuseLightColour"), 1, glm::value_ptr(diffuseLightColour));
+	glUniform4fv(currentShader->getUniformLocation("specularLightColour"), 1, glm::value_ptr(specularLightColour));
+
+	GLint ambientLocation = currentShader->getUniformLocation("ambientMaterialColour");
+	glUniform4fv(currentShader->getUniformLocation("ambientMaterialColour"), 1, glm::value_ptr(ambientMaterialColour));
+	glUniform4fv(currentShader->getUniformLocation("diffuseMaterialColour"), 1, glm::value_ptr(diffuseMaterialColour));
+	glUniform4fv(currentShader->getUniformLocation("specularMaterialColour"), 1, glm::value_ptr(specularMaterialColour));
+	glUniform1f(currentShader->getUniformLocation("specularMaterialPower"), specularMaterialPower);
+
+	glUniform3fv(currentShader->getUniformLocation("lightDirection"), 1, glm::value_ptr(lightDirection));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
+
+	alphaTime += 0.2 * time.GetDeltaTime();
+	glUniform1f(currentShader->getUniformLocation("currentTime"), alphaTime);
+	glUniform1f(currentShader->getUniformLocation("deltaTime"), deltaTimeLocation);
+
+	glUniform1f(currentShader->getUniformLocation("windForce"), windForce);
+}

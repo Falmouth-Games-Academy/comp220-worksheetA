@@ -66,3 +66,8 @@ unsigned int Skybox::LoadCubemap(std::vector<std::string> faces)
 
 	return textureID;
 }
+
+void Skybox::changeSkyboxTexture(int skyBoxNum)
+{
+
+}
