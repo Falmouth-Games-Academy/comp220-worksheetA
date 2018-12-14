@@ -11,7 +11,8 @@ List of things to add:
 
 ## WorkSheet C
 Screenshot from using RenderDoc
-![Image](Screenshots/Screenshot1.png)
+
+<img src="Screenshots/Screenshot1.png" alt="alt text" width="500">
 
 Grass model taken from: https://sketchfab.com/models/4fc117d6a23441bf803bef56e378f098
 More assets I'm planning on using: https://assetstore.unity.com/packages/3d/environments/fantasy-landscape-103573
@@ -21,7 +22,8 @@ Resources used to get the grass shader working:
 - https://lindenreid.wordpress.com/2018/01/07/waving-grass-shader-in-unity/
 
 Grass shader gif:
-![Image](Screenshots/GrassGif.gif)
+
+<img src="Screenshots/GrassGif.gif" alt="alt text" width="500">
 
 
 Plan for the next Iteration:
@@ -31,4 +33,11 @@ Plan for the next Iteration:
 - Add more models to construct a small forest to move around in // instancing // rand function
 
 ## WorkSheet D
+Screenshot from the latest version of my graphics application
 
+<img src="Screenshots/screenshot2.png" alt="alt text" width="500">
+<img src="Screenshots/screenshot3.png" alt="alt text" width="500">
+<img src="Screenshots/screenshot4.png" alt="alt text" width="500">
+
+Gif of the wind effect in play on the foliage in the scene
+<img src="Screenshots/Nature.gif" alt="alt text" width="500">
