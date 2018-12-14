@@ -15,6 +15,13 @@ public:
 	GameObject();
 	~GameObject();
 
+	void CreateGameObject(std::string name, glm::vec3 pos);
+	
+	void CreateGameObject(std::string name, glm::vec3 pos, glm::vec3 scale, glm::vec3 rotation, MeshCollection * model, std::string shader = "defShader");
+
+	void CreateGameObject(std::string name, glm::vec3 pos, glm::vec3 scale, glm::vec3 rotation, MeshCollection * model, std::string shader, std::string texture);
+
+
 	void Update(float deltaTime);
 
 	// Position Rotation and Scale
@@ -59,7 +66,6 @@ public:
 	{
 		shaderName = name;
 	};
-
 
 	std::string getShader()
 	{
@@ -128,5 +134,12 @@ private:
 	GLuint diffuseTexture;
 	GLuint activeDiffuseTexture;
 	std::vector<GLuint> textureList;
+
+	struct Transform
+	{
+		glm::vec3 Position;
+		glm::vec3 Rotation;
+		glm::vec3 Scale;
+	};
 
 };

@@ -87,6 +87,9 @@ bool loadMeshFromFile(const std::string & filename, MeshCollection * pMeshCollec
 	for (int i = 0; i < scene->mNumMeshes; i++)
 	{
 		aiMesh *currentMesh = scene->mMeshes[i];
+		aiMaterial *assignMaterial = scene->mMaterials[currentMesh->mMaterialIndex];
+		//printf("MaterialName ", assignMaterial->mProperties);
+		//currentMesh->mMaterialIndex
 		Mesh *pMesh = new Mesh();
 		pMesh->init();
 

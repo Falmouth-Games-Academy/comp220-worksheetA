@@ -15,7 +15,7 @@ void GraphicsApplication::init()
 	
 	// -------- INIT GAMEOBJECTS AND SHADERS ------- //
 
-	//Load Mesh
+	//Load Meshs
 	skyboxModel = new MeshCollection();
 	loadMeshFromFile("Skybox\\box.FBX", skyboxModel);
 
@@ -40,17 +40,20 @@ void GraphicsApplication::init()
 	FlowersModel = new MeshCollection();
 	loadMeshFromFile("FBXmodels\\Flower1.FBX", FlowersModel);
 
-	// needs to stay disabled for the grass to work
-	// Culls the clockwise facing side of the triangles
-	//glEnable(GL_CULL_FACE);
-
 	// load in the shaders
 	shaderManager.LoadShaders("skyboxShader", "vertSkybox.glsl", "fragSkybox.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("texturedShader", "texturedVert.glsl", "texturedFrag.glsl");
 	shaderManager.LoadShaders("VertexShader", "VertexAnimation.glsl", "texturedFrag.glsl");
+	shaderManager.LoadShaders("leafVertexShader", "leafVertexAnimation.glsl", "texturedFrag.glsl");
 	shaderManager.LoadShaders("GroundShader", "groundVert.glsl", "groundFrag.glsl");
 	
+	// Setting certain shaders to not cull, this allows leaves and folliage to be rendered correctly
+	shaderManager.GetShader("leafVertexShader")->setCulling(false);
+	shaderManager.GetShader("VertexShader")->setCulling(false);
+	shaderManager.GetShader("skyboxShader")->setCulling(false);
+
+	//SDL mouse mode setting
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
 	// INIT SKYBOX
@@ -60,12 +63,9 @@ void GraphicsApplication::init()
 	skybox->SetScale(40.0f, 40.0f, 40.0f);
 	skybox->SetPosition(0.0f, -5.0f, 0.0f);
 
-
 	// Create each seperate new GameObject
 	GameObject* GO1 = new GameObject;
-	GO1->SetMesh(teaPotModel);
-	GO1->setShader("defShader");
-	GO1->SetScale(0.2f, 0.2f, 0.2f);
+	GO1->CreateGameObject("TeaPot", glm::vec3(0.0f, 0.0f, 14.0f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), teaPotModel);
 
 	GameObject* GO2 = new GameObject;
 	GO2->SetMesh(dinoModel);
@@ -78,29 +78,19 @@ void GraphicsApplication::init()
 	GO3->setName("TreeModel");
 	GO3->SetDiffuseTextures("FBXmodels\\Textures\\Birch_leaves.tga");
 	GO3->SetDiffuseTextures("FBXmodels\\Textures\\TreeTexture.tga");
-	GO3->setShader("VertexShader");
+	GO3->setShader("leafVertexShader");
 
 	GameObject* GO4 = new GameObject;
-	GO4->SetMesh(BunnyModel);
-	GO4->setShader("defShader");
-	GO4->SetScale(0.012f, 0.012f, 0.012f);
+	GO4->CreateGameObject("BunnyRabbit", glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(0.012f, 0.012f, 0.012f), glm::vec3(0.0f, 0.0f, 0.0f), BunnyModel);
 
 	GameObject* GO5 = new GameObject;
-	GO5->SetMesh(GroundModel);
-	GO5->SetDiffuseTexture("FBXmodels\\Textures\\ground_grass.tga");
-	GO5->setShader("GroundShader");
-	GO5->SetRotation(-1.5708f, 0.0f, 0.0f);
-	GO5->SetPosition(-30.0f, -5.0f, -30.0f);
+	GO5->CreateGameObject("Ground", glm::vec3(-30.0f, -5.0f, -30.0f), glm::vec3(1.0f), glm::vec3(-1.5708f, 0.0f, 0.0f), GroundModel, "GroundShader", "FBXmodels\\Textures\\ground_grass.tga");
 
 	GameObject* GO6 = new GameObject;
-	GO6->SetMesh(GrassModel);
-	GO6->SetDiffuseTexture("FBXmodels\\Textures\\Plant.tga");
-	GO6->setShader("VertexShader");
+	GO6->CreateGameObject("Grass", glm::vec3(-8.0f, 0.0f, 1.0f), glm::vec3(1.0f), glm::vec3(0), GrassModel, "VertexShader", "FBXmodels\\Textures\\Plant.tga");
 
 	GameObject* GO7 = new GameObject;
-	GO7->SetMesh(FlowersModel);
-	GO7->SetDiffuseTexture("FBXmodels\\Textures\\Plant.tga");
-	GO7->setShader("VertexShader");
+	GO7->CreateGameObject("Flowers", glm::vec3(-8.0f, 0.0f, 0.0f), glm::vec3(1.0f), glm::vec3(0), FlowersModel, "VertexShader", "FBXmodels\\Textures\\Plant.tga");
 
 	// Add all the GameObjects to a list
 	objs.push_back(GO5);
@@ -118,12 +108,8 @@ void GraphicsApplication::init()
 	int count = 0;
 	for (GameObject * obj : objs)
 	{
-		objs[1]->SetPosition(0.0f, 3.0f, 0);
 		objs[2]->SetPosition(0.0f, 0.0f, 5);
-		objs[3]->SetPosition(0.0f, 0.0f, 14);
 		objs[4]->SetPosition(0.0f, 0.0f, -7.0f);
-		objs[5]->SetPosition(-8.0f, 0.0f, 0.0f);
-		objs[6]->SetPosition(-8.0f, 0.0f, 1.0f);
 	}
 }
 
@@ -176,6 +162,19 @@ void GraphicsApplication::render()
 
 void GraphicsApplication::useShader(Shader * currentShader, GameObject * obj)
 {
+	if (currentShader->isCullingEnabled())
+	{
+		glEnable(GL_CULL_FACE);
+		//glDisable(GL_CULL_FACE);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
+	//glEnable(currentShader->getCullMode());
+	//glCullFace(GL_FRONT);
+
 	glUseProgram(currentShader->getProgramID());
 
 	// send the uniforms across

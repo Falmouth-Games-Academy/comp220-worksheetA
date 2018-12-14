@@ -9,5 +9,4 @@ void main()
 {
 	gl_FragDepth = 0.9999f;
 	colour = texture(skybox, textureCoords);
-	
 }

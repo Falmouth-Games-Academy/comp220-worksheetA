@@ -27,8 +27,8 @@ void main(){
 	vec3 adjustedVertexPosition=vertexPosition;
 	vec4 orginalWorldSpace = modelMatrix*vec4(vertexPosition,1.0f);
 
-	adjustedVertexPosition.x+=(sin(currentTime+adjustedVertexPosition.y)*(vertexPosition.y))*windForce;
-	adjustedVertexPosition.z+=(sin(currentTime+adjustedVertexPosition.y)*(vertexPosition.y))*windForce;
+	adjustedVertexPosition.x+=(sin(currentTime+adjustedVertexPosition.y)*(orginalWorldSpace.y - 8))*windForce * 2;
+	adjustedVertexPosition.z+=(sin(currentTime+adjustedVertexPosition.y)*(orginalWorldSpace.y - 8))*windForce * 2;
 
 	vec4 worldPosition=modelMatrix*vec4(adjustedVertexPosition,1.0f);
 	vec4 mvpPosition=mvpMatrix*vec4(adjustedVertexPosition,1.0f);

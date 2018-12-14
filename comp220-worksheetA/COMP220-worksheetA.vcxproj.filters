@@ -95,6 +95,9 @@
     <None Include="groundVert.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="leafVertexAnimation.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">

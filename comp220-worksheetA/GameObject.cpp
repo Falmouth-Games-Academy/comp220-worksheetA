@@ -21,6 +21,29 @@ GameObject::~GameObject()
 	glDeleteTextures(1, &diffuseTexture);
 }
 
+void GameObject::CreateGameObject(std::string name, glm::vec3 pos)
+{
+	setName(name);
+	SetPosition(pos.x,pos.y,pos.z);
+}
+
+void GameObject::CreateGameObject(std::string name, glm::vec3 pos, glm::vec3 scale, glm::vec3 rotation, MeshCollection * model, std::string shader)
+{
+	CreateGameObject(name, pos);
+	SetScale(scale.x, scale.y, scale.z);
+	SetRotation(rotation.x, rotation.y, rotation.z);
+	SetMesh(model);
+	setShader(shader);
+}
+
+void GameObject::CreateGameObject(std::string name, glm::vec3 pos, glm::vec3 scale, glm::vec3 rotation, MeshCollection * model, std::string shader, std::string texture)
+{
+	CreateGameObject(name, pos, scale, rotation, model, shader);
+	SetDiffuseTexture(texture);
+}
+
+
+
 void GameObject::Update(float deltaTime)
 {
 	TranslationMatrix = glm::translate(Position);
@@ -43,3 +66,5 @@ void GameObject::Render()
 		Meshes->render();
 	}
 }
+
+

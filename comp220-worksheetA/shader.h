@@ -29,8 +29,6 @@ public:
 
 	void discoverUniforms();
 
-	void Use();
-
 	GLint getUniformLocation(std::string name)
 	{
 		// Find function in map
@@ -38,11 +36,23 @@ public:
 		return location;
 	};
 
+	bool isCullingEnabled()
+	{
+		return cullingEnabled;
+	}
+
+	void setCulling(bool culling)
+	{
+		cullingEnabled = culling;
+	}
+
 private:
 	GLuint programID;
 	std::map<std::string, GLint> UniformLocationDict;
 
 	std::string Name;
+
+	bool cullingEnabled;
 };
 
 class ShaderManager {

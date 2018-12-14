@@ -15,7 +15,7 @@ uniform vec4 specularLightColour = vec4 (1.0f);
 
 uniform vec3 lightDirection = vec3 (0.0f, 0.0f, 1.0f);
 
-uniform vec4 ambientMaterialColour = vec4 (0.4f, 0.0f, 0.0f, 1.0f);
+vec4 ambientMaterialColour = vec4 (0.8f, 0.8f, 0.8f, 1.0f);
 uniform vec4 diffuseMaterialColour = vec4 (0.8f, 0.0f, 0.0f, 1.0f);
 uniform vec4 specularMaterialColour = vec4 (1.0f);
 uniform float specularMaterialPower = 25.0f;

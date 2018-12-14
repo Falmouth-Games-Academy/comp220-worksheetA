@@ -45,7 +45,6 @@ private:
 	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	// Material Properties
-	//glm::vec4 Colour = glm::vec4(0.5f, 0.7f, 0.9f, 1.0f);
 	glm::vec4 Colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glm::vec4 ambientMaterialColour = Colour;

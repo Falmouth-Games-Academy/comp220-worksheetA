@@ -5,6 +5,7 @@
 ShaderManager::ShaderManager()
 {
 	//ShaderDict = std::map<std::string, GLuint>();
+	
 }
 
 ShaderManager::~ShaderManager()
@@ -112,6 +113,7 @@ Shader * ShaderManager::GetShader(std::string name)
 Shader::Shader(std::string ShaderName)
 {
 	Name = ShaderName;
+	cullingEnabled = true;
 }
 
 Shader::~Shader()

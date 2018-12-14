@@ -53,7 +53,14 @@ public:
 		return skyboxVAO;
 	}
 
-	void changeSkyboxTexture(int skyBoxNum);
+	void changeSkyboxTexture(int skyboxNum);
+
+
+	int skyboxNum;
+
+	//File paths for each skybox face
+	//The filepaths should be able to be specified in a function to allow different skyboxes to be loaded.
+	std::vector<std::string> skyboxFaces;
 
 private:
 
@@ -61,18 +68,6 @@ private:
 
 	//ID of the shader to use for this skybox
 	GLuint programID;
-
-	//File paths for each skybox face
-	//The filepaths should be able to be specified in a function to allow different skyboxes to be loaded.
-	std::vector<std::string> skyboxFaces
-	{
-		"Skybox/Skybox_8/Left_Tex.png",
-		"Skybox/Skybox_8/Right_Tex.png",
-		"Skybox/Skybox_8/Up_Tex.png",
-		"Skybox/Skybox_8/Down_Tex.png",
-		"Skybox/Skybox_8/Front_Tex.png",
-		"Skybox/Skybox_8/Back_Tex.png"
-	};
 
 	unsigned int cubemapTexture;
 

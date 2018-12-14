@@ -194,6 +194,7 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x64\*.dll "$(OutDir)\*.dll"</Co
     <None Include="fragSkybox.glsl" />
     <None Include="groundFrag.glsl" />
     <None Include="groundVert.glsl" />
+    <None Include="leafVertexAnimation.glsl" />
     <None Include="texturedFrag.glsl" />
     <None Include="texturedVert.glsl" />
     <None Include="vert.glsl" />

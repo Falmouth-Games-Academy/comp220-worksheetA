@@ -3,7 +3,19 @@
 
 Skybox::Skybox()
 {
+	skyboxNum = 2;
+
+	skyboxFaces = 
+	{
+		"Skybox/Skybox_" + std::to_string(skyboxNum) + "/Left_Tex.png",
+		"Skybox/Skybox_" + std::to_string(skyboxNum) + "/Right_Tex.png",
+		"Skybox/Skybox_" + std::to_string(skyboxNum) + "/Up_Tex.png",
+		"Skybox/Skybox_" + std::to_string(skyboxNum) + "/Down_Tex.png",
+		"Skybox/Skybox_" + std::to_string(skyboxNum) + "/Front_Tex.png",
+		"Skybox/Skybox_" + std::to_string(skyboxNum) + "/Back_Tex.png"
+	};
 }
+
 
 Skybox::~Skybox()
 {
@@ -67,7 +79,7 @@ unsigned int Skybox::LoadCubemap(std::vector<std::string> faces)
 	return textureID;
 }
 
-void Skybox::changeSkyboxTexture(int skyBoxNum)
+void Skybox::changeSkyboxTexture(int skyboxNum)
 {
 
 }

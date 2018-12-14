@@ -22,6 +22,7 @@ private:
 	GLuint m_VAO;
 	unsigned int m_NumberOfVertices;
 	unsigned int m_NumberOfIndices;
+
 };
 
 class MeshCollection
