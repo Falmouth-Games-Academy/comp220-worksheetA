@@ -29,10 +29,14 @@ Grass shader gif:
 Plan for the next Iteration:
 - Make a skybox handled by it's own class -- DONE
 - Make a new vertex shader that works on the leaves of a tree model -- DONE
-- further refactoring of the code that handles textures and models
-- Add more models to construct a small forest to move around in // instancing // rand function
+- further refactoring of the code that handles textures and models -- partially done
+- Add more models to construct a small forest to move around in // instancing // rand function -- DONE
 
 ## WorkSheet D
+For Worksheet D I worked on creating the intended scene I wanted to create for the final outcome of this Graphics Application
+I created a a skybox, that can be swapped out for different skyboxes quite easily.
+I managed to get multiple textures working on a single model, this still need to be refactored quite a bit.
+
 Screenshot from the latest version of my graphics application
 
 <img src="Screenshots/screenshot2.png" alt="alt text" width="500">
@@ -40,4 +44,10 @@ Screenshot from the latest version of my graphics application
 <img src="Screenshots/screenshot4.png" alt="alt text" width="500">
 
 Gif of the wind effect in play on the foliage in the scene
+
 <img src="Screenshots/Nature.gif" alt="alt text" width="500">
+
+Renderdoc Screenshots
+
+<img src="Screenshots/renderdoc.JPG" alt="alt text" width="500">
+<img src="Screenshots/renderdoc2.JPG" alt="alt text" width="500">
