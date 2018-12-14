@@ -25,6 +25,7 @@ private:
 	MeshCollection * TreeModel;
 	MeshCollection * GrassModel;
 	MeshCollection * FlowersModel;
+	MeshCollection * FlowersModel2;
 
 	// SHADER VARS //
 
@@ -59,5 +60,12 @@ private:
 	// WindShader Properties
 	GLfloat windForce = 0.06;
 	GLfloat treeWindForce = 0.01;
+
+	float RandomFloat(float a, float b) {
+		float random = ((float)rand()) / (float)RAND_MAX;
+		float diff = b - a;
+		float r = random * diff;
+		return a + r;
+	}
 
 };

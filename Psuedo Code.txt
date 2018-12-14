@@ -1,0 +1,18 @@
+List of things a GameObject might need:
+- Shader
+- Texture(s)
+- 3D Model
+- initial spawn position, Scale and Rotation (a Transform)
+- A name for the GameObject
+
+Functions that creates a list of GameObjects by taking in all the files from the FBX model folder
+same with textures
+List of models to use
+List of texture to use
+
+
+Function to add all the GameObjects to a GObjsList
+
+Sort out a solution for multi textured GameObjects
+
+implement solution to culling

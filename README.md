@@ -4,12 +4,12 @@ List of things to add:
 - Shift button press speedx2
 - easy model laoding (lots of code refactoring)
 - easy shader asignment (lots of code refactoring)
-- Vertex animation shader (for grass and leaves) -- Done for grass
-- Sky box
-- Collision Detection
-- find and or make 3D models for the scene -- Almost Done
-- create a GraphicsApplication class that inherits from the game class and deals with the scene and gameobjects -- Done
+- Vertex animation shader (for grass and leaves) -- DONE
+- Sky box -- DONE
+- find 3D models for the scene -- DONE
+- create a GraphicsApplication class that inherits from the game class and deals with the scene and gameobjects -- DONE
 
+## WorkSheet C
 Screenshot from using RenderDoc
 ![Image](Screenshots/Screenshot1.png)
 
@@ -25,7 +25,10 @@ Grass shader gif:
 
 
 Plan for the next Iteration:
-- Make a skybox handled by it's own class
-- Make a new vertex shader that works on the leaves of a tree model
+- Make a skybox handled by it's own class -- DONE
+- Make a new vertex shader that works on the leaves of a tree model -- DONE
 - further refactoring of the code that handles textures and models
-- Add more models to construct a small forest to move around in
+- Add more models to construct a small forest to move around in // instancing // rand function
+
+## WorkSheet D
+
