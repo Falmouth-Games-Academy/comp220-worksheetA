@@ -42,8 +42,6 @@ void GameObject::CreateGameObject(std::string name, glm::vec3 pos, glm::vec3 sca
 	SetDiffuseTexture(texture);
 }
 
-
-
 void GameObject::Update(float deltaTime)
 {
 	TranslationMatrix = glm::translate(Position);

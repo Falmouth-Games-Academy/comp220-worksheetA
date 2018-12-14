@@ -26,6 +26,7 @@ private:
 	MeshCollection * GrassModel;
 	MeshCollection * FlowersModel;
 	MeshCollection * FlowersModel2;
+	MeshCollection * MushroomModel;
 
 	// SHADER VARS //
 
@@ -58,8 +59,8 @@ private:
 	GLint deltaTimeLocation = time.GetDeltaTime();
 
 	// WindShader Properties
-	GLfloat windForce = 0.06;
-	GLfloat treeWindForce = 0.01;
+	GLfloat windForce = 0.09;
+	GLfloat treeWindForce = 0.03;
 
 	float RandomFloat(float a, float b) {
 		float random = ((float)rand()) / (float)RAND_MAX;

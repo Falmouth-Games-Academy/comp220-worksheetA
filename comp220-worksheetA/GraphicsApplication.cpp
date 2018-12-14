@@ -43,6 +43,9 @@ void GraphicsApplication::init()
 	FlowersModel2 = new MeshCollection();
 	loadMeshFromFile("FBXmodels\\Flower2.FBX", FlowersModel2);
 
+	MushroomModel = new MeshCollection();
+	loadMeshFromFile("FBXmodels\\Mushroom1.FBX", MushroomModel);
+
 	// load in the shaders
 	shaderManager.LoadShaders("skyboxShader", "vertSkybox.glsl", "fragSkybox.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
@@ -94,7 +97,7 @@ void GraphicsApplication::init()
 	// Add all the GameObjects to a list
 	objs.push_back(GO5);
 	//objs.push_back(GO4);
-	//objs.push_back(GO2);
+	objs.push_back(GO2);
 	//objs.push_back(GO1);
 	//objs.push_back(GO3);
 	objs.push_back(GO6);
@@ -130,25 +133,28 @@ void GraphicsApplication::init()
 		GO3->setShader("leafVertexShader");
 		objs.push_back(GO3);
 
+		GameObject* GO12 = new GameObject;
+		GO12->CreateGameObject("Mushroom", glm::vec3(-8.0f, 0.0f, 3.0f), glm::vec3(1.0f), glm::vec3(0), MushroomModel, "texturedShader", "FBXmodels\\Textures\\Plant.tga");
+		objs.push_back(GO12);
 	}
 
 	// Set the position for each GameObject in the list
 	int count = 0;
 	for (GameObject * obj : objs)
 	{
-		if (obj->getName() == "Grass" || obj->getName() == "Flowers" || obj->getName() == "Flowers2" || obj->getName() == "TreeModel")
+		if (obj->getName() == "Grass" || obj->getName() == "Flowers" || obj->getName() == "Flowers2")
 		{
 			obj->SetPosition(RandomFloat(-15.0f, 15.0f), 0.0f, RandomFloat(-15.0f, 15.0f));
 			obj->SetRotation(0.0f, RandomFloat(0.0f, 6.2f), 0.0f);
 		}
 
-		if (obj->getName() == "TreeModel")
+		if (obj->getName() == "TreeModel" || obj->getName() == "Mushroom")
 		{
 			obj->SetPosition(RandomFloat(-15.0f, 15.0f), 0.0f, RandomFloat(-15.0f, 15.0f));
-			obj->SetRotation(0.0f, RandomFloat(0.0f, 6.2f) ,0.0f);
+			obj->SetRotation(0.0f, RandomFloat(0.0f, 6.2f), 0.0f);
 		}
 
-		//objs[2]->SetPosition(0.0f, 0.0f, 5);
+		objs[2]->SetPosition(0.0f, 0.0f, 5);
 		//objs[4]->SetPosition(0.0f, 0.0f, -7.0f);
 	}
 
