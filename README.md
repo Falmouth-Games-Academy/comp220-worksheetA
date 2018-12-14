@@ -37,13 +37,16 @@ For Worksheet D I worked on creating the intended scene I wanted to create for t
 I created a a skybox, that can be swapped out for different skyboxes quite easily.
 I managed to get multiple textures working on a single model, this still need to be refactored quite a bit.
 
-Screenshot from the latest version of my graphics application
+Screenshot from working on the Skybox
 
 <img src="Screenshots/screenshot2.png" alt="alt text" width="500">
+
+Screenshots from the latest version of my graphics application
+
 <img src="Screenshots/screenshot3.png" alt="alt text" width="500">
 <img src="Screenshots/screenshot4.png" alt="alt text" width="500">
 
-Gif of the wind effect in play on the foliage in the scene
+#### Gif of the wind effect in play on the foliage in the scene
 
 <img src="Screenshots/Nature.gif" alt="alt text" width="500">
 
