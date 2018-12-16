@@ -210,22 +210,20 @@ void Game::LoadingScene()
 	teapotGO->SetShader(texturedShader);
 	teapotGO->SetDiffuseTexture(diffuseTextureID);
 
+	teapotGO1->SetPosition(-10.0f, -20.0f, -50.0f);
+	teapotGO1->SetRotation(0.0f, 0.0f, 90.0f);
+	teapotGO1->SetScale(0.5f, 0.5f, 0.5f);
+	teapotGO1->SetMesh(teapotMesh);
+	teapotGO1->SetShader(texturedShader);
+	teapotGO1->SetDiffuseTexture(diffuseTextureID);
+
 	GameObjectList.push_back(teapotGO);
+	GameObjectList.push_back(teapotGO1);
 
 	// Set up vectors for our camera position
 	cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
 	cameraLook = glm::vec3(0.0f, 0.0f, -10.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	// Calculate the view matrix and projection matrix
-	/*viewMatrix = glm::lookAt(cameraPosition, cameraLook, cameraUp);
-
-	projectionMatrix = glm::perspective(
-		glm::radians(45.0f),
-		(float)800 / (float)640,
-		0.1f,
-		1000.0f
-	);*/
 
 	// Ambient
 	ambientLightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -246,7 +244,10 @@ void Game::LoadingScene()
 
 void Game::Render()
 {
-	teapotGO->Update(deltaTime);
+	for (GameObject* obj : GameObjectList)
+	{
+		obj->Update(deltaTime);
+	}
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -265,54 +266,50 @@ void Game::Render()
 	// Draw skybox
 	skybox->RenderSkybox(viewMatrix, projectionMatrix);
 
-	// Getting shaders
-	Shader* currentShader = teapotGO->GetShader();
-	currentShader->Use();
+	for (GameObject* obj : GameObjectList)
+	{
+		// Getting shaders
+		Shader* currentShader = obj->GetShader();
+		currentShader->Use();
 
-	// Send uniforms across
-	// Model, view and projection locations
-	glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(teapotGO->GetModelTransformation()));
-	glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-	glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+		// Binding textures
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
 
-	// Texture locations
-	glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
-	glUniform1i(currentShader->GetUniform("specularTexture"), 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
-	// Ambient location
-	glUniform4fv(currentShader->GetUniform("ambientMaterialColor"), 1, glm::value_ptr(ambientMaterialColor));
-	glUniform4fv(currentShader->GetUniform("ambientLightColor"), 1, glm::value_ptr(ambientLightColor));
+		// Send uniforms across
+		// Model, view and projection locations
+		glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
+		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-	// Diffuse location
-	glUniform4fv(currentShader->GetUniform("diffuseMaterialColor"), 1, glm::value_ptr(diffuseMaterialColor));
-	glUniform4fv(currentShader->GetUniform("diffuseLightColor"), 1, glm::value_ptr(diffuseLightColor));
+		// Texture locations
+		glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
+		glUniform1i(currentShader->GetUniform("specularTexture"), 1);
 
-	// Specular location
-	glUniform4fv(currentShader->GetUniform("specularMaterialColor"), 1, glm::value_ptr(specularMaterialColor));
-	glUniform4fv(currentShader->GetUniform("specularLightColor"), 1, glm::value_ptr(specularLightColor));
+		// Ambient location
+		glUniform4fv(currentShader->GetUniform("ambientMaterialColor"), 1, glm::value_ptr(ambientMaterialColor));
+		glUniform4fv(currentShader->GetUniform("ambientLightColor"), 1, glm::value_ptr(ambientLightColor));
 
-	// Specular power location
-	glUniform1f(currentShader->GetUniform("specularMaterialPower"), specularMaterialPower);
+		// Diffuse location
+		glUniform4fv(currentShader->GetUniform("diffuseMaterialColor"), 1, glm::value_ptr(diffuseMaterialColor));
+		glUniform4fv(currentShader->GetUniform("diffuseLightColor"), 1, glm::value_ptr(diffuseLightColor));
 
-	// Light and camera locations
-	glUniform3fv(currentShader->GetUniform("lightDirection"), 1, glm::value_ptr(lightDirection));
-	glUniform3fv(currentShader->GetUniform("cameraPosition"), 1, glm::value_ptr(cameraPosition));
+		// Specular location
+		glUniform4fv(currentShader->GetUniform("specularMaterialColor"), 1, glm::value_ptr(specularMaterialColor));
+		glUniform4fv(currentShader->GetUniform("specularLightColor"), 1, glm::value_ptr(specularLightColor));
 
-	// Binding textures
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+		// Specular power location
+		glUniform1f(currentShader->GetUniform("specularMaterialPower"), specularMaterialPower);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, specularTextureID);
+		// Light and camera locations
+		glUniform3fv(currentShader->GetUniform("lightDirection"), 1, glm::value_ptr(lightDirection));
+		glUniform3fv(currentShader->GetUniform("cameraPosition"), 1, glm::value_ptr(cameraPosition));
 
-	// Setting view matrix for camera movement (currently not working)
-	/*viewMatrix = glm::lookAt(
-		camera.GetCameraPosition(), 
-		camera.GetCameraPosition() + camera.GetCameraFront(), 
-		camera.GetCameraUp()
-	);*/
-
-	teapotGO->Render();
+		obj->Render();
+	}
 
 	SDL_GL_SwapWindow(mainWindow);
 }
@@ -321,14 +318,30 @@ void Game::Clean()
 {
 	// Cleanup
 	std::cout << "Cleaning SDL \n";
-	if (teapotMesh)
+
+	// Cleaning with iter gives an error after closing an application
+	/*auto iter = GameObjectList.begin();
+	while (iter != GameObjectList.end())
 	{
-		delete teapotMesh;
-		teapotMesh = nullptr;
-	}
+		if ((*iter))
+		{
+			delete (*iter);
+			iter = GameObjectList.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}*/
+	GameObjectList.clear();
+
+	delete skybox;
+
 	glDeleteTextures(1, &diffuseTextureID);
 	glDeleteTextures(1, &specularTextureID);
+
 	player.ClearEvents();
+
 	SDL_GL_DeleteContext(gl_Context);
 	SDL_DestroyWindow(mainWindow);
 	IMG_Quit();

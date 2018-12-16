@@ -66,6 +66,7 @@ private:
 	MeshCollection* teapotMesh = new MeshCollection();
 	Shader* texturedShader = new Shader();
 	GameObject* teapotGO = new GameObject();
+	GameObject* teapotGO1 = new GameObject();
 
 	float lastTime = 0;
 	float tickTime = 0;
