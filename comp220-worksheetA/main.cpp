@@ -17,82 +17,28 @@
 #include "Model.h"
 #include "Timer.h"
 #include "GameObject.h"
+#include "Camera.h"
 
 int main(int argc, char ** argsv)
 {
-	unsigned int windowWidth = 600;
-	unsigned int windowHeight = 800;
+	unsigned int windowWidth = 800;
+	unsigned int windowHeight = 600;
 
 	OpenGLWindow *openGLWindow = new OpenGLWindow();
-	bool success = openGLWindow->createWindow(windowWidth, windowHeight);
-	SDL_Window *window = openGLWindow->getWindow();
+	bool success = openGLWindow->CreateWindow(windowWidth, windowHeight);
 
 	if (!success)
 	{
+		openGLWindow->RemoveWindow();
+		if (openGLWindow)
+		{
+			delete openGLWindow;
+			openGLWindow = nullptr;
+		}
 		return -1;
 	}
 
-	// Mesh collection(vector)
-	//std::vector<Mesh*> meshes;
-	// Teapot
-	//loadMeshesFromFile("utah-teapot.fbx", meshes);
 	std::vector<GameObject*> GameObjectList;
-
-	Vertex verts[] =
-	{
-
-		{ -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
-		{ -0.5f, -0.5f, 0.5f,-0.5f, -0.5f, 0.5f, 1.0f },
-		{ 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 1.0f },
-		{ 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
-
-		{ -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 1.0f },
-		{ -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 1.0f }
-	};
-
-	//Define triangles in the cube
-	unsigned int indices[] =
-	{
-		1, 0 , 4,
-		4, 0, 5,
-
-		7, 2, 1,
-		7, 1, 4,
-
-		1, 2, 3,
-		1, 3, 0,
-
-		5, 0, 3,
-		5, 3, 6,
-
-		6, 3, 7,
-		7, 3, 2,
-
-		7, 4, 5,
-		7, 5, 6
-	};
-
-	/*
-	Mesh * morphMesh = new Mesh();
-	morphMesh->init();
-	morphMesh->copyBufferData(verts, 8, indices, 36);
-	MeshCollection* morphMeshes = new MeshCollection();
-	morphMeshes->addMesh(morphMesh);
-
-	// Create and compile our GLSL program from the shader
-	Shader * morphShader = new Shader();
-	morphShader->Load("morphVert.glsl", "frag.glsl");
-	*/
-
-	// Make a function which takes Mesh file, shader files and texture file and returns a game obj.
-
-	/*
-	GameObject * cubeGO = new GameObject();
-	cubeGO->SetPosition(0.0f, 0.0f, 1.0f);
-	cubeGO->SetMesh(morphMeshes);
-	cubeGO->SetShader(morphShader);
 
 	MeshCollection * teapotMeshes = new MeshCollection();
 	loadMeshFromFile("utah-teapot.fbx", teapotMeshes);
@@ -108,9 +54,9 @@ int main(int argc, char ** argsv)
 	teapotGO->SetShader(texturedShader);
 	teapotGO->SetDiffuseTexture(textureID);
 
-	GameObjectList.push_back(cubeGO);
+	//GameObjectList.push_back(cubeGO);
 	GameObjectList.push_back(teapotGO);
-	*/
+
 
 	// Water mesh needs to later be moved out of GameObjectList
 	// so that it can be rendered after all other objects
@@ -118,10 +64,10 @@ int main(int argc, char ** argsv)
 	MeshCollection * waterMesh = new MeshCollection();
 	loadMeshFromFile("water.fbx", waterMesh);
 
-	Shader * texturedShader = new Shader();
+	texturedShader = new Shader();
 	texturedShader->Load("waterVert.glsl", "waterFrag.glsl");
 
-	GLuint textureID = loadTextureFromFile("waterTexture.png");
+	textureID = loadTextureFromFile("waterTexture.png");
 
 	GameObject * waterGO = new GameObject();
 	waterGO->SetPosition(0.0f, -20.0f, -50.0f);
@@ -129,31 +75,9 @@ int main(int argc, char ** argsv)
 	waterGO->SetShader(texturedShader);
 	waterGO->SetDiffuseTexture(textureID);
 
-	GameObjectList.push_back(waterGO);
+	//GameObjectList.push_back(waterGO);
 
-
-	// Triangle
-	glm::vec3 trianglePosition = glm::vec3(0.0f, -7.0f, -60.0f);
-	glm::vec3 triangleScale = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 trinagleRotation = glm::vec3(glm::radians(10.0f), 0.0f, 0.0f);
-
-	// View
-	glm::mat4 translationMatrix = glm::translate(trianglePosition);
-	glm::mat4 scaleMatrix = glm::scale(triangleScale);
-	glm::mat4 rotationMatrix = glm::rotate(trinagleRotation.x, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(trinagleRotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::rotate(trinagleRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-	// Model
-	glm::mat4 modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-
-	// Camera
-	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
-	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, -10.0f);
-	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
-
-	glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)windowWidth / windowHeight), 0.1f, 1000.0f);
+	Camera camera;
 
 	bool fullScreen = false;
 
@@ -198,7 +122,7 @@ int main(int argc, char ** argsv)
 					running = false;
 					break;
 				case SDLK_F11:
-					openGLWindow->fullScreen(!fullScreen);
+					openGLWindow->FullScreen(!fullScreen);
 					fullScreen = !fullScreen;
 					break;
 				case SDLK_UP:
@@ -223,12 +147,14 @@ int main(int argc, char ** argsv)
 		{
 			obj->Update(timer.GetDeltaTime());
 		}
+		waterGO->Update(timer.GetDeltaTime());
 
 		// Update game and draw with OpenGL
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		//glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Render game objects
 		for (GameObject * obj : GameObjectList) {
 
 			// Centralise information passing
@@ -239,8 +165,8 @@ int main(int argc, char ** argsv)
 			glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
 
 			glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
-			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
-			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ViewMatrix()));
+			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ProjectionMatrix(openGLWindow)));
 			//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
 			//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 			glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
@@ -250,8 +176,21 @@ int main(int argc, char ** argsv)
 			obj->Render();
 		}
 
+		// Render water
+		Shader * currentShader = waterGO->GetShader();
+		currentShader->Use();
 
-		SDL_GL_SwapWindow(window);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, waterGO->GetDiffuseTexture());
+
+		glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(waterGO->GetModelTransformation()));
+		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ViewMatrix()));
+		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ProjectionMatrix(openGLWindow)));
+		glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
+
+		waterGO->Render();
+
+		SDL_GL_SwapWindow(openGLWindow->GetWindow());
 
 	}
 
@@ -269,6 +208,13 @@ int main(int argc, char ** argsv)
 		{
 			iter++;
 		}
+	}
+
+	// Remove water
+	if (waterGO)
+	{
+		delete waterGO;
+		waterGO = nullptr;
 	}
 
 	// Flushes the vector

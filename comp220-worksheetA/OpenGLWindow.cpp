@@ -1,7 +1,10 @@
 #include "OpenGLWindow.h"
 
-bool OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
+bool OpenGLWindow::CreateWindow(unsigned int sizeX, unsigned int sizeY)
 {
+	width = sizeX;
+	height = sizeY;
+
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
 	//https://wiki.libsdl.org/SDL_Init
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -14,7 +17,7 @@ bool OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
-	window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sizeX, sizeY, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	if (window == nullptr)
 	{
@@ -58,18 +61,18 @@ bool OpenGLWindow::createWindow(unsigned int sizeX, unsigned int sizeY)
 	return true;
 }
 
-SDL_Window * OpenGLWindow::getWindow()
+SDL_Window * OpenGLWindow::GetWindow()
 {
 	return window;
 }
 
 OpenGLWindow::~OpenGLWindow()
 {
-	removeWindow();
+	RemoveWindow();
 }
 
 
-void OpenGLWindow::fullScreen(bool enable)
+void OpenGLWindow::FullScreen(bool enable)
 {
 	if (enable)
 	{
@@ -81,7 +84,7 @@ void OpenGLWindow::fullScreen(bool enable)
 	}
 }
 
-void OpenGLWindow::removeWindow()
+void OpenGLWindow::RemoveWindow()
 {
 	if (window)
 	{
