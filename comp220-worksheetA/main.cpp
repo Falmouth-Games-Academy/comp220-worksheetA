@@ -38,6 +38,10 @@ int main(int argc, char ** argsv)
 		return -1;
 	}
 
+	// Hide and lock cursor to screen
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	std::vector<GameObject*> GameObjectList;
 
 	MeshCollection * teapotMeshes = new MeshCollection();
@@ -77,7 +81,7 @@ int main(int argc, char ** argsv)
 
 	//GameObjectList.push_back(waterGO);
 
-	Camera camera;
+	Camera * camera = new Camera();
 
 	bool fullScreen = false;
 
@@ -100,6 +104,11 @@ int main(int argc, char ** argsv)
 	while (running)
 	{
 		timer.Update();
+
+		int lastX = 0;
+		int lastY = 0;
+
+		bool paused = false;
 
 		//Poll for the events which have happened in this frame
 		//https://wiki.libsdl.org/SDL_PollEvent
@@ -131,10 +140,37 @@ int main(int argc, char ** argsv)
 				case SDLK_DOWN:
 					morphBlendFactor -= 0.1f;
 					break;
+
+				case SDLK_SPACE:
+					paused = !paused;
+					break;
+
+				// Refactor later -- BUG jumps around
+				case SDLK_w:
+					if (!paused)
+						camera->ProcessKeyboard(FORWARD, timer.GetDeltaTime());
+					break;
+				case SDLK_s:
+					if (!paused)
+						camera->ProcessKeyboard(BACKWARD, timer.GetDeltaTime());
+					break;
+				case SDLK_a:
+					if (!paused)
+						camera->ProcessKeyboard(LEFT, timer.GetDeltaTime());
+					break;
+				case SDLK_d:
+					if (!paused)
+						camera->ProcessKeyboard(RIGHT, timer.GetDeltaTime());
+					break;
 				}
 			// If the mouse is being moved
 			case SDL_MOUSEMOTION:
 				//std::cout << ev.motion.xrel << " | " << ev.motion.yrel << std::endl;
+				if (!paused)
+					camera->ProcessMouseMovement(ev.motion.xrel - lastX, lastY - ev.motion.yrel, timer.GetDeltaTime());
+
+				lastX = ev.motion.xrel;
+				lastY = ev.motion.yrel;
 				break;
 			}
 		}
@@ -143,11 +179,13 @@ int main(int argc, char ** argsv)
 		morphBlendFactor = glm::clamp(morphBlendFactor, 0.0f, 1.0f);
 
 		//update
-		for (GameObject * obj : GameObjectList)
-		{
-			obj->Update(timer.GetDeltaTime());
+		if (!paused) {
+			for (GameObject * obj : GameObjectList)
+			{
+				obj->Update(timer.GetDeltaTime());
+			}
+			waterGO->Update(timer.GetDeltaTime());
 		}
-		waterGO->Update(timer.GetDeltaTime());
 
 		// Update game and draw with OpenGL
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -165,8 +203,8 @@ int main(int argc, char ** argsv)
 			glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
 
 			glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
-			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ViewMatrix()));
-			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ProjectionMatrix(openGLWindow)));
+			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ViewMatrix()));
+			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ProjectionMatrix(openGLWindow)));
 			//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
 			//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 			glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
@@ -184,8 +222,8 @@ int main(int argc, char ** argsv)
 		glBindTexture(GL_TEXTURE_2D, waterGO->GetDiffuseTexture());
 
 		glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(waterGO->GetModelTransformation()));
-		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ViewMatrix()));
-		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera.ProjectionMatrix(openGLWindow)));
+		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ViewMatrix()));
+		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ProjectionMatrix(openGLWindow)));
 		glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
 
 		waterGO->Render();
@@ -219,6 +257,13 @@ int main(int argc, char ** argsv)
 
 	// Flushes the vector
 	GameObjectList.clear();
+
+	// Remove camera
+	if (camera)
+	{
+		delete camera;
+		camera = nullptr;
+	}
 
 	// Delete Context
 	//SDL_GL_DeleteContext(gl_Context);

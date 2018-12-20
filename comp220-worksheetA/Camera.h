@@ -8,6 +8,19 @@
 
 #include "OpenGLWindow.h"
 
+// Default camera values
+const float YAW = -90.0f;
+const float PITCH = 0.0f;
+const float SPEED = 20.5f;
+const float SENSITIVITY = 160.0f;
+
+enum Camera_Movement {
+	FORWARD,
+	BACKWARD,
+	LEFT,
+	RIGHT
+};
+
 class Camera {
 public:
 	Camera();
@@ -22,31 +35,34 @@ public:
 		return position;
 	};
 
-	void SetDirection(glm::vec3 direction)
-	{
-		this->direction = direction;
-	};
-	glm::vec3 GetDirection()
-	{
-		return direction;
-	};
-
-	void SetUp(glm::vec3 up)
-	{
-		this->up = up;
-	};
-	glm::vec3 GetUp()
-	{
-		return up;
-	}
-
 	glm::mat4 ViewMatrix();
 	glm::mat4 ProjectionMatrix(OpenGLWindow * openGLWindow);
 
+	void ProcessKeyboard(Camera_Movement direction, float deltaTime);
+	void ProcessMouseMovement(float xOffset, float yOffset, float deltaTime);
+
 private:
 	glm::vec3 position;
-	glm::vec3 direction;
+
+	glm::vec3 front;
 	glm::vec3 up;
+	glm::vec3 right;
+	glm::vec3 direction;
+
+	glm::vec3 worldUp;
+
+	float yaw;
+	float pitch;
+
+	float movementSpeed;
+	float mouseSensitivity;
 
 	float fieldOfView;
+
+	float ClampPitch(float pitch);
+
+	void UpdateDirection();
+	void UpdateFront();
+	void UpdateRight();
+	void UpdateUp();
 };
