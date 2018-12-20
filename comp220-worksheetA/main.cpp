@@ -112,11 +112,14 @@ int main(int argc, char ** argsv)
 	GameObjectList.push_back(teapotGO);
 	*/
 
+	// Water mesh needs to later be moved out of GameObjectList
+	// so that it can be rendered after all other objects
+	// or add some sort of layer/priority system
 	MeshCollection * waterMesh = new MeshCollection();
 	loadMeshFromFile("water.fbx", waterMesh);
 
 	Shader * texturedShader = new Shader();
-	texturedShader->Load("animationVert.glsl", "textureFrag.glsl");
+	texturedShader->Load("waterVert.glsl", "waterFrag.glsl");
 
 	GLuint textureID = loadTextureFromFile("waterTexture.png");
 

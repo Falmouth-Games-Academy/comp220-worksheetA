@@ -199,6 +199,8 @@ copy ..\Libraries\assimp-4.1.0\bin\x64\assimp-vc140-mt.dll "$(OutDir)\assimp-vc1
     <None Include="textureFrag.glsl" />
     <None Include="textureVert.glsl" />
     <None Include="vert.glsl" />
+    <None Include="waterFrag.glsl" />
+    <None Include="waterVert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
