@@ -147,27 +147,23 @@ int main(int argc, char ** argsv)
 
 				// Refactor later -- BUG jumps around
 				case SDLK_w:
-					if (!paused)
-						camera->ProcessKeyboard(FORWARD, timer.GetDeltaTime());
+					camera->keyboardMovement(FORWARD, timer.GetDeltaTime());
 					break;
 				case SDLK_s:
-					if (!paused)
-						camera->ProcessKeyboard(BACKWARD, timer.GetDeltaTime());
+					camera->keyboardMovement(BACKWARD, timer.GetDeltaTime());
 					break;
 				case SDLK_a:
-					if (!paused)
-						camera->ProcessKeyboard(LEFT, timer.GetDeltaTime());
+					camera->keyboardMovement(LEFT, timer.GetDeltaTime());
 					break;
 				case SDLK_d:
-					if (!paused)
-						camera->ProcessKeyboard(RIGHT, timer.GetDeltaTime());
+					camera->keyboardMovement(RIGHT, timer.GetDeltaTime());
 					break;
 				}
 			// If the mouse is being moved
 			case SDL_MOUSEMOTION:
 				//std::cout << ev.motion.xrel << " | " << ev.motion.yrel << std::endl;
-				if (!paused)
-					camera->ProcessMouseMovement(ev.motion.xrel - lastX, lastY - ev.motion.yrel, timer.GetDeltaTime());
+				//camera->ProcessMouseMovement(ev.motion.xrel - lastX, lastY - ev.motion.yrel);
+				camera->mouseMovement(lastX - ev.motion.xrel, lastY - ev.motion.yrel, timer.GetDeltaTime());
 
 				lastX = ev.motion.xrel;
 				lastY = ev.motion.yrel;
@@ -203,8 +199,8 @@ int main(int argc, char ** argsv)
 			glBindTexture(GL_TEXTURE_2D, obj->GetDiffuseTexture());
 
 			glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
-			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ViewMatrix()));
-			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ProjectionMatrix(openGLWindow)));
+			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
+			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix(openGLWindow)));
 			//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
 			//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 			glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
@@ -222,8 +218,8 @@ int main(int argc, char ** argsv)
 		glBindTexture(GL_TEXTURE_2D, waterGO->GetDiffuseTexture());
 
 		glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(waterGO->GetModelTransformation()));
-		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ViewMatrix()));
-		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera->ProjectionMatrix(openGLWindow)));
+		glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
+		glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix(openGLWindow)));
 		glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
 
 		waterGO->Render();
