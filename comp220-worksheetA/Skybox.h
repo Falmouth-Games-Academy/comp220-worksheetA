@@ -1,9 +1,3 @@
-/**
-Skybox
-
-Handles the setup and loading of skybox textures into a cubemap that can be drawn around the gameworld.
-*/
-
 #pragma once
 #include <glm\glm.hpp>
 #include <SDL.h>
@@ -11,6 +5,7 @@ Handles the setup and loading of skybox textures into a cubemap that can be draw
 
 #include "GameObject.h"
 #include "shader.h"
+#include "Globals.h"
 
 class Skybox : public GameObject {
 public:
@@ -56,7 +51,7 @@ public:
 	void changeSkyboxTexture(int skyboxNum);
 
 
-	int skyboxNum;
+	int skyboxNum = globals::skyBoxNum;
 
 	//File paths for each skybox face
 	//The filepaths should be able to be specified in a function to allow different skyboxes to be loaded.

@@ -17,6 +17,12 @@ void Controls::cameraControls(Input &input, Camera &camera, float deltaTime)
 	cameraMovementVec.x = 0.0f;
 	cameraMovementVec.y = 0.0f;
 	cameraMovementVec.z = 0.0f;
+
+	if (input.isKeyHeld(SDL_SCANCODE_LSHIFT) == true)
+	{
+		deltaCamSpeed = (cameraMovSpeed * deltaTime) * cameraShiftIncreaseSpeed;
+	}
+
 	if (input.isKeyHeld(SDL_SCANCODE_LEFT) == true || input.isKeyHeld(SDL_SCANCODE_A) == true)
 	{
 		cameraMovementVec.z -= deltaCamSpeed;

@@ -1,13 +1,15 @@
 # comp220-worksheetA 
 
 List of things to add:
-- Shift button press speedx2
+- Shift button press speedx2 -- DONE
 - easy model laoding (lots of code refactoring)
 - easy shader asignment (lots of code refactoring)
 - Vertex animation shader (for grass and leaves) -- DONE
 - Sky box -- DONE
 - find 3D models for the scene -- DONE
 - create a GraphicsApplication class that inherits from the game class and deals with the scene and gameobjects -- DONE
+- Add the rock model into the scene
+- function to change skybox on key press -- DONE (needs refactoring)
 
 ## WorkSheet C
 Screenshot from using RenderDoc
@@ -30,7 +32,7 @@ Plan for the next Iteration:
 - Make a skybox handled by it's own class -- DONE
 - Make a new vertex shader that works on the leaves of a tree model -- DONE
 - further refactoring of the code that handles textures and models
-- Add more models to construct a small forest to move around in // instancing // rand function
+- Add more models to construct a small forest to move around in // instancing // rand function -- DONE
 
 ## WorkSheet D
 Screenshot from the latest version of my graphics application

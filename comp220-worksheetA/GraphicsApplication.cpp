@@ -165,6 +165,12 @@ void GraphicsApplication::update()
 {
 	Game::update();
 
+	if (input.isKeyHeld(SDL_SCANCODE_0) == true)
+	{
+		skyBoxnum = skyBoxnum++;
+		skybox->changeSkyboxTexture(skyBoxnum);
+	}
+
 	//objs[1]->SetRotation(0.0f, (0.3f * time.GetUpdatedTime()), 0.0f);
 
 	// Go through each object in the scene and update them

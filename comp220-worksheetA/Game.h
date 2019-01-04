@@ -17,6 +17,7 @@
 #include "Input.h"
 #include "Timer.h"
 #include "Controls.h"
+#include "Skybox.h"
 
 class Game
 {

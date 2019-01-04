@@ -1,6 +1,5 @@
 #pragma once
 #include "Game.h"
-#include "Skybox.h"
 
 class GraphicsApplication : public Game {
 public:
@@ -27,6 +26,8 @@ private:
 	MeshCollection * FlowersModel;
 	MeshCollection * FlowersModel2;
 	MeshCollection * MushroomModel;
+	MeshCollection * RockModel;
+
 
 	// SHADER VARS //
 
@@ -68,5 +69,7 @@ private:
 		float r = random * diff;
 		return a + r;
 	}
+
+	int skyBoxnum = 0;
 
 };
