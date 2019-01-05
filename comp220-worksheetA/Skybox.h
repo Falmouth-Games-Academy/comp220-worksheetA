@@ -12,24 +12,13 @@ public:
 	Skybox();
 	~Skybox();
 
-	/**
-	Initalise the skybox and create a cubemap.
-
-	@param vertexShader : The filepath to the vertex shader to use.
-	@param fragmentShader : The filepath to the fragment shader to use.
-	*/
 	void Init();
 
-	/**
-	Creates and fills the vertex attribute and vertex buffer objects.
-	*/
+	// Creates and fills the vertex attribute and vertex buffer objects.
+
 	void SetupBuffers();
 
-	/**
-	Load a cubemap from a vector of six images.
-
-	@returns textureID : The ID of the created cubemap texture.
-	*/
+	// Load a cubemap from a vector of six images.
 	unsigned int LoadCubemap(std::vector<std::string> faces);
 
 
@@ -50,7 +39,7 @@ public:
 
 	void changeSkyboxTexture(int skyboxNum);
 
-
+	// The initial skybox texture number
 	int skyboxNum = globals::skyBoxNum;
 
 	//File paths for each skybox face

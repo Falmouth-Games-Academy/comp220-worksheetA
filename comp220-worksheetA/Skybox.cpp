@@ -3,7 +3,7 @@
 
 Skybox::Skybox()
 {
-
+	// The Skybox texture that is assigned at when the skybox is intialized
 	skyboxFaces = 
 	{
 		"Skybox/Skybox_" + std::to_string(skyboxNum) + "/Left_Tex.png",
@@ -44,6 +44,7 @@ void Skybox::SetupBuffers()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 }
 
+// function to load the cubemap for the skybox to use
 unsigned int Skybox::LoadCubemap(std::vector<std::string> faces)
 {
 	unsigned int textureID;
@@ -78,6 +79,7 @@ unsigned int Skybox::LoadCubemap(std::vector<std::string> faces)
 	return textureID;
 }
 
+// function that allows the Skybox textures to be changed
 void Skybox::changeSkyboxTexture(int num)
 {
 	skyboxNum = num;

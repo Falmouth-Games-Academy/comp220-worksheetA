@@ -20,7 +20,7 @@ void GraphicsApplication::init()
 	loadMeshFromFile("Skybox\\box.FBX", skyboxModel);
 
 	dinoModel = new MeshCollection();
-	loadMeshFromFile("TomModel.FBX", dinoModel);
+	loadMeshFromFile("TomModel2.FBX", dinoModel);
 
 	teaPotModel = new MeshCollection();
 	loadMeshFromFile("teaPotModel.FBX", teaPotModel);
@@ -46,7 +46,10 @@ void GraphicsApplication::init()
 	MushroomModel = new MeshCollection();
 	loadMeshFromFile("FBXmodels\\Mushroom1.FBX", MushroomModel);
 
-	// load in the shaders
+	RockModel = new MeshCollection();
+	loadMeshFromFile("FBXmodels\\Rock.FBX", RockModel);
+
+	// load the shaders
 	shaderManager.LoadShaders("skyboxShader", "vertSkybox.glsl", "fragSkybox.glsl");
 	shaderManager.LoadShaders("defShader", "vert.glsl", "frag.glsl");
 	shaderManager.LoadShaders("texturedShader", "texturedVert.glsl", "texturedFrag.glsl");
@@ -83,7 +86,7 @@ void GraphicsApplication::init()
 	GO4->CreateGameObject("BunnyRabbit", glm::vec3(0.0f, 3.0f, 0.0f), glm::vec3(0.012f, 0.012f, 0.012f), glm::vec3(0.0f, 0.0f, 0.0f), BunnyModel);
 
 	GameObject* GO5 = new GameObject;
-	GO5->CreateGameObject("Ground", glm::vec3(-30.0f, 0.0f, -30.0f), glm::vec3(1.0f), glm::vec3(-1.5708f, 0.0f, 0.0f), GroundModel, "GroundShader", "FBXmodels\\Textures\\ground_grass.tga");
+	GO5->CreateGameObject("Ground", glm::vec3(-30.0f, 0.0f, -30.0f), glm::vec3(0.9f), glm::vec3(-1.5708f, 0.0f, 0.0f), GroundModel, "GroundShader", "FBXmodels\\Textures\\ground_grass.tga");
 
 	GameObject* GO6 = new GameObject;
 	GO6->CreateGameObject("Grass", glm::vec3(-8.0f, 0.0f, 1.0f), glm::vec3(1.0f), glm::vec3(0), GrassModel, "VertexShader", "FBXmodels\\Textures\\Plant.tga");
@@ -96,19 +99,12 @@ void GraphicsApplication::init()
 
 	// Add all the GameObjects to a list
 	objs.push_back(GO5);
-	//objs.push_back(GO4);
 	objs.push_back(GO2);
-	//objs.push_back(GO1);
-	//objs.push_back(GO3);
-	objs.push_back(GO6);
-	objs.push_back(GO7);
-	objs.push_back(GO8);
-
 
 	objs.push_back(skybox);
 
-
-	int amount = 30;
+	// creates 34 gameobjects of the grass flowers type 1 and 2 and places them in random positions in the scene
+	int amount = 34;
 	for (int i = 0; i < amount; i++)
 	{
 		GameObject* GO9 = new GameObject;
@@ -122,8 +118,9 @@ void GraphicsApplication::init()
 		objs.push_back(GO10);
 		objs.push_back(GO11);
 	}
-
-	for (int i = 0; i < 10; i++)
+	 
+	// creates 14 gameobjects of the trees, mushrooms and rocks and places them in random positions in the scene
+	for (int i = 0; i < 14; i++)
 	{
 		GameObject* GO3 = new GameObject;
 		GO3->SetMesh(TreeModel);
@@ -136,6 +133,10 @@ void GraphicsApplication::init()
 		GameObject* GO12 = new GameObject;
 		GO12->CreateGameObject("Mushroom", glm::vec3(-8.0f, 0.0f, 3.0f), glm::vec3(1.0f), glm::vec3(0), MushroomModel, "texturedShader", "FBXmodels\\Textures\\Plant.tga");
 		objs.push_back(GO12);
+
+		GameObject* GO13 = new GameObject;
+		GO13->CreateGameObject("Rock", glm::vec3(-8.0f, 0.0f, 3.0f), glm::vec3(RandomFloat(0.15f, 0.4f)), glm::vec3(0), RockModel, "texturedShader", "FBXmodels\\Textures\\Rock1.tga");
+		objs.push_back(GO13);
 	}
 
 	// Set the position for each GameObject in the list
@@ -148,14 +149,13 @@ void GraphicsApplication::init()
 			obj->SetRotation(0.0f, RandomFloat(0.0f, 6.2f), 0.0f);
 		}
 
-		if (obj->getName() == "TreeModel" || obj->getName() == "Mushroom")
+		if (obj->getName() == "TreeModel" || obj->getName() == "Mushroom" || obj->getName() == "Rock")
 		{
 			obj->SetPosition(RandomFloat(-15.0f, 15.0f), 0.0f, RandomFloat(-15.0f, 15.0f));
 			obj->SetRotation(0.0f, RandomFloat(0.0f, 6.2f), 0.0f);
 		}
 
 		objs[2]->SetPosition(0.0f, 0.0f, 5);
-		//objs[4]->SetPosition(0.0f, 0.0f, -7.0f);
 	}
 
 }
@@ -194,6 +194,7 @@ void GraphicsApplication::render()
 
 		useShader(currentShader, obj);
 
+		// Checks if the gameObject is the tree, and if it is it apply different texture and shader for the leaves and the trunk of the tree. 
 		if (obj->getName() == "TreeModel")
 		{
 			MeshCollection * m = obj->GetMeshes();
@@ -214,7 +215,7 @@ void GraphicsApplication::render()
 	Game::endRender();
 }
 
-
+// Function to use a shader on a specific  object
 void GraphicsApplication::useShader(Shader * currentShader, GameObject * obj)
 {
 	if (currentShader->isCullingEnabled())

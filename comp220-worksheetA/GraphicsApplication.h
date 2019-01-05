@@ -12,10 +12,11 @@ public:
 
 private:
 
-	Skybox* skybox = new Skybox;
+	// Scene Objects
 
-	// model vars
+	Skybox* skybox = new Skybox;
 	MeshCollection * skyboxModel;
+	int skyBoxnum = 0;
 
 	MeshCollection * dinoModel;
 	MeshCollection * teaPotModel;
@@ -31,10 +32,10 @@ private:
 
 	// SHADER VARS //
 
-	// uses and send the shader uniform variables across for the chosen object
+	// Uses and send the shader uniform variables across for the chosen object
 	void useShader(Shader * currentShader, GameObject * obj);
 
-	// secene matrix locations
+	// Secene matrix locations
 	GLuint modelMatrixUniformLocation;
 	GLuint viewMatrixUniformLocation;
 	GLuint projectionMatrixUniformLocation;
@@ -69,7 +70,5 @@ private:
 		float r = random * diff;
 		return a + r;
 	}
-
-	int skyBoxnum = 0;
 
 };

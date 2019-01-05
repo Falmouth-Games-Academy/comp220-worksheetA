@@ -10,6 +10,7 @@ Controls::~Controls()
 {
 }
 
+// Camera Controls that allow user input to control the in game camera to move around the scene
 void Controls::cameraControls(Input &input, Camera &camera, float deltaTime)
 {
 	float deltaCamSpeed = cameraMovSpeed * deltaTime;

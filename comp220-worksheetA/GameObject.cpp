@@ -1,5 +1,6 @@
 #include "GameObject.h"
 
+// The initial set values of a GameObject
 GameObject::GameObject()
 {
 	Position = glm::vec3(0.0f);
@@ -21,6 +22,7 @@ GameObject::~GameObject()
 	glDeleteTextures(1, &diffuseTexture);
 }
 
+// List of functions to create gameObjects using different parameters //
 void GameObject::CreateGameObject(std::string name, glm::vec3 pos)
 {
 	setName(name);
@@ -42,6 +44,7 @@ void GameObject::CreateGameObject(std::string name, glm::vec3 pos, glm::vec3 sca
 	SetDiffuseTexture(texture);
 }
 
+// Update for a gameobject
 void GameObject::Update(float deltaTime)
 {
 	TranslationMatrix = glm::translate(Position);
@@ -57,6 +60,7 @@ void GameObject::Update(float deltaTime)
 	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
 }
 
+// Rendering function to render the mesh of a gameObject
 void GameObject::Render()
 {
 	if (Meshes)

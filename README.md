@@ -1,5 +1,25 @@
 # comp220-worksheetA 
 
+## Controls
+- WASD to move around
+- LShift to move faster
+- LCtrl to go down
+- SpaceBar to go up
+- 0 key to change skybox textures
+
+## What's being shown in the Demo
+My graphics demo is trying to portray a small calm forest scene that feels alive.
+
+My graphics demo shows a small forest that was constructed from free assets I found online.
+The enviroment models are placed arond the scene psuedo randomly to make it look more natural.
+The leaves of the trees and the foliage on the ground (the grass and 2 types of flowers) have a vertex shader apllied to them to simulate the effect of wind blowing through them.
+
+the assets used:
+- https://assetstore.unity.com/packages/3d/environments/fantasy-landscape-103573
+- https://assetstore.unity.com/packages/2d/textures-materials/sky/colorskies-91541
+
+I also left in my custom dinosaur model in the scene.
+========================================================================
 List of things to add:
 - Shift button press speedx2 -- DONE
 - easy model laoding (lots of code refactoring)
@@ -35,24 +55,11 @@ Plan for the next Iteration:
 - Add more models to construct a small forest to move around in // instancing // rand function -- DONE
 
 ## WorkSheet D
-For Worksheet D I worked on creating the intended scene I wanted to create for the final outcome of this Graphics Application
-I created a a skybox, that can be swapped out for different skyboxes quite easily.
-I managed to get multiple textures working on a single model, this still need to be refactored quite a bit.
-
-Screenshot from working on the Skybox
+Screenshot from the latest version of my graphics application
 
 <img src="Screenshots/screenshot2.png" alt="alt text" width="500">
-
-Screenshots from the latest version of my graphics application
-
 <img src="Screenshots/screenshot3.png" alt="alt text" width="500">
 <img src="Screenshots/screenshot4.png" alt="alt text" width="500">
 
-#### Gif of the wind effect in play on the foliage in the scene
-
+Gif of the wind effect in play on the foliage in the scene
 <img src="Screenshots/Nature.gif" alt="alt text" width="500">
-
-Renderdoc Screenshots
-
-<img src="Screenshots/renderdoc.JPG" alt="alt text" width="500">
-<img src="Screenshots/renderdoc2.JPG" alt="alt text" width="500">

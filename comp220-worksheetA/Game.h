@@ -39,19 +39,14 @@ public:
 	SDL_Window* window;
 
 	Input input;
-
 	Timer time;
-
 	SDL_GLContext gl_Context;
-	
 	GLuint location;
+	ShaderManager shaderManager;
+	Controls controls;
 
 	std::vector<GameObject *> objs;
 	GameObject gameObject;
-
-	ShaderManager shaderManager;
-
-	Controls controls;
 
 	// Camera to view the screen
 	Camera camera;
