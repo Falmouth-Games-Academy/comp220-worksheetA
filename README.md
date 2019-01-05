@@ -19,7 +19,9 @@ the assets used:
 - https://assetstore.unity.com/packages/2d/textures-materials/sky/colorskies-91541
 
 I also left in my custom dinosaur model in the scene.
+
 ========================================================================
+
 List of things to add:
 - Shift button press speedx2 -- DONE
 - easy model laoding (lots of code refactoring)
@@ -62,4 +64,5 @@ Screenshot from the latest version of my graphics application
 <img src="Screenshots/screenshot4.png" alt="alt text" width="500">
 
 Gif of the wind effect in play on the foliage in the scene
+
 <img src="Screenshots/Nature.gif" alt="alt text" width="500">
