@@ -125,6 +125,8 @@ int main(int argc, char ** argsv)
 
 	dynamicWorld->addRigidBody(groundRigidBody);
 
+	waterGO->SetRigidBody(groundRigidBody);
+
 	// Create Sphere Shape
 	btCollisionShape *sphereShape = new btSphereShape(btScalar(1));
 	btTransform sphereTransform;
@@ -144,6 +146,8 @@ int main(int argc, char ** argsv)
 
 	dynamicWorld->addRigidBody(sphereRigidBody);
 
+	teapotGO->SetRigidBody(sphereRigidBody);
+
 	Timer timer;
 	timer.Start();
 
@@ -159,17 +163,6 @@ int main(int argc, char ** argsv)
 		timer.Update();
 
 		dynamicWorld->stepSimulation(timer.GetDeltaTime(), 10);
-
-		btTransform currentTransform;
-		btMotionState *currentMotionState = sphereRigidBody->getMotionState();
-		currentMotionState->getWorldTransform(currentTransform);
-
-		teapotGO->SetPosition(
-			currentTransform.getOrigin().getX(), 
-			currentTransform.getOrigin().getY(), 
-			currentTransform.getOrigin().getZ()
-		);
-
 
 		int lastX = 0;
 		int lastY = 0;
@@ -293,6 +286,9 @@ int main(int argc, char ** argsv)
 	{
 		if ((*iter))
 		{
+			btRigidBody * rb = (*iter)->GetRigidBody();
+			dynamicWorld->removeRigidBody(rb);
+
 			delete (*iter);
 			iter = GameObjectList.erase(iter);
 		}
@@ -319,20 +315,8 @@ int main(int argc, char ** argsv)
 		camera = nullptr;
 	}
 
-	//dynamicWorld->removeCollisionObject((btCollisionObject*)groundShape);
-	dynamicWorld->removeRigidBody(groundRigidBody);
-	dynamicWorld->removeRigidBody(sphereRigidBody);
-	
-	delete groundMotionState;
-	delete groundRigidBody;
-	delete groundShape;
-
-	delete sphereMotionState;
-	delete sphereRigidBody;
-	delete sphereShape;
-
 	// Cleanup physics
-	delete dynamicWorld;
+	//delete dynamicWorld; // add back
 	delete solver;
 	delete overlappingPairCache;
 	delete dispatcher;

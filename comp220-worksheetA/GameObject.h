@@ -5,6 +5,8 @@
 #include <glm\gtx\transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
+#include <btBulletDynamicsCommon.h>
+
 #include "Mesh.h"
 #include "Shaders.h"
 
@@ -21,6 +23,14 @@ public:
 	void SetPosition(float x, float y, float z)
 	{
 		Position = glm::vec3(x, y, z);
+	};
+	void SetPosition(btTransform &vec3)
+	{
+		SetPosition(
+			vec3.getOrigin().getX(),
+			vec3.getOrigin().getY(),
+			vec3.getOrigin().getZ()
+		);
 	};
 
 	glm::vec3& GetPosition()	// Returns a reference instead of a copy (faster)
@@ -84,6 +94,16 @@ public:
 		return DiffuseTexture;
 	};
 
+	void SetRigidBody(btRigidBody *rigidBody)
+	{
+		RigidBody = rigidBody;
+	};
+
+	btRigidBody *GetRigidBody()
+	{
+		return RigidBody;
+	};
+
 private:
 	//Set up positions for position, rotation and scale
 	glm::vec3 Position;
@@ -109,4 +129,6 @@ private:
 
 	//Texture
 	GLuint DiffuseTexture;
+
+	btRigidBody *RigidBody;
 };

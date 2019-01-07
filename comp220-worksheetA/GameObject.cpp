@@ -14,12 +14,19 @@ GameObject::GameObject()
 	Meshes = nullptr;
 	ShaderProgram = nullptr;
 	DiffuseTexture = 0;
+	RigidBody = nullptr;
 }
 
 GameObject::~GameObject()
 {
 	glDeleteTextures(1, &DiffuseTexture);
 
+	if (RigidBody) 
+	{
+		delete RigidBody->getCollisionShape();
+		delete RigidBody->getMotionState();
+		delete RigidBody;
+	}
 	if (Meshes) 
 	{
 		delete Meshes;
@@ -32,6 +39,14 @@ GameObject::~GameObject()
 
 void GameObject::Update(float deltaTime)
 {
+	if (RigidBody)
+	{
+		btTransform currentTransform;
+		btMotionState *currentMotionState = RigidBody->getMotionState();
+		currentMotionState->getWorldTransform(currentTransform);
+
+		SetPosition(currentTransform);
+	}
 	TranslationMatrix = glm::translate(Position);
 	RotationMatrix = glm::rotate(Rotation.x, glm::vec3(1.0f, 0.0f, 0.0f))
 		*glm::rotate(Rotation.y, glm::vec3(0.0f, 1.0f, 0.0f))
