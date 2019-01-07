@@ -6,6 +6,8 @@ GameObject::GameObject()
 	Scale = glm::vec3(1.0f);
 	Rotation = glm::vec3(0.0f);
 
+	renderLayer = DEFAULT_LAYER;
+
 	TranslationMatrix = glm::mat4(0.0f);
 	RotationMatrix = glm::mat4(0.0f);
 	ScaleMatrix = glm::mat4(0.0f);

@@ -20,6 +20,12 @@
 #include "Timer.h"
 #include "GameObject.h"
 #include "Camera.h"
+#include "GameObjectCollection.h"
+
+void addToGameObjectsList()
+{
+
+}
 
 int main(int argc, char ** argsv)
 {
@@ -71,7 +77,7 @@ int main(int argc, char ** argsv)
 	loadMeshFromFile("water.fbx", waterMesh);
 
 	texturedShader = new Shader();
-	texturedShader->Load("waterVert.glsl", "waterFrag.glsl");
+	texturedShader->Load("animationVert.glsl", "waterFrag.glsl");
 
 	textureID = loadTextureFromFile("waterTexture.png");
 
@@ -80,6 +86,7 @@ int main(int argc, char ** argsv)
 	waterGO->SetMesh(waterMesh);
 	waterGO->SetShader(texturedShader);
 	waterGO->SetDiffuseTexture(textureID);
+	//waterGO->SetLayer(Water);
 
 	//GameObjectList.push_back(waterGO);
 
@@ -164,8 +171,8 @@ int main(int argc, char ** argsv)
 
 		dynamicWorld->stepSimulation(timer.GetDeltaTime(), 10);
 
-		int lastX = 0;
-		int lastY = 0;
+		int xLast = 0;
+		int yLast = 0;
 
 		//Poll for the events which have happened in this frame
 		//https://wiki.libsdl.org/SDL_PollEvent
@@ -191,35 +198,19 @@ int main(int argc, char ** argsv)
 					openGLWindow->FullScreen(!fullScreen);
 					fullScreen = !fullScreen;
 					break;
-				case SDLK_UP:
-					morphBlendFactor += 0.1f;
-					break;
-				case SDLK_DOWN:
-					morphBlendFactor -= 0.1f;
-					break;
-
-				// Refactor later -- BUG jumps around
-				case SDLK_w:
-					camera->keyboardMovement(FORWARD, timer.GetDeltaTime());
-					break;
-				case SDLK_s:
-					camera->keyboardMovement(BACKWARD, timer.GetDeltaTime());
-					break;
-				case SDLK_a:
-					camera->keyboardMovement(LEFT, timer.GetDeltaTime());
-					break;
-				case SDLK_d:
-					camera->keyboardMovement(RIGHT, timer.GetDeltaTime());
-					break;
 				}
+
+				// Send key movement to camera
+				camera->keyboardMovement(Camera_Movement(ev.key.keysym.sym), timer.GetDeltaTime());
+
 			// If the mouse is being moved
 			case SDL_MOUSEMOTION:
-				//std::cout << ev.motion.xrel << " | " << ev.motion.yrel << std::endl;
-				//camera->ProcessMouseMovement(ev.motion.xrel - lastX, lastY - ev.motion.yrel);
-				camera->mouseMovement(lastX - ev.motion.xrel, lastY - ev.motion.yrel, timer.GetDeltaTime());
+				int xOffset = xLast - ev.motion.xrel;
+				int yOffset = yLast - ev.motion.yrel;
+				camera->mouseMovement(xOffset, yOffset, timer.GetDeltaTime());
 
-				lastX = ev.motion.xrel;
-				lastY = ev.motion.yrel;
+				xLast = ev.motion.xrel;
+				yLast = ev.motion.yrel;
 				break;
 			}
 		}
@@ -252,10 +243,10 @@ int main(int argc, char ** argsv)
 			glUniformMatrix4fv(currentShader->GetUniform("modelMatrix"), 1, GL_FALSE, glm::value_ptr(obj->GetModelTransformation()));
 			glUniformMatrix4fv(currentShader->GetUniform("viewMatrix"), 1, GL_FALSE, glm::value_ptr(camera->viewMatrix()));
 			glUniformMatrix4fv(currentShader->GetUniform("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(camera->projectionMatrix(openGLWindow)));
-			//glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
-			//glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
+			glUniform1f(currentShader->GetUniform("morphBlendAlpha"), 0.0f);
+			glUniform1i(currentShader->GetUniform("diffuseTexture"), 0);
 			glUniform1f(currentShader->GetUniform("currentTime"), timer.GetUpdatedTime());
-			//glUniform1f(currentShader->GetUniform("morphBlendFactor"), morphBlendFactor);
+			glUniform1f(currentShader->GetUniform("morphBlendFactor"), morphBlendFactor);
 
 
 			obj->Render();

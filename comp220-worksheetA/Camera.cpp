@@ -39,24 +39,24 @@ void Camera::mouseMovement(int xOffset, int yOffset, float deltaTime)
 	verticalAngle += mouseSpeed * deltaTime * yOffset;
 }
 
-void Camera::keyboardMovement(Camera_Movement direction, float deltaTime)
+void Camera::keyboardMovement(Camera_Movement key, float deltaTime)
 {
 	std::cout << "Before " << position[0] << " " << position[1] << " " << position[2] << " ";
 	// Move forward
-	if (direction == FORWARD) {
+	if (key == FORWARD) {
 		std::cout << "Direction " << this->direction()[0] << " " << this->direction()[1] << " " << this->direction()[2] << " ";
 		position += this->direction(); //* deltaTime * speed;
 	}
 	// Move backward
-	if (direction == BACKWARD) {
+	if (key == BACKWARD) {
 		position -= this->direction() * deltaTime * speed;
 	}
 	// Strafe right
-	if (direction == RIGHT) {
+	if (key == RIGHT) {
 		position += right() * deltaTime * speed;
 	}
 	// Strafe left
-	if (direction == LEFT) {
+	if (key == LEFT) {
 		position -= right() * deltaTime * speed;
 	}
 

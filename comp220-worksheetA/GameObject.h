@@ -10,6 +10,15 @@
 #include "Mesh.h"
 #include "Shaders.h"
 
+enum RenderLayers
+{
+	Default,
+	Water,
+	RenderLayers_ITEMCOUNT
+};
+
+static const RenderLayers DEFAULT_LAYER = Default;
+
 class GameObject
 {
 public:
@@ -104,11 +113,22 @@ public:
 		return RigidBody;
 	};
 
+	void SetLayer(RenderLayers renderLayer)
+	{
+		this->renderLayer = renderLayer;
+	}
+	RenderLayers GetLayer()
+	{
+		return renderLayer;
+	}
+
 private:
 	//Set up positions for position, rotation and scale
 	glm::vec3 Position;
 	glm::vec3 Rotation;
 	glm::vec3 Scale;
+
+	RenderLayers renderLayer;
 
 	//calculate the translation, rotation and scale matrices using the above vectores
 	glm::mat4 TranslationMatrix;

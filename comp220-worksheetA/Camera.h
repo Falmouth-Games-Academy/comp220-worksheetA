@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <math.h>         // Used only for sin() and cos() functions
+#include <SDL.h>
 
 #include <glm/glm.hpp> // Old header file standard (.hpp)
 
@@ -11,13 +12,14 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
 #include "OpenGLWindow.h"
 
 enum Camera_Movement {
-	FORWARD,
-	BACKWARD,
-	LEFT,
-	RIGHT
+	FORWARD = SDLK_w,
+	BACKWARD = SDLK_s,
+	LEFT = SDLK_a,
+	RIGHT = SDLK_d
 };
 
 class Camera
