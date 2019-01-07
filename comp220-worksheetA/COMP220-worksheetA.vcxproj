@@ -109,13 +109,14 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.1\lib\x64\*.dll "</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Libraries\glew-2.1.0\include;..\Libraries\SDL2_image-2.0.4\include;..\Libraries\SDL2-2.0.9\include;..\Libraries\glm;%(AdditionalIncludeDirectories);..\Libraries\assimp-4.1.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\glew-2.1.0\include;..\Libraries\SDL2_image-2.0.4\include;..\Libraries\SDL2-2.0.9\include;..\Libraries\glm;%(AdditionalIncludeDirectories);..\Libraries\assimp-4.1.0\include;..\Libraries\bullet3-2.87\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;OpenGL32.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.4\lib\x64;..\Libraries\SDL2-2.0.9\lib\x64;..\Libraries\assimp-4.1.0\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;OpenGL32.lib;assimp-vc140-mt.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;LinearMath_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.4\lib\x64;..\Libraries\SDL2-2.0.9\lib\x64;..\Libraries\assimp-4.1.0\lib\x64;..\Libraries\bullet3-2.87\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\Libraries\SDL2_image-2.0.4\lib\x64\*.dll "$(OutDir)\*.dll"

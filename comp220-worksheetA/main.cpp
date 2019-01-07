@@ -9,9 +9,11 @@
 
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <btBulletDynamicsCommon.h>
+
 #include "Shaders.h"
 #include "Vertex.h"
-
 #include "OpenGLWindow.h"
 #include "Texture.h"
 #include "Model.h"
@@ -90,6 +92,23 @@ int main(int argc, char ** argsv)
 	glEnable(GL_DEPTH_TEST);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 
+	// init physics (make physics class)
+
+	// Create config for collision
+	btDefaultCollisionConfiguration *collisionConfig = new btDefaultCollisionConfiguration();
+
+	// Collision dispatcher
+	btCollisionDispatcher *dispatcher = new btCollisionDispatcher(collisionConfig);
+
+	// Create Broadphase
+	btBroadphaseInterface *overlappingPairCache = new btDbvtBroadphase();
+
+	// Solver
+	btSequentialImpulseConstraintSolver *solver = new btSequentialImpulseConstraintSolver();
+
+	// Create physics world
+	btDiscreteDynamicsWorld *dynamicWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfig);
+
 
 	Timer timer;
 	timer.Start();
@@ -105,10 +124,10 @@ int main(int argc, char ** argsv)
 	{
 		timer.Update();
 
+		dynamicWorld->stepSimulation(timer.GetDeltaTime(), 10);
+
 		int lastX = 0;
 		int lastY = 0;
-
-		bool paused = false;
 
 		//Poll for the events which have happened in this frame
 		//https://wiki.libsdl.org/SDL_PollEvent
@@ -141,10 +160,6 @@ int main(int argc, char ** argsv)
 					morphBlendFactor -= 0.1f;
 					break;
 
-				case SDLK_SPACE:
-					paused = !paused;
-					break;
-
 				// Refactor later -- BUG jumps around
 				case SDLK_w:
 					camera->keyboardMovement(FORWARD, timer.GetDeltaTime());
@@ -175,13 +190,11 @@ int main(int argc, char ** argsv)
 		morphBlendFactor = glm::clamp(morphBlendFactor, 0.0f, 1.0f);
 
 		//update
-		if (!paused) {
-			for (GameObject * obj : GameObjectList)
-			{
-				obj->Update(timer.GetDeltaTime());
-			}
-			waterGO->Update(timer.GetDeltaTime());
+		for (GameObject * obj : GameObjectList)
+		{
+			obj->Update(timer.GetDeltaTime());
 		}
+		waterGO->Update(timer.GetDeltaTime());
 
 		// Update game and draw with OpenGL
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -260,6 +273,13 @@ int main(int argc, char ** argsv)
 		delete camera;
 		camera = nullptr;
 	}
+
+	// Cleanup physics
+	delete dynamicWorld;
+	delete solver;
+	delete overlappingPairCache;
+	delete dispatcher;
+	delete collisionConfig;
 
 	// Delete Context
 	//SDL_GL_DeleteContext(gl_Context);
