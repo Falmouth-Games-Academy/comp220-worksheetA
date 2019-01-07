@@ -18,7 +18,7 @@ public:
 				btRigidBody * rb = (*iter)->GetRigidBody();
 				dynamicWorld->removeRigidBody(rb);
 
-				//delete (*iter);
+				delete (*iter);
 				iter = objects.erase(iter);
 			}
 			else

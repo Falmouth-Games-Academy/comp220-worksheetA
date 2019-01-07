@@ -157,9 +157,6 @@ int main(int argc, char ** argsv)
 
 	Timer timer;
 	timer.Start();
-
-	// Capture mouse
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -201,7 +198,8 @@ int main(int argc, char ** argsv)
 				}
 
 				// Send key movement to camera
-				camera->keyboardMovement(Camera_Movement(ev.key.keysym.sym), timer.GetDeltaTime());
+				if (Camera_Movement(ev.key.keysym.sym))
+					camera->keyboardMovement(Camera_Movement(ev.key.keysym.sym), timer.GetDeltaTime());
 
 			// If the mouse is being moved
 			case SDL_MOUSEMOTION:
