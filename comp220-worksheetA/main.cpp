@@ -55,7 +55,7 @@ int main(int argc, char ** argsv)
 	GLuint textureID = loadTextureFromFile("brick_D.png");
 
 	GameObject * teapotGO = new GameObject();
-	teapotGO->SetPosition(0.0f, 0.0f, -100.0f);
+	teapotGO->SetPosition(0.0f, 0.0f, -50.0f);
 	teapotGO->SetMesh(teapotMeshes);
 	teapotGO->SetShader(texturedShader);
 	teapotGO->SetDiffuseTexture(textureID);
@@ -76,7 +76,7 @@ int main(int argc, char ** argsv)
 	textureID = loadTextureFromFile("waterTexture.png");
 
 	GameObject * waterGO = new GameObject();
-	waterGO->SetPosition(0.0f, -20.0f, -50.0f);
+	waterGO->SetPosition(0.0f, -20.0f, -25.0f);
 	waterGO->SetMesh(waterMesh);
 	waterGO->SetShader(texturedShader);
 	waterGO->SetDiffuseTexture(textureID);
@@ -110,6 +110,40 @@ int main(int argc, char ** argsv)
 	btDiscreteDynamicsWorld *dynamicWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfig);
 
 
+	// Create ground shape
+	btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(50.0), btScalar(0.5), btScalar(50.0)));
+	btTransform groundTransform;
+	groundTransform.setIdentity();
+	btVector3 groundPosition = btVector3(waterGO->GetPosition().x, waterGO->GetPosition().y, waterGO->GetPosition().z);
+	groundTransform.setOrigin(groundPosition);
+
+	// Create Ground Rigid Body
+	btVector3 groundLocalIntertia = btVector3(0, 0, 0); // calculate if physics are dynamic
+	btDefaultMotionState *groundMotionState = new btDefaultMotionState(groundTransform);
+	btRigidBody::btRigidBodyConstructionInfo groundInfo(btScalar(0), groundMotionState, groundShape, groundLocalIntertia);
+	btRigidBody *groundRigidBody = new btRigidBody(groundInfo);
+
+	dynamicWorld->addRigidBody(groundRigidBody);
+
+	// Create Sphere Shape
+	btCollisionShape *sphereShape = new btSphereShape(btScalar(1));
+	btTransform sphereTransform;
+	sphereTransform.setIdentity();
+	btVector3 spherePosition = btVector3(teapotGO->GetPosition().x, teapotGO->GetPosition().y, teapotGO->GetPosition().z);
+
+	btScalar sphereMass = 1;
+	btVector3 sphereLocalIntertia = btVector3(0, 0, 0);
+	sphereShape->calculateLocalInertia(sphereMass, sphereLocalIntertia);
+
+	sphereTransform.setOrigin(spherePosition);
+
+	// Rigid Body
+	btMotionState *sphereMotionState = new btDefaultMotionState(sphereTransform);
+	btRigidBody::btRigidBodyConstructionInfo sphereInfo(sphereMass, sphereMotionState, sphereShape, sphereLocalIntertia);
+	btRigidBody *sphereRigidBody = new btRigidBody(sphereInfo);
+
+	dynamicWorld->addRigidBody(sphereRigidBody);
+
 	Timer timer;
 	timer.Start();
 
@@ -125,6 +159,17 @@ int main(int argc, char ** argsv)
 		timer.Update();
 
 		dynamicWorld->stepSimulation(timer.GetDeltaTime(), 10);
+
+		btTransform currentTransform;
+		btMotionState *currentMotionState = sphereRigidBody->getMotionState();
+		currentMotionState->getWorldTransform(currentTransform);
+
+		teapotGO->SetPosition(
+			currentTransform.getOrigin().getX(), 
+			currentTransform.getOrigin().getY(), 
+			currentTransform.getOrigin().getZ()
+		);
+
 
 		int lastX = 0;
 		int lastY = 0;
@@ -273,6 +318,18 @@ int main(int argc, char ** argsv)
 		delete camera;
 		camera = nullptr;
 	}
+
+	//dynamicWorld->removeCollisionObject((btCollisionObject*)groundShape);
+	dynamicWorld->removeRigidBody(groundRigidBody);
+	dynamicWorld->removeRigidBody(sphereRigidBody);
+	
+	delete groundMotionState;
+	delete groundRigidBody;
+	delete groundShape;
+
+	delete sphereMotionState;
+	delete sphereRigidBody;
+	delete sphereShape;
 
 	// Cleanup physics
 	delete dynamicWorld;
