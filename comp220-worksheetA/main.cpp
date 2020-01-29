@@ -16,18 +16,9 @@ int main(int argc, char ** argsv)
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_Init failed", SDL_GetError(), NULL);
 		return 1;
 	}
-	OpenGLWindow glWindow = OpenGLWindow("New Game", 1280, 720, SDL_WINDOW_OPENGL, SDL_TRUE);
-	if (!glWindow.CheckSuccess())
+	OpenGLWindow* glWindow = new OpenGLWindow("New Game", 1280, 720, SDL_TRUE);
+	if (glWindow == nullptr)
 		return 1;
-	SDL_Window* window = glWindow.GetWindow();
-
-#pragma region GL Setup
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-	SDL_GL_CreateContext(window);
-#pragma endregion
 
 #pragma region GLEW Setup
 	glewExperimental = GL_TRUE;
@@ -63,18 +54,13 @@ int main(int argc, char ** argsv)
 				}
 			}
 		}
-		glClearColor(0.0f, 0.75f, 0.15f, 1.0f);
+		glClearColor(0.0, 1.0, 0.5, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		SDL_GL_SwapWindow(window);
+		SDL_GL_SwapWindow(glWindow->GetWindow());
 	}
-
-	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
-	//https://wiki.libsdl.org/SDL_DestroyWindow
-	SDL_DestroyWindow(window);
-	//https://wiki.libsdl.org/SDL_Quit
-	SDL_Quit();
-
+	glWindow->~OpenGLWindow();
+	glWindow = nullptr;
 	return 0;
 }
 
