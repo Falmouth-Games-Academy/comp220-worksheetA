@@ -12,6 +12,7 @@ namespace ByGL
 		~OpenGLWindow();
 		bool CheckSuccess();
 		SDL_Window* GetWindow();
+		void CleanUp();
 	private:
 		SDL_Window* window;
 		bool SetOpenGlAttributes();

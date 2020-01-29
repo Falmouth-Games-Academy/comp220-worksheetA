@@ -14,40 +14,41 @@ ByGL::OpenGLWindow::OpenGLWindow(const char* title, int windowWidth, int windowH
 	
 #pragma endregion
 	if (!SetOpenGlAttributes())
-		this->~OpenGLWindow();
+		CleanUp();
 	SDL_GLContext mainContext = SDL_GL_CreateContext(window);
-	if (!CheckSuccess())
-		this->~OpenGLWindow();
 }
 
 ByGL::OpenGLWindow::~OpenGLWindow()
 {
-	std::cout << "am Called" << std::endl;
-	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
-	//https://wiki.libsdl.org/SDL_DestroyWindow
-	SDL_DestroyWindow(window);
-	//https://wiki.libsdl.org/SDL_Quit
-	SDL_Quit();
+	CleanUp();
 }
 
 bool ByGL::OpenGLWindow::CheckSuccess()
 {
+	// If 
 	if (window == nullptr)
 	{
 		//Show error
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "failed", SDL_GetError(), NULL);
 		//Close the SDL Library
 		//https://wiki.libsdl.org/SDL_Quit
-		SDL_Quit();
 		return false;
 	}
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Success", SDL_GetError(), NULL);
+	//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Success", SDL_GetError(), NULL);
 	return true;
 }
 
 SDL_Window* ByGL::OpenGLWindow::GetWindow()
 {
 	return window;
+}
+
+void ByGL::OpenGLWindow::CleanUp()
+{
+	std::cout << "am Called" << std::endl;
+	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!
+	//https://wiki.libsdl.org/SDL_DestroyWindow
+	SDL_DestroyWindow(window);
 }
 
 bool ByGL::OpenGLWindow::SetOpenGlAttributes()
