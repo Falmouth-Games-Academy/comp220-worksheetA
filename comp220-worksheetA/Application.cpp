@@ -25,23 +25,28 @@ int ByGL::Application::Init()
 
 #pragma region Window Setup
 	// Initialize a window and check its success
-	glWindow = new OpenGLWindow("New Game", 1280, 720, SDL_TRUE);
-	if (!glWindow->CheckSuccess())
-	{
-		// Should the window fail, quit the application
-		delete glWindow;
-		return Quit();
-	}
-#pragma endregion
-
-#pragma region GLEW Setup
-	glewExperimental = GL_TRUE;
-	glewInit();
+	glWindow = NewWindow("New Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_TRUE, SDL_WINDOW_OPENGL);
 #pragma endregion
 	return 1;
 	running = true;
 }
 
+ByGL::OpenGLWindow* ByGL::Application::NewWindow(const char* title, int x, int y, int windowWidth, int windowHeight, SDL_bool fullscreen, SDL_WindowFlags flags)
+{
+	OpenGLWindow* newWindow = new OpenGLWindow(title, x, y, windowWidth, windowHeight, fullscreen, flags);
+	if (newWindow != nullptr)
+	{
+		if (!newWindow->CheckSuccess())
+		{
+			// Should the window fail, quit the application
+			delete newWindow;
+			Quit();
+		}
+		return newWindow;
+	}
+	// Don't quit if just one window fails.
+	Quit();
+}
 
 int ByGL::Application::Run()
 {

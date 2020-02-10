@@ -8,7 +8,7 @@ namespace ByGL
 	class OpenGLWindow
 	{
 	public:
-		OpenGLWindow(const char* title, int windowWidth, int windowHeight, SDL_bool fullscreen);
+		OpenGLWindow(const char* title, int x, int y, int windowWidth, int windowHeight, SDL_bool fullscreen, SDL_WindowFlags flags);
 		~OpenGLWindow();
 		bool CheckSuccess();
 		SDL_Window* GetWindow();

@@ -1,6 +1,6 @@
 #include "OpenGLWindow.h"
 
-ByGL::OpenGLWindow::OpenGLWindow(const char* title, int windowWidth, int windowHeight, SDL_bool fullscreen)
+ByGL::OpenGLWindow::OpenGLWindow(const char* title, int x, int y, int windowWidth, int windowHeight, SDL_bool fullscreen, SDL_WindowFlags flags)
 {
 #pragma region Window Setup
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
@@ -8,7 +8,7 @@ ByGL::OpenGLWindow::OpenGLWindow(const char* title, int windowWidth, int windowH
 	///<summary>
 	///SLD Window to be rendered to.
 	///</summary>
-	window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow(title, x, y, windowWidth, windowHeight, flags);
 	//Checks to see if the window has been created, the pointer will have a value of some kind
 	SDL_SetWindowResizable(window, fullscreen);
 	
