@@ -19,7 +19,6 @@ namespace ByGL
 		int Quit();
 		OpenGLWindow* glWindow;
 		OpenGLWindow* NewWindow(const char* title, int x, int y, int windowWidth, int windowHeight, SDL_bool fullscreen, SDL_WindowFlags flags);
-
 		SDL_Event ev;
 		bool running;
 

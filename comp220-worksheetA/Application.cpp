@@ -24,8 +24,10 @@ int ByGL::Application::Init()
 #pragma endregion
 
 #pragma region Window Setup
-	// Initialize a window and check its success
+	// Initialize the main window and check its success.
 	glWindow = NewWindow("New Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_TRUE, SDL_WINDOW_OPENGL);
+	if (glWindow == nullptr)
+		return Quit();
 #pragma endregion
 	return 1;
 	running = true;
@@ -40,12 +42,10 @@ ByGL::OpenGLWindow* ByGL::Application::NewWindow(const char* title, int x, int y
 		{
 			// Should the window fail, quit the application
 			delete newWindow;
-			Quit();
 		}
 		return newWindow;
 	}
-	// Don't quit if just one window fails.
-	Quit();
+	return nullptr;
 }
 
 int ByGL::Application::Run()
@@ -58,9 +58,12 @@ int ByGL::Application::Run()
 	
 	while (running)
 	{
-		// Run Events
+		// Physics Update
+
+		// Events loop
 		Events();
-		// Update World
+		// Object Update
+
 		// Update Screen
 		glClearColor(0.0, 1.0, 0.5, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -102,6 +105,7 @@ void ByGL::Application::Events()
 int ByGL::Application::Quit()
 {
 	//https://wiki.libsdl.org/SDL_Quit
+	running = false;
 	SDL_Quit();
 	return 0;
 }
