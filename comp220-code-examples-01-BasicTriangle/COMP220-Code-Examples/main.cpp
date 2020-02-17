@@ -183,7 +183,7 @@ int main(int argc, char ** argsv)
 	//SDL_Quit();
 
 	//====================MODULARISATION======================
-
+	
 	FluidGL::Application* application = new FluidGL::Application();
 	application->Init("FluidGL", 1280, 720, false);
 	application->Run();

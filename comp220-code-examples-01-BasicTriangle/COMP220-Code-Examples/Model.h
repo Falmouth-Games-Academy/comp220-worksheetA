@@ -22,8 +22,14 @@ class Model : public IComponent
 public:
 	Model() { componentFlags = GLU::operator|(ComponentFlags::MESH, ComponentFlags::RENDERER); };
 	~Model() {};
+
+	void Init(const std::vector<GLfloat>& inVertices, const GLuint& inProgram);
+	void Render();
+	
 protected:
-
+	GLuint vertexArray = -1;
+	GLuint vertexBuffer = -1;
+	std::vector<GLfloat> vertices;
+	GLuint shaderProgram = -1;
 private:
-
 };
