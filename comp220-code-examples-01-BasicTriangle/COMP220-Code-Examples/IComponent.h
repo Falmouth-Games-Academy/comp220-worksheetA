@@ -21,7 +21,8 @@ enum class ComponentFlags
 	NONE = 0x00,
 	RENDERER = 0x01,	// Contains functionality for rendering GameObject
 	MESH = 0x02,	// Contains functionality for storing and/or manipulating mesh
-	TRANSLATION = 0x04		// Contains functionality for manipulating position, rotation, scale etc.
+	TRANSLATION = 0x04,		// Contains functionality for manipulating position, rotation, scale etc.
+	CAMERA = 0x08
 };
 
 // GameObject component system
@@ -47,6 +48,8 @@ public:
 	{
 		return (componentFlags & flags) == flags;
 	}
+
+	virtual void Update() {};
 
 protected:
 	ComponentFlags componentFlags;

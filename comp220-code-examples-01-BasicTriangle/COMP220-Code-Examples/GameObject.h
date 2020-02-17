@@ -10,6 +10,7 @@
 
 #include "Transform.h"
 #include "Model.h"
+#include "Camera.h"
 
 #include <SDL.h>
 #include <gl\glew.h>
@@ -23,7 +24,7 @@ public:
 	~GameObject();
 
 	// Initialize mesh
-	void Init(const std::vector<GLfloat> &inVertices, const GLuint &inProgram);
+	void Init(const GLuint &inProgram);
 
 	// Render object
 	void Render();

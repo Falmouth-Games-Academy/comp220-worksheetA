@@ -8,19 +8,14 @@ GameObject::~GameObject()
 	glDeleteVertexArrays(1, &vertexArray);
 }
 
-void GameObject::Init(const std::vector<GLfloat>& inVertices, const GLuint& inProgram)
+void GameObject::Init(const GLuint& inProgram)
 {
 	// Add gameObject to list of created objects
 	gameObjects.push_back(this);
-	// Pass vertices to gameObject
-	vertices = inVertices;
 
 	// A Transform is a required component for all GameObjects
 	AddComponent(Transform());
 	transform = GetComponent(Transform());
-
-	AddComponent(Model());
-	GetComponent(Model())->Init(inVertices, inProgram);
 }
 
 void GameObject::Render()
