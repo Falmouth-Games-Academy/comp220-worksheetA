@@ -2,7 +2,7 @@
 
 ByGL::Application::Application()
 {
-	glWindow = nullptr;
+
 }
 
 ByGL::Application::~Application()
@@ -25,8 +25,8 @@ int ByGL::Application::Init()
 
 #pragma region Window Setup
 	// Initialize the main window and check its success.
-	glWindow = NewWindow("New Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_TRUE, SDL_WINDOW_OPENGL);
-	if (glWindow == nullptr)
+	glWindow.push_back(NewWindow("New Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_TRUE, SDL_WINDOW_OPENGL));
+	if (glWindow.at(0) == nullptr)
 		return Quit();
 #pragma endregion
 	return 1;
@@ -67,10 +67,12 @@ int ByGL::Application::Run()
 		// Update Screen
 		glClearColor(0.0, 1.0, 0.5, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		SDL_GL_SwapWindow(glWindow->GetWindow());
+		for (int i = 0; i < glWindow.size(); i++)
+			SDL_GL_SwapWindow(glWindow.at(i)->GetWindow());
 	}
-	delete glWindow;
+	for (int i = 0; i < glWindow.size(); i++)
+		delete glWindow.at(i);
+	glWindow.clear();
 	return Quit();
 }
 
