@@ -20,7 +20,7 @@
 class Model : public IComponent
 {
 public:
-	Model() {};
+	Model() { componentFlags = GLU::operator|(ComponentFlags::MESH, ComponentFlags::RENDERER); };
 	~Model() {};
 protected:
 

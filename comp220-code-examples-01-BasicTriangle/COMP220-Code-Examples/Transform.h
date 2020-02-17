@@ -22,7 +22,7 @@
 class Transform : public IComponent
 {
 public:
-	Transform() {};
+	Transform() { componentFlags = ComponentFlags::TRANSLATION; };
 	~Transform() {};
 	///<summary>
 	/// Returns the transform location in world space

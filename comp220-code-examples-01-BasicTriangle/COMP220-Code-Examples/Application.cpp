@@ -26,10 +26,9 @@ void FluidGL::Application::Run()
 	bool running = true;
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
+
  	while (running)
 	{
-
-		bool fullscreen = renderer->IsFullscreen();
 		//Poll for the events which have happened in this frame
 		//https://wiki.libsdl.org/SDL_PollEvent
 		while (SDL_PollEvent(&ev))

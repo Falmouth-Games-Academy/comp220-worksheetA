@@ -7,6 +7,7 @@
 
 #include "Renderer.h"
 #include "GameObject.h"
+#include "GLUtils.h"
 
 #include <SDL.h>
 #include <gl\glew.h>
@@ -17,6 +18,7 @@
 
 namespace FluidGL
 {
+
 	class Application
 	{
 	public:
