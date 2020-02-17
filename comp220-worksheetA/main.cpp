@@ -1,11 +1,14 @@
 #include <iostream>
-#include <SDL.h>
+#include <GL/glew.h>
+#include "OpenWindow.h"
 
-int main(int argc, char ** argsv)
+using namespace OGL;
+
+int main(int argc, char* args[])
 {
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
 	//https://wiki.libsdl.org/SDL_Init
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		//Display an error message box
 		//https://wiki.libsdl.org/SDL_ShowSimpleMessageBox
@@ -13,20 +16,34 @@ int main(int argc, char ** argsv)
 		return 1;
 	}
 
-	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
-	//https://wiki.libsdl.org/SDL_CreateWindow
-	SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 640, SDL_WINDOW_SHOWN);
-	//Checks to see if the window has been created, the pointer will have a value of some kind
-	if (window == nullptr)
-	{
-		//Show error
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_CreateWindow failed", SDL_GetError(), NULL);
-		//Close the SDL Library
-		//https://wiki.libsdl.org/SDL_Quit
-		SDL_Quit();
-		return 1;
-	}
+	OpenWindow glWindow = OpenWindow("Welcome to the world of tomorrow!", 1280, 720, SDL_WINDOW_OPENGL);
 
+	if (!glWindow.CheckSuccess())
+
+		return 1;
+
+		SDL_Window* window = glWindow.GetWindow();
+
+	SDL_GLContext glContext = SDL_GL_CreateContext(window);
+
+#pragma region GL setup
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+	SDL_GL_CreateContext(window);
+
+#pragma endregion
+
+#pragma region GLEW setup
+
+	glewExperimental = GL_TRUE;
+
+	glewInit();
+
+
+#pragma endregion
 	
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -58,6 +75,8 @@ int main(int argc, char ** argsv)
 			}
 		}
 
+		glClearColor(0.0f, 0.75f, 0.25f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		SDL_GL_SwapWindow(window);
 	}
