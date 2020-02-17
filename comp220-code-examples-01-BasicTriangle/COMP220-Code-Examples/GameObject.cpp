@@ -31,12 +31,12 @@ void GameObject::Init(const std::vector<GLfloat>& inVertices, const GLuint& inPr
 
 void GameObject::Render()
 {
-	//glUseProgram(shaderProgram);
+	glUseProgram(shaderProgram);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	glVertexAttribPointer(
 		0,
-		vertices.size() / 3,	// Number  of vertices
+		3,	// Number of components that make up a vertex
 		GL_FLOAT,
 		GL_FALSE,
 		0,
