@@ -24,6 +24,13 @@ enum class ComponentFlags
 	TRANSLATION = 0x04		// Contains functionality for manipulating position, rotation, scale etc.
 };
 
+// GameObject component system
+// problem with enums is they are compile time
+// Runtime
+
+// Consider having a separate material system
+// And a separate shader -> enumerate all shaders
+
 ///<summary>
 /// Interface for implementing the component-based system
 ///</summary>

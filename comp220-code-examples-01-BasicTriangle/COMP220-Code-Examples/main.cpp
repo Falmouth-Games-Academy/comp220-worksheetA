@@ -14,6 +14,15 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
+// Consider moving the main loop to a separate project and importing the application as a static library
+// This can also serve as a basis for performing unit tests
+
+// Consider centralising all headers in a single header file
+// e.g. Common.h or Engine.h
+// BUT: compile times will suffer
+
+// Resource acquisition initialisation - useful to look into
+
 int main(int argc, char ** argsv)
 {
 	////Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
@@ -187,6 +196,13 @@ int main(int argc, char ** argsv)
 	FluidGL::Application* application = new FluidGL::Application();
 	application->Init("FluidGL", 1280, 720, false);
 	application->Run();
+	
+	// Delete application pointer
+	if (application)
+	{
+		delete application;
+		application = nullptr;
+	}
 
 	return 0;
 }
