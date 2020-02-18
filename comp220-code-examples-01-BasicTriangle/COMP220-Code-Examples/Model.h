@@ -9,6 +9,7 @@
 #include <map>
 
 #include "IComponent.h"
+#include "GLUtils.h"
 
 #include <SDL.h>
 #include <gl\glew.h>

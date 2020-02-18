@@ -62,4 +62,14 @@ namespace GLU
 		return static_cast<T>(~static_cast<int>(a));
 	}
 #pragma endregion
+
+#pragma region vertex
+
+	struct vertex
+	{
+		float x, y, z;
+		float r, g, b, a;
+	};
+
+#pragma endregion
 }
