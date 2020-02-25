@@ -12,15 +12,16 @@ void GameObject::Init(const GLuint& inProgram)
 {
 	// Add gameObject to list of created objects
 	gameObjects.push_back(this);
+}
 
-	// A Transform is a required component for all GameObjects
-	AddComponent(Transform());
-	transform = GetComponent(Transform());
+void GameObject::Update()
+{
+
 }
 
 void GameObject::Render()
 {
-	GetComponent(Model())->Render();
+	
 }
 
 void GameObject::DeleteAll()

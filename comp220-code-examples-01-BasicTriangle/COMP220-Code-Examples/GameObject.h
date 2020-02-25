@@ -8,10 +8,6 @@
 #include <vector>
 #include <map>
 
-#include "Transform.h"
-#include "Model.h"
-#include "Camera.h"
-
 #include <SDL.h>
 #include <gl\glew.h>
 #include <SDL_opengl.h>
@@ -23,9 +19,11 @@ public:
 	GameObject() {};
 	~GameObject();
 
-	// Initialize mesh
+	// Initialize gameObject
 	void Init(const GLuint &inProgram);
 
+	// Update GameObject
+	void Update();
 	// Render object
 	void Render();
 
@@ -37,9 +35,8 @@ public:
 	template<typename T>
 	void AddComponent(T);
 
+	// Deletes all created gameObjects
 	static void DeleteAll();
-
-	Transform* transform;
 
 protected:
 	GLuint vertexArray = -1;
@@ -48,7 +45,6 @@ protected:
 	GLuint shaderProgram = -1;
 private:
 	static std::vector<GameObject*> gameObjects;
-	std::vector<IComponent*> components;
 };
 
 template<typename T>

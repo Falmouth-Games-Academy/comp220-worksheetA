@@ -1,29 +1,9 @@
 #pragma once
 
-#include <sstream>
-#include <fstream>
-#include <iostream>
-
-#include <array>
-#include <vector>
-#include <map>
-
+#include "Base.h"
 #include "GLUtils.h"
 
-#include <SDL.h>
-#include <gl\glew.h>
-#include <SDL_opengl.h>
-
 using namespace GLU;
-
-enum class ComponentFlags
-{
-	NONE = 0x00,
-	RENDERER = 0x01,	// Contains functionality for rendering GameObject
-	MESH = 0x02,	// Contains functionality for storing and/or manipulating mesh
-	TRANSLATION = 0x04,		// Contains functionality for manipulating position, rotation, scale etc.
-	CAMERA = 0x08
-};
 
 // GameObject component system
 // problem with enums is they are compile time
@@ -41,17 +21,21 @@ public:
 	IComponent() {};
 	virtual ~IComponent() {};
 
-	// Should all methods be here : render, translate etc. and have individual components deal with implementing/not implementing them?
-	// Certainly a point worth discussing
+	// Returns the type of component
+	const char* GetComponentType() { return componentType; };
 
-	virtual bool hasFlags(ComponentFlags flags) 
-	{
-		return (componentFlags & flags) == flags;
-	}
-
+	// Runs every update loop
 	virtual void Update() {};
-
 protected:
-	ComponentFlags componentFlags;
-private:
+	const char* componentType = "";
+};
+
+// Base components should be described here i.e. transforms, etc
+// These components are fundamental to the usage of the component system as other components will rely on them
+
+class Transform : public IComponent
+{
+public:
+	Transform() {};
+	virtual ~Transform() {};
 };

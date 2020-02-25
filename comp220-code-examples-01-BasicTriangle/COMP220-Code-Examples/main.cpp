@@ -171,10 +171,10 @@ int main(int argc, char ** argsv)
 		{1, -1, 0, 0, 1, 0, 1}, // vertex 2
 		{1, 1, 0, 0, 0, 1, 1}, // vertex 3
 	    {-1, 1, 0, 1, 1, 0, 1}, // vertex 4
-		{-1, -1, 2, 1, 0, 0, 1}, // vertex 5
-		{1, -1, 2, 0, 1, 0, 1}, // vertex 6
-		{1, 1, 2, 0, 0, 1, 1}, // vertex 7
-		{-1, 1, 2, 1, 1, 0, 1} // vertex 8
+		{-1, -1, -2, 1, 0, 0, 1}, // vertex 5
+		{1, -1, -2, 0, 1, 0, 1}, // vertex 6
+		{1, 1, -2, 0, 0, 1, 1}, // vertex 7
+		{-1, 1, -2, 1, 1, 0, 1} // vertex 8
 	};
 
 	// This will identify our vertex buffer
@@ -188,14 +188,18 @@ int main(int argc, char ** argsv)
 
 	glEnable(GL_CULL_FACE);
 
-	std::vector<unsigned int> indices = { 0, 3, 2,
-		1, 0, 2,
-		5, 1, 6,
-		1, 2, 6,
-		7, 6, 5, 
-		7, 5, 4,
-		3, 7, 4,
-		3, 4, 0
+	std::vector<unsigned int> indices = { 0, 2, 3,
+		0, 1, 2,
+		1, 6, 2,
+		1, 5, 6,
+		5, 4, 7,
+		5, 7, 6,
+		4, 3, 7,
+		4, 0, 3,
+		2, 7, 3,
+		2, 6, 7,
+		1, 4, 5,
+		1, 0, 4
 	};
 	GLuint elementBuffer;
 	glGenBuffers(1, &elementBuffer);
@@ -210,7 +214,7 @@ int main(int argc, char ** argsv)
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 
-	glm::vec3 position = glm::vec3(0.5, 0.0, 0.0);
+	glm::vec3 position = glm::vec3(0.0, 0.0, 0.0);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::mat4 translationMatrix = glm::mat4(1.0f);
 	glm::mat4 rotationMatrix = glm::mat4(1.0f);
@@ -218,7 +222,7 @@ int main(int argc, char ** argsv)
 	translationMatrix = glm::translate(translationMatrix, position);
 
 	// Set up camera view matrix
-	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -10.0f);
+	glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 10.0f);
 	glm::vec3 cameraTarget = glm::vec3(position);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::mat4 view = glm::lookAt(cameraPosition, cameraTarget, cameraUp);
@@ -255,10 +259,10 @@ int main(int argc, char ** argsv)
 					running = false;
 					break;
 				case SDLK_LEFT:
-					translationMatrix = glm::translate(translationMatrix, glm::vec3(1, 0, 0));
+					translationMatrix = glm::translate(translationMatrix, glm::vec3(-1, 0, 0));
 					break;
 				case SDLK_RIGHT:
-					translationMatrix = glm::translate(translationMatrix, glm::vec3(-1, 0, 0));
+					translationMatrix = glm::translate(translationMatrix, glm::vec3(1, 0, 0));
 					break;
 				case SDLK_UP:
 					translationMatrix = glm::translate(translationMatrix, glm::vec3(0, 1, 0));
@@ -270,7 +274,7 @@ int main(int argc, char ** argsv)
 			}
 		}
 
-		glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(programID);
