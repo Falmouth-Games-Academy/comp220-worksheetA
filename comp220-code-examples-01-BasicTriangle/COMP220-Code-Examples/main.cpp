@@ -6,6 +6,8 @@
 #include <fstream>
 
 #include "Application.h"
+#include "GLUtils.h"
+#include "Texture.h"
 
 #include <SDL.h>
 #include <gl\glew.h>
@@ -22,6 +24,8 @@
 // BUT: compile times will suffer
 
 // Resource acquisition initialisation - useful to look into
+
+using namespace GLU;
 
 GLuint LoadShaders(const char* vertex_file_path, const char* fragment_file_path) {
 
@@ -124,6 +128,9 @@ int main(int argc, char ** argsv)
 		return 1;
 	}
 
+	// Check for image support
+	IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
+
 	//Create a window, note we have to free the pointer returned using the DestroyWindow Function
 	//https://wiki.libsdl.org/SDL_CreateWindow
 	SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_OPENGL);
@@ -167,14 +174,14 @@ int main(int argc, char ** argsv)
 
 	vertex vertices[] =
 	{
-		{-1, -1, 0, 1, 0, 0, 1}, // vertex 1
-		{1, -1, 0, 0, 1, 0, 1}, // vertex 2
-		{1, 1, 0, 0, 0, 1, 1}, // vertex 3
-	    {-1, 1, 0, 1, 1, 0, 1}, // vertex 4
-		{-1, -1, -2, 1, 0, 0, 1}, // vertex 5
-		{1, -1, -2, 0, 1, 0, 1}, // vertex 6
-		{1, 1, -2, 0, 0, 1, 1}, // vertex 7
-		{-1, 1, -2, 1, 1, 0, 1} // vertex 8
+		{-1, -1, 0, 1, 0, 0, 1, 0, 0}, // vertex 1
+		{1, -1, 0, 0, 1, 0, 1, 1, 0}, // vertex 2
+		{1, 1, 0, 0, 0, 1, 1, 1, 1}, // vertex 3
+	    {-1, 1, 0, 1, 1, 0, 1, 0, 1}, // vertex 4
+		{-1, -1, -2, 1, 0, 0, 1, 1, 0}, // vertex 5
+		{1, -1, -2, 0, 1, 0, 1, 0, 0}, // vertex 6
+		{1, 1, -2, 0, 0, 1, 1, 0, 1}, // vertex 7
+		{-1, 1, -2, 1, 1, 0, 1, 1, 1} // vertex 8
 	};
 
 	// This will identify our vertex buffer
@@ -207,12 +214,13 @@ int main(int argc, char ** argsv)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 	
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("BasicShader.vert",
-		"BasicShader.frag");
+	GLuint programID = LoadShaders("TextureShader.vert",
+		"TextureShader.frag");
 
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "model");
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
+	GLuint baseTextureLocation = glGetUniformLocation(programID, "baseTexture");
 
 	glm::vec3 position = glm::vec3(0.0, 0.0, 0.0);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -236,6 +244,9 @@ int main(int argc, char ** argsv)
 	SDL_Event ev;
 
 	int l = 0;
+
+	GLuint BaseTextureId = loadTextureFromFile("Resources/Textures/GreatGrateCrate.png");
+
 	while (running)
 	{
 		//Poll for the events which have happened in this frame
@@ -277,6 +288,11 @@ int main(int argc, char ** argsv)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glActiveTexture(GL_TEXTURE0); // Allocate texture slot
+		glBindTexture(GL_TEXTURE_2D, BaseTextureId); // Bind texture to slot
+		glUniform1i(baseTextureLocation, 0);  // Send in texture 0
+		// Usually, have a max of 4 textures per object
+
 		glUseProgram(programID);
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(translationMatrix));
@@ -306,6 +322,16 @@ int main(int argc, char ** argsv)
 			sizeof(vertex),
 			(void*)(3 * sizeof(float))
 		);
+
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(
+			2,
+			2,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(vertex),
+			(void*)(7 * sizeof(float))
+		);
 			
 		// Draw the triangle !
 		//glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -321,7 +347,7 @@ int main(int argc, char ** argsv)
 		SDL_GL_SwapWindow(window);
 	}
 
-
+	glDeleteTextures(1, &BaseTextureId);
 	glDeleteProgram(programID);
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteVertexArrays(1, &vertexArray);

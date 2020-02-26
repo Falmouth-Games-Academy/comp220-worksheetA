@@ -4,8 +4,8 @@ std::vector<GameObject*> GameObject::gameObjects;
 
 GameObject::~GameObject()
 {
-	glDeleteBuffers(1, &vertexBuffer);
-	glDeleteVertexArrays(1, &vertexArray);
+	/*glDeleteBuffers(1, &vertexBuffer);
+	glDeleteVertexArrays(1, &vertexArray);*/
 }
 
 void GameObject::Init(const GLuint& inProgram)

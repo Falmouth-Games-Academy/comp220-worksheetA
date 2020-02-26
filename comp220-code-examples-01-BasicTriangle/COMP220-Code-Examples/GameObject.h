@@ -39,26 +39,6 @@ public:
 	static void DeleteAll();
 
 protected:
-	GLuint vertexArray = -1;
-	GLuint vertexBuffer = -1;
-	std::vector<GLfloat> vertices;
-	GLuint shaderProgram = -1;
 private:
 	static std::vector<GameObject*> gameObjects;
 };
-
-template<typename T>
-inline T* GameObject::GetComponent(T)
-{
-	for (auto& i : components) 
-		if (dynamic_cast<T*>(i) != NULL && typeid(dynamic_cast<T*>(i)) == typeid(T*))
-			return dynamic_cast<T*>(i);
-
-	return nullptr;
-}
-
-template<typename T>
-inline void GameObject::AddComponent(T)
-{
-	components.push_back(new T());
-}

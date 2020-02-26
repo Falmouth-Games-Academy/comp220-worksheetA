@@ -24,9 +24,9 @@ void FluidGL::Application::Run()
 	//GLuint viewMatrixLocation = glGetUniformLocation(renderer->GetProgram("BasicShader"), "viewMatrix");
 	//GLuint projectionMatrixLocation = glGetUniformLocation(renderer->GetProgram("BasicShader"), "projectionMatrix");
 
-	gameObject->Init(renderer->GetProgram("BasicShader"));
-	gameObject->AddComponent(Model());
-	gameObject->GetComponent(Model())->Init(vertices, renderer->GetProgram("BasicShader"));
+	//gameObject->Init(renderer->GetProgram("BasicShader"));
+	//gameObject->AddComponent(Model());
+	//gameObject->GetComponent(Model())->Init(vertices, renderer->GetProgram("BasicShader"));
 
 	//camera->Init(renderer->GetProgram("BasicShader"));
 	//camera->AddComponent(Camera());
