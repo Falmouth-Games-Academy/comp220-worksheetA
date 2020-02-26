@@ -13,5 +13,15 @@ public:
 	Material() {};
 	~Material() {};
 
-protected:
+	GLuint shaderProgram;
+	
+//=========TEXTURES=========//
+	// Albedo texture
+	GLuint albedo;
+	// Normal texture
+	GLuint normal;
+	// Specular texture
+	GLuint specular;
+	// Gloss texture
+	GLuint gloss;
 };

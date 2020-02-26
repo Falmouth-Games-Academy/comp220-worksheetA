@@ -1,4 +1,4 @@
-#include "Transform.h"
+#include "IComponent.h"
 
 void Transform::Move(glm::vec3 velocity)
 {
