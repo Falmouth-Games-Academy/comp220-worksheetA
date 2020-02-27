@@ -8,6 +8,9 @@
 #include <vector>
 #include <map>
 
+#include "IComponent.h"
+#include "Transform.h"
+
 #include <SDL.h>
 #include <gl\glew.h>
 #include <SDL_opengl.h>
@@ -38,7 +41,25 @@ public:
 	// Deletes all created gameObjects
 	static void DeleteAll();
 
-protected:
+	Transform* transform;
+
 private:
 	static std::vector<GameObject*> gameObjects;
+	std::vector<IComponent*> components;
 };
+
+template<typename T>
+inline T* GameObject::GetComponent(T)
+{
+	for (auto& i : components)
+		if (dynamic_cast<T*>(i) != NULL && typeid(dynamic_cast<T*>(i)) == typeid(T*))
+			return dynamic_cast<T*>(i);
+
+	return nullptr;
+}
+
+template<typename T>
+inline void GameObject::AddComponent(T)
+{
+	components.push_back(new T());
+}

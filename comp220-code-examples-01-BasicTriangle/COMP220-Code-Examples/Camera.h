@@ -25,5 +25,9 @@ public:
 protected:
 	GLuint programId;
 private:
-
+	bool _perspective = true;
+	float _fov = 60;
+	float _aspectRatio = 16.0 / 9.0;
+	float _nearClipPlane = 0.01;
+	float _farClipPlane = 100.0;
 };

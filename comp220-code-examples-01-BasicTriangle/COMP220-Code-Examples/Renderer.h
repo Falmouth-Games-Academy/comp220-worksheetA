@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <map>
+#include "Components.h"
 
 #include <SDL.h>
 #include <gl\glew.h>
@@ -59,6 +60,8 @@ public:
 	void UnloadAllPrograms();
 	// Get program based on name
 	GLuint GetProgram(const char* programName) { return loadedPrograms.at(programName); }
+	// Render all cameras 
+
 
 private : 
 	SDL_Window* window = nullptr;
