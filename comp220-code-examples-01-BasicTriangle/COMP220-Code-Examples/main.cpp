@@ -194,6 +194,9 @@ int main(int argc, char ** argsv)
 		glGenBuffers(1, &vertexBuffer);
 		// The following commands will talk about our 'vertexbuffer' buffer
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+
+		int u = sizeof(vertices);
+
 		// Give our vertices to OpenGL.
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 

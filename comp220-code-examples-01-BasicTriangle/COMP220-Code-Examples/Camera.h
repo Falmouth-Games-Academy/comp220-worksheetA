@@ -16,9 +16,9 @@ public:
 		return glm::perspective(glm::radians(fov), aspectRatio, nearClipPlane, farClipPlane);
 	}
 
-	glm::mat4 GetViewMatrix(glm::vec3 cameraTarget)
+	glm::mat4 GetViewMatrix()
 	{
-		return glm::lookAt(transform->Position(), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+		return glm::lookAt(transform->Position(), transform->Position() + transform->Forward(), glm::vec3(0, 1, 0));
 	}
 
 	virtual void Update() override {};

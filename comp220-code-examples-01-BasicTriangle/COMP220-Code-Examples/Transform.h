@@ -32,7 +32,11 @@ public:
 	///<summary>
 	/// Returns the transform rotation as a vec3 of euler angles
 	///</summary>
-	glm::vec3 EulerRotation() { return glm::eulerAngles(rotation); }
+	glm::vec3 EulerRotation() { return glm::eulerAngles(glm::quat_cast(rotationMatrix)); }
+	///<summary>
+	/// Returns the forward vector of the transform
+	///</summary>
+	glm::vec3 Forward() { return glm::vec3(cos(EulerRotation().x) * cos(EulerRotation().y), cos(EulerRotation().x) * sin(EulerRotation().y), sin(EulerRotation().x)); }
 	///<summary>
 	/// Move GameObject by certain amount
 	///</summary>
@@ -51,7 +55,7 @@ public:
 	void Scale(glm::vec3 scale);
 
 private:
-	glm::vec3 position = glm::vec3(1.0);
+	glm::vec3 position = glm::vec3(0.0);
 	glm::vec3 scale = glm::vec3(1.0);
 	glm::quat rotation = glm::quat(0, 0, 0, 0);
 

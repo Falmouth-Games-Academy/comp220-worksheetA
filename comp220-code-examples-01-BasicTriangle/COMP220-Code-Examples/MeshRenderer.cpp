@@ -33,7 +33,7 @@ void MeshRenderer::Render(Camera* visibleFromCamera)
 	}
 
 	// Use material
-	materials[0].Use(transform->GetTransformation(), visibleFromCamera->GetViewMatrix(glm::vec3(0, 0, 10)), visibleFromCamera->GetProjectionMatrix());
+	materials[0].Use(transform->GetTransformation(), visibleFromCamera->GetViewMatrix(), visibleFromCamera->GetProjectionMatrix());
 
 	// Use mesh
 	mesh->Use();
