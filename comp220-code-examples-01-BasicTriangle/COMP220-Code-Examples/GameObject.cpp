@@ -6,9 +6,12 @@ GameObject::~GameObject()
 {
 	/*glDeleteBuffers(1, &vertexBuffer);
 	glDeleteVertexArrays(1, &vertexArray);*/
+	
+	delete transform;
+	transform = NULL;
 }
 
-void GameObject::Init(const GLuint& inProgram)
+void GameObject::Init()
 {
 	// Add gameObject to list of created objects
 	gameObjects.push_back(this);

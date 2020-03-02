@@ -26,6 +26,7 @@ public:
 	// Returns the type of component
 	const char* GetComponentType() { return componentType; };
 
+	void SetTransform(Transform* transform) { this->transform = transform; }
 	void SetOwner(GameObject* gameObject) { owner = gameObject; }
 	GameObject* GetOwner() { return owner; }
 
@@ -34,6 +35,7 @@ public:
 protected:
 	const char* componentType = "";
 	GameObject* owner;
+	Transform* transform;
 };
 
 // Base components should be described here i.e. transforms, etc

@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include "Components.h"
+#include "Texture.h"
 
 #include <SDL.h>
 #include <gl\glew.h>

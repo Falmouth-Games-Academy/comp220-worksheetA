@@ -11,23 +11,23 @@ public:
 
 	void Init(GLuint programId) { this->programId = programId; };
 
-	glm::mat4 GetProjectionMatrix(bool perspective, float fov, float aspectRatio, float nearClipPlane, float farClipPlane)
+	glm::mat4 GetProjectionMatrix()
 	{
 		return glm::perspective(glm::radians(fov), aspectRatio, nearClipPlane, farClipPlane);
 	}
 
-	glm::mat4 GetViewMatrix(glm::vec3 cameraPosition, glm::vec3 cameraTarget, glm::vec3 cameraUp)
+	glm::mat4 GetViewMatrix(glm::vec3 cameraTarget)
 	{
-		return glm::lookAt(cameraPosition, cameraTarget, cameraUp);
+		return glm::lookAt(transform->Position(), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	}
 
 	virtual void Update() override {};
 protected:
 	GLuint programId;
 private:
-	bool _perspective = true;
-	float _fov = 60;
-	float _aspectRatio = 16.0 / 9.0;
-	float _nearClipPlane = 0.01;
-	float _farClipPlane = 100.0;
+	bool perspective = true;
+	float fov = 45;
+	float aspectRatio = 16.0 / 9.0;
+	float nearClipPlane = 0.01;
+	float farClipPlane = 100.0;
 };

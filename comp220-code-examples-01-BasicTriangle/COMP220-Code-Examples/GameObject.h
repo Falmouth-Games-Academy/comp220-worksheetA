@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 
-#include "IComponent.h"
+#include "Components.h"
 #include "Transform.h"
 
 #include <SDL.h>
@@ -19,11 +19,11 @@ class GameObject
 {
 public:
 	// Constructor & destructor
-	GameObject() {};
+	GameObject() { transform = new Transform(); };
 	~GameObject();
 
 	// Initialize gameObject
-	void Init(const GLuint &inProgram);
+	void Init();
 
 	// Update GameObject
 	void Update();
@@ -62,4 +62,6 @@ template<typename T>
 inline void GameObject::AddComponent(T)
 {
 	components.push_back(new T());
+	components[components.size() - 1]->SetOwner(this);
+	components[components.size() - 1]->SetTransform(transform);
 }

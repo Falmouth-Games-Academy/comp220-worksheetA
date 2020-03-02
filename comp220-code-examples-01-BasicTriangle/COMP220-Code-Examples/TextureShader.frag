@@ -5,9 +5,9 @@ in vec2 vertexTextureCoordsOut;
 
 out vec4 color;
 
-uniform sampler2D baseTexture;
+uniform sampler2D albedo;
 
 void main()
 {
-	color = texture(baseTexture, vertexTextureCoordsOut);
+	color = texture(albedo, vertexTextureCoordsOut);
 }

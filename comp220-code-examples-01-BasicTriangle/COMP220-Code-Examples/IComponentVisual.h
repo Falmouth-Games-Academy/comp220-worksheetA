@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "IComponent.h"
+#include "Camera.h"
 
 using namespace GLU;
 
@@ -24,7 +25,7 @@ public:
 	// Runs every loop
 	virtual void Update() override {};
 	// Also runs every loop for render purposes
-	virtual void Render() {};
+	virtual void Render(Camera * visibleFromCamera) {};
 protected:
 	const char* componentType = "visual";
 };
