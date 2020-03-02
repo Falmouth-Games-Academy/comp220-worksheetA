@@ -41,7 +41,7 @@ public:
 	// Deletes all created gameObjects
 	static void DeleteAll();
 
-	Transform* transform;
+	Transform * transform;
 
 private:
 	static std::vector<GameObject*> gameObjects;

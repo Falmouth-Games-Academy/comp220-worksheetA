@@ -24,6 +24,14 @@ void FluidGL::Application::Run()
 		{-1, 1, -2, 1, 1, 0, 1, 1, 1} // vertex 8
 	};
 
+	std::vector<vertex> _vertices =
+	{
+		{-1, 0, -1, .5, .5, .5, 1, 0, 0},		// 3------2
+		{-1, 0, 1, .5, .5, .5, 1, 0, 0},		// |      |
+		{1, 0, 1, .5, .5, .5, 1, 0, 0},			// |      |
+		{1, 0, -1, .5, .5, .5, 1, 0, 0}			// 0------1
+	};
+
 	std::vector<GLuint> indices = { 0, 2, 3,
 	0, 1, 2,
 	1, 6, 2,
@@ -38,38 +46,35 @@ void FluidGL::Application::Run()
 	1, 0, 4
 	};
 
+	std::vector<GLuint> _indices =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
+
 	GameObject* gameObject = new GameObject();
-	GameObject* gameObject2 = new GameObject();
-	GameObject* gameObject3 = new GameObject();
 	GameObject* camera = new GameObject();
 
 	GLuint albedoId = loadTextureFromFile("Resources/Textures/GreatGrateCrate.png");
 	Material material = Material();
 	material.Init(renderer->GetProgram("TextureShader"), albedoId);
 
+	GLuint _albedoId = loadTextureFromFile("Resources/Textures/TEX_Panel_Albedo.png");
+	GLuint _normalId = loadTextureFromFile("Resources/Textures/TEX_Panel_Normal.png");
+	Material _material = Material();
+
 	Mesh mesh = Mesh();
 	mesh.Init(vertices, indices);
 
-	Mesh mesh2 = Mesh();
-	mesh2.Init(vertices, indices);
+	Mesh _mesh = Mesh();
+	_mesh.Init(_vertices, _indices);
 
-	Mesh mesh3 = Mesh();
-	mesh3.Init(vertices, indices);
+	glEnable(GL_CULL_FACE);
 
 	gameObject->transform->MoveTo(glm::vec3(0, 0, -7));
 	gameObject->AddComponent(MeshRenderer());
 	gameObject->GetComponent(MeshRenderer())->materials.push_back(material);
 	gameObject->GetComponent(MeshRenderer())->mesh = &mesh;
-
-	gameObject2->transform->MoveTo(glm::vec3(0, 0, 0));
-	gameObject2->AddComponent(MeshRenderer());
-	gameObject2->GetComponent(MeshRenderer())->materials.push_back(material);
-	gameObject2->GetComponent(MeshRenderer())->mesh = &mesh2;
-
-	gameObject3->transform->MoveTo(glm::vec3(5, 0, 5));
-	gameObject3->AddComponent(MeshRenderer());
-	gameObject3->GetComponent(MeshRenderer())->materials.push_back(material);
-	gameObject3->GetComponent(MeshRenderer())->mesh = &mesh3;
 
 	camera->AddComponent(Camera());
 	camera->GetComponent(Camera())->Init(renderer->GetProgram("TextureShader"));
@@ -80,7 +85,6 @@ void FluidGL::Application::Run()
 	SDL_Event ev;
 
 	float i = 0;
-	glEnable(GL_CULL_FACE);
 
 	float input = 0;
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -112,18 +116,6 @@ void FluidGL::Application::Run()
 				case SDLK_SPACE:
 					renderer->SetFullscreen(!renderer->IsFullscreen());
 					break;
-				//case SDLK_LEFT:
-				//	camera->transform->RotateAngles(glm::vec3(1, 0, 0), -15);
-				//	break;
-				//case SDLK_RIGHT:
-				//	camera->transform->RotateAngles(glm::vec3(1, 0, 0), 15);
-				//	break;
-				//case SDLK_UP:
-				//	input = -0.1;
-				//	break;
-				//case SDLK_DOWN:
-				//	input = 0.1;
-				//	break;
 				}
 			}
 		}
@@ -145,8 +137,7 @@ void FluidGL::Application::Run()
 		//====RENDER OBJECTS HERE====//
 		//camera->transform->RotateAngles(glm::vec3(0, 1, 0), (int)i % 360);
 		gameObject->GetComponent(MeshRenderer())->Render(camera->GetComponent(Camera()));
-		gameObject2->GetComponent(MeshRenderer())->Render(camera->GetComponent(Camera()));
-		gameObject3->GetComponent(MeshRenderer())->Render(camera->GetComponent(Camera()));
+
 		glm::vec3 forward = camera->transform->Forward();
 		// Swap buffers
 		renderer->SwapBuffers();

@@ -106,5 +106,11 @@
     <None Include="TextureShader.vert">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="NormalShader.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="NormalShader.vert">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

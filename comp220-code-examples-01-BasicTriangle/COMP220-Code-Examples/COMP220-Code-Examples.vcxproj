@@ -188,6 +188,8 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.5\lib\x64\*.dll "$(OutDir)\*.dll"</Co
   <ItemGroup>
     <None Include="BasicShader.frag" />
     <None Include="BasicShader.vert" />
+    <None Include="NormalShader.frag" />
+    <None Include="NormalShader.vert" />
     <None Include="TextureShader.frag" />
     <None Include="TextureShader.vert" />
   </ItemGroup>
