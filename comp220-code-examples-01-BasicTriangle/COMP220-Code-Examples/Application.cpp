@@ -7,7 +7,7 @@ void FluidGL::Application::Init(const char* applicationName, int windowWidth, in
 	renderer->Init(applicationName, windowWidth, windowHeight, fullscreen);
 	renderer->LoadProgram("BasicShader");
 	renderer->LoadProgram("TextureShader");
-
+	renderer->LoadProgram("LightShader");
 }
 
 void FluidGL::Application::Run()
@@ -24,14 +24,6 @@ void FluidGL::Application::Run()
 		{-1, 1, -2, 1, 1, 0, 1, 1, 1} // vertex 8
 	};
 
-	std::vector<vertex> _vertices =
-	{
-		{-1, 0, -1, .5, .5, .5, 1, 0, 0},		// 3------2
-		{-1, 0, 1, .5, .5, .5, 1, 0, 0},		// |      |
-		{1, 0, 1, .5, .5, .5, 1, 0, 0},			// |      |
-		{1, 0, -1, .5, .5, .5, 1, 0, 0}			// 0------1
-	};
-
 	std::vector<GLuint> indices = { 0, 2, 3,
 	0, 1, 2,
 	1, 6, 2,
@@ -45,13 +37,6 @@ void FluidGL::Application::Run()
 	1, 4, 5,
 	1, 0, 4
 	};
-
-	std::vector<GLuint> _indices =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
-
 	GameObject* gameObject = new GameObject();
 	GameObject* camera = new GameObject();
 
@@ -59,19 +44,16 @@ void FluidGL::Application::Run()
 	Material material = Material();
 	material.Init(renderer->GetProgram("TextureShader"), albedoId);
 
-	GLuint _albedoId = loadTextureFromFile("Resources/Textures/TEX_Panel_Albedo.png");
-	GLuint _normalId = loadTextureFromFile("Resources/Textures/TEX_Panel_Normal.png");
-	Material _material = Material();
-
 	Mesh mesh = Mesh();
-	mesh.Init(vertices, indices);
+	//mesh.Init(vertices, indices);
+	//mesh.LoadFromFile("Resources/Models/Corridor_X.obj", MeshFormat::MESH_FORMAT_OBJ);
+	//mesh.LoadFromFile("Resources/Models/Corridor_Test.obj", MeshFormat::MESH_FORMAT_OBJ);
+	mesh.LoadFromFile("Resources/Models/Monkey.obj", MeshFormat::MESH_FORMAT_OBJ);
+	//mesh.LoadFromFile("Resources/Models/Sphere.obj", MeshFormat::MESH_FORMAT_OBJ);
+	//mesh.LoadFromFile("Resources/Models/IcoSphere.obj", MeshFormat::MESH_FORMAT_OBJ);
+	//mesh.LoadFromFile("Resources/Models/Cube.obj", MeshFormat::MESH_FORMAT_OBJ);
 
-	Mesh _mesh = Mesh();
-	_mesh.Init(_vertices, _indices);
-
-	glEnable(GL_CULL_FACE);
-
-	gameObject->transform->MoveTo(glm::vec3(0, 0, -7));
+	gameObject->transform->MoveTo(glm::vec3(0, 0, 0));
 	gameObject->AddComponent(MeshRenderer());
 	gameObject->GetComponent(MeshRenderer())->materials.push_back(material);
 	gameObject->GetComponent(MeshRenderer())->mesh = &mesh;

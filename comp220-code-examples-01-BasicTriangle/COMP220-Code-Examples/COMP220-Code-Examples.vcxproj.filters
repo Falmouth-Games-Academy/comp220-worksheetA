@@ -106,10 +106,10 @@
     <None Include="TextureShader.vert">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="NormalShader.frag">
+    <None Include="LightShader.frag">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="NormalShader.vert">
+    <None Include="LightShader.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

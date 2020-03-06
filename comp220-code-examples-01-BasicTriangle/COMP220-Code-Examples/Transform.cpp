@@ -15,6 +15,7 @@ void Transform::MoveTo(glm::vec3 position)
 void Transform::RotateAngles(glm::vec3 axis, float angle)
 {
 	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(angle), axis);
+	rotation = glm::quat_cast(rotationMatrix);
 }
 
 void Transform::Scale(glm::vec3 scale)

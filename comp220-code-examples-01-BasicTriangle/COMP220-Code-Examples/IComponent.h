@@ -32,6 +32,7 @@ public:
 
 	// Runs every update loop
 	virtual void Update() {};
+	// Get a clone of this component
 protected:
 	const char* componentType = "";
 	GameObject* owner;

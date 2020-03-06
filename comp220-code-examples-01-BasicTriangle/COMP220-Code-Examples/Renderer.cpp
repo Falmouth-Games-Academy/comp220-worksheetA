@@ -7,7 +7,7 @@ Renderer::~Renderer()
 	SDL_Quit();
 }
 
-int Renderer::Init(const char* windowName, int resX, int resY, bool fullscreen, int glMajorVersion, int glMinorVersion)
+int Renderer::Init(const char* windowName, int resX, int resY, bool fullscreen, int glMajorVersion, int glMinorVersion, bool depthTesting, bool cullFaces)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -47,13 +47,19 @@ int Renderer::Init(const char* windowName, int resX, int resY, bool fullscreen, 
 
 	SetFullscreen(fullscreen);
 
+	if(depthTesting)
+		glEnable(GL_DEPTH_TEST);
+	
+	if(cullFaces)
+		glEnable(GL_CULL_FACE);
+
 	return 0;
 }
 
 void Renderer::ClearScreen(float r, float g, float b, float a, GLbitfield mask)
 {
 	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::SwapBuffers()

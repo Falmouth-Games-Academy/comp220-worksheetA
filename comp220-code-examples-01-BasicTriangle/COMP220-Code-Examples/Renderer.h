@@ -33,7 +33,9 @@ public:
 		int resY = RENDERER_DEFAULT_RESOLUTION_Y,
 		bool fullscreen = false,
 		int glMajorVersion = RENDERER_GL_MAJOR_VERSION,
-		int glMinorVersion = RENDERER_GL_MINOR_VERSION
+		int glMinorVersion = RENDERER_GL_MINOR_VERSION,
+		bool depthTesting = true,
+		bool cullFaces = true
 	);	// Initialise an SDL window and Gl context
 	
 	void ClearScreen(float r, float g, float b, float a, GLbitfield mask = GL_COLOR_BUFFER_BIT);	// Clear screen

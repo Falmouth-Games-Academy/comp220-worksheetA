@@ -73,4 +73,21 @@ namespace GLU
 	};
 
 #pragma endregion
+
+#pragma region utils
+
+	// Add a unique element to the vector
+	//template <typename T>
+	//inline void AddUnique(std::vector<T> &arr, T elem)
+	//{
+	//	for (auto& i : arr)
+	//	{
+	//		if (i == elem)
+	//			return;
+	//	}
+
+	//	arr.push_back(elem);
+	//}
+	
+#pragma endregion
 }
