@@ -40,20 +40,19 @@ void FluidGL::Application::Run()
 	GameObject* gameObject = new GameObject();
 	GameObject* camera = new GameObject();
 
-	GLuint albedoId = loadTextureFromFile("Resources/Textures/GreatGrateCrate.png");
+	//GLuint albedoId = loadTextureFromFile("Resources/Textures/TEX_Car_UV.png");
+	GLuint albedoId = loadTextureFromFile("Resources/Textures/TEX_Panel_Albedo.png");
+	GLuint normalId = loadTextureFromFile("Resources/Textures/TEX_Panel_Normal.png");
 	Material material = Material();
-	material.Init(renderer->GetProgram("TextureShader"), albedoId);
+	material.Init(renderer->GetProgram("TextureShader"), albedoId, normalId);
 
 	Mesh mesh = Mesh();
 	//mesh.Init(vertices, indices);
-	//mesh.LoadFromFile("Resources/Models/Corridor_X.obj", MeshFormat::MESH_FORMAT_OBJ);
-	//mesh.LoadFromFile("Resources/Models/Corridor_Test.obj", MeshFormat::MESH_FORMAT_OBJ);
-	mesh.LoadFromFile("Resources/Models/Monkey.obj", MeshFormat::MESH_FORMAT_OBJ);
-	//mesh.LoadFromFile("Resources/Models/Sphere.obj", MeshFormat::MESH_FORMAT_OBJ);
-	//mesh.LoadFromFile("Resources/Models/IcoSphere.obj", MeshFormat::MESH_FORMAT_OBJ);
 	//mesh.LoadFromFile("Resources/Models/Cube.obj", MeshFormat::MESH_FORMAT_OBJ);
+	mesh.LoadFromFile("Resources/Models/Car.obj", MeshFormat::MESH_FORMAT_OBJ);
 
-	gameObject->transform->MoveTo(glm::vec3(0, 0, 0));
+	gameObject->transform->MoveTo(glm::vec3(0, .5, 0));
+	gameObject->transform->Scale(glm::vec3(7, 7, 7));
 	gameObject->AddComponent(MeshRenderer());
 	gameObject->GetComponent(MeshRenderer())->materials.push_back(material);
 	gameObject->GetComponent(MeshRenderer())->mesh = &mesh;
@@ -66,13 +65,14 @@ void FluidGL::Application::Run()
 	//SDL Event structure, this will be checked in the while loop
 	SDL_Event ev;
 
-	float i = 0;
-
 	float input = 0;
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 
+	Time time = Time();
+
  	while (running)
 	{
+		time.StartTimer();
 		input = 0;
 		keys = SDL_GetKeyboardState(NULL);
 		//Poll for the events which have happened in this frame
@@ -123,6 +123,7 @@ void FluidGL::Application::Run()
 		glm::vec3 forward = camera->transform->Forward();
 		// Swap buffers
 		renderer->SwapBuffers();
+		time.EndTimer();
 	}
 }
 

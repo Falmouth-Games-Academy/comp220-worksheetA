@@ -3,6 +3,10 @@
 #include "Base.h"
 #include "GLUtils.h"
 
+#include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
+
 ///<summary>
 /// Container for shader programs and textures
 /// Has functionality to send data to shader programs
@@ -11,56 +15,10 @@ class Material
 {
 public:
 	Material() {};
-	~Material() 
-	{
-		glDeleteTextures(1, &albedoId);
-		glDeleteTextures(1, &normalId);
-		glDeleteTextures(1, &specularId);
-		glDeleteTextures(1, &glossId);
+	~Material();
 
-		glDeleteProgram(this->shaderProgram);
-	};
-
-	void Init(GLuint shaderProgram, GLuint albedo = NOTEXTURE, GLuint normal = NOTEXTURE, GLuint specular = NOTEXTURE, GLuint gloss = NOTEXTURE)
-	{
-		this->shaderProgram = shaderProgram;
-		this->albedoId = albedo;
-		this->normalId = normal;
-		this->specularId = specular;
-		this->glossId = gloss;
-
-		modelMatrixLocation = glGetUniformLocation(shaderProgram, "model");
-		viewMatrixLocation = glGetUniformLocation(shaderProgram, "viewMatrix");
-		projectionMatrixLocation = glGetUniformLocation(shaderProgram, "projectionMatrix");
-		
-		if(albedo != NOTEXTURE)
-			albedoLocation = glGetUniformLocation(shaderProgram, "albedo");
-		if (normal != NOTEXTURE)
-			normalLocation = glGetUniformLocation(shaderProgram, "normal");
-		if (specular != NOTEXTURE)
-			specularLocation = glGetUniformLocation(shaderProgram, "specular");
-		if (gloss != NOTEXTURE)
-			glossLocation = glGetUniformLocation(shaderProgram, "gloss");
-	}
-
-	void Use(glm::mat4 translationMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
-	{
-		// Use albedo texture
-		if (albedoId != NOTEXTURE)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, albedoId);
-			glUniform1i(albedoLocation, 0);
-		}
-		// Use rest of textures
-
-		// Use shader
-		glUseProgram(shaderProgram);
-
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(translationMatrix));
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	}
+	void Init(GLuint shaderProgram, GLuint albedo = NOTEXTURE, GLuint normal = NOTEXTURE, GLuint specular = NOTEXTURE, GLuint gloss = NOTEXTURE);
+	void Use(glm::mat4 translationMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
 
 	GLuint shaderProgram;
 	

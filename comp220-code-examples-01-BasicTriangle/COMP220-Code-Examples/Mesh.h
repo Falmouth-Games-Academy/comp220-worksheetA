@@ -40,91 +40,94 @@ public:
 
 	void LoadFromFile(const std::string& fileName, MeshFormat meshFormat)
 	{
-		std::ifstream f(fileName);
-		std::string line = "";
+		FILE* f = fopen(fileName.c_str(), "r");
 
-		while (std::getline(f, line))
+		if (f == nullptr)
 		{
-			// If the line describes the object name
-			if (line[0] == 'o')
-			{
-				name = line;
-			}
-			// Else if line describes a UV coordinate
-			else if (line[0] == 'v' && line[1] == 't')
-			{
-				char* _line = new char[128];
-				strcpy(_line, line.c_str() + 3);
-
-				glm::vec2 uv = glm::vec2(0);
-
-				char* p = strtok(_line, " ");
-
-				uv.x = std::atof(p);
-				p = strtok(NULL, " ");
-				uv.y = std::atof(p);
-
-				// AddUnique(this->uv, uv);
-				this->uv.push_back(uv);
-			}
-			// Else if line describes a vertex
-			else if (line[0] == 'v')
-			{
-				char* _line = new char[128];
-				strcpy(_line, line.c_str() + 2);
-
-				char* p = strtok(_line, " ");
-
-				glm::vec3 vert = glm::vec3(0);
-
-				vert.x = std::atof(p);
-				p = strtok(NULL, " ");
-				vert.y = std::atof(p);
-				p = strtok(NULL, " ");
-				vert.z = std::atof(p);
-
-				vertices.push_back(vert);
-
-				delete _line;
-				_line = nullptr;
-			}
-			// Else if line describes a triangle
-			else if (line[0] == 'f')
-			{
-				char* _line = new char[128];
-				strcpy(_line, line.c_str() + 2);
-
-				char* p = strtok(_line, " ");
-
-				triangles.push_back(std::atoi(p) - 1);
-				p = strtok(NULL, " ");
-				triangles.push_back(std::atoi(p) - 1);
-				p = strtok(NULL, " ");
-				triangles.push_back(std::atoi(p) - 1);
-
-				delete _line;
-				_line = nullptr;
-			}
+			printf("Could not open %s\n", fileName);
+			return;
 		}
 
-		for (int i = 0; i < vertices.size(); i++)
-		{
-			GLU::vertex vert = {
-				// Vertex position
-				vertices[i].x,
-				vertices[i].y,
-				vertices[i].z,
-				// Vertex colour
-				((float)i) / vertices.size(),
-				((float)i) / vertices.size(),
-				((float)i) / vertices.size(),
-				1,
-				// Vertex UV
-				(i % 4 + 1) / 4.0,
-				(i % 4 + 1) / 4.0
-			};
+		char line[128];
+		int fReader = fscanf(f, "%s", line);
 
-			_vertices.push_back(vert);
+		// While we haven't reached the end of the file, read its contents
+		while (fReader != EOF)
+		{
+			// Read normals
+			if (strcmp(line, "vn") == 0)
+			{
+				glm::vec3 normal;
+				fscanf(f, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
+				this->normals.push_back(normal);
+			}
+			// Read UVs
+			else if (strcmp(line, "vt") == 0)
+			{
+				glm::vec2 uv;
+				fscanf(f, "%f %f\n", &uv.x, &uv.y);
+				this->uv.push_back(uv);
+			}
+			// Read vertex
+			else if (strcmp(line, "v") == 0)
+			{
+				glm::vec3 vertex;
+				fscanf(f, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+				this->vertices.push_back(vertex);
+			}
+			// Read face
+			else if (strcmp(line, "f") == 0)
+			{
+				unsigned int vertexIndices[3], uvIndices[3], normalIndices[3];
+				GLU::vertex vertex0;
+				GLU::vertex vertex1;
+				GLU::vertex vertex2;
+
+				int vertices = fscanf(f, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndices[0], &uvIndices[0], &normalIndices[0], &vertexIndices[1], &uvIndices[1], &normalIndices[1], &vertexIndices[2], &uvIndices[2], &normalIndices[2]);
+
+				if (vertices != 9)
+				{
+					printf("Cannot read file format\n");
+					return;
+				}
+
+				vertex0.x = this->vertices[vertexIndices[0] - 1].x;
+				vertex0.y = this->vertices[vertexIndices[0] - 1].y;
+				vertex0.z = this->vertices[vertexIndices[0] - 1].z;
+				vertex0.tu = this->uv[uvIndices[0] - 1].x;
+				vertex0.tv = this->uv[uvIndices[0] - 1].y;
+				vertex0.nx = this->normals[normalIndices[0] - 1].x;
+				vertex0.ny = this->normals[normalIndices[0] - 1].y;
+				vertex0.nz = this->normals[normalIndices[0] - 1].z;
+
+				vertex1.x = this->vertices[vertexIndices[1] - 1].x;
+				vertex1.y = this->vertices[vertexIndices[1] - 1].y;
+				vertex1.z = this->vertices[vertexIndices[1] - 1].z;
+				vertex1.tu = this->uv[uvIndices[1] - 1].x;
+				vertex1.tv = this->uv[uvIndices[1] - 1].y;
+				vertex1.nx = this->normals[normalIndices[1] - 1].x;
+				vertex1.ny = this->normals[normalIndices[1] - 1].y;
+				vertex1.nz = this->normals[normalIndices[1] - 1].z;
+
+				vertex2.x = this->vertices[vertexIndices[2] - 1].x;
+				vertex2.y = this->vertices[vertexIndices[2] - 1].y;
+				vertex2.z = this->vertices[vertexIndices[2] - 1].z;
+				vertex2.tu = this->uv[uvIndices[2] - 1].x;
+				vertex2.tv = this->uv[uvIndices[2] - 1].y;
+				vertex2.nx = this->normals[normalIndices[2] - 1].x;
+				vertex2.ny = this->normals[normalIndices[2] - 1].y;
+				vertex2.nz = this->normals[normalIndices[2] - 1].z;
+
+
+				triangles.push_back(_vertices.size());
+				this->_vertices.push_back(vertex0);
+				triangles.push_back(_vertices.size());
+				this->_vertices.push_back(vertex1);
+				triangles.push_back(_vertices.size());
+				this->_vertices.push_back(vertex2);
+			}
+
+			fReader = fscanf(f, "%s", line);
 		}
 
 		glGenVertexArrays(1, &vertexArray);
@@ -237,6 +240,7 @@ public:
 
 	void Use()
 	{
+		// Vertex position
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(
@@ -250,6 +254,7 @@ public:
 
 		// https://en.cppreference.com/w/cpp/types/offsetof
 
+		// Vertex colours
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(
 			1,
@@ -260,6 +265,7 @@ public:
 			(void*)(3 * sizeof(float))
 		);
 
+		// Vertex UV
 		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(
 			2,
@@ -268,6 +274,17 @@ public:
 			GL_FALSE,
 			sizeof(vertex),
 			(void*)(7 * sizeof(float))
+		);
+
+		// Vertex normals
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(
+			3,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			sizeof(vertex),
+			(void*)(10 * sizeof(float))
 		);
 
 		glDrawElements(
