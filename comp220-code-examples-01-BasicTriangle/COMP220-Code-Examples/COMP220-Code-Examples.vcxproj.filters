@@ -60,6 +60,9 @@
     <ClCompile Include="Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -113,6 +116,12 @@
     <ClInclude Include="Time.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IComponentParticle.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicShader.vert">
@@ -125,6 +134,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="TextureShader.vert">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Lighting.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Lighting.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

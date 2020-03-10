@@ -7,7 +7,7 @@ void FluidGL::Application::Init(const char* applicationName, int windowWidth, in
 	renderer->Init(applicationName, windowWidth, windowHeight, fullscreen);
 	renderer->LoadProgram("BasicShader");
 	renderer->LoadProgram("TextureShader");
-	renderer->LoadProgram("LightShader");
+	renderer->LoadProgram("Lighting");
 }
 
 void FluidGL::Application::Run()
@@ -44,18 +44,23 @@ void FluidGL::Application::Run()
 	GLuint albedoId = loadTextureFromFile("Resources/Textures/TEX_Panel_Albedo.png");
 	GLuint normalId = loadTextureFromFile("Resources/Textures/TEX_Panel_Normal.png");
 	Material material = Material();
-	material.Init(renderer->GetProgram("TextureShader"), albedoId, normalId);
+	material.Init(renderer->GetProgram("Lighting"), albedoId, normalId);
 
 	Mesh mesh = Mesh();
 	//mesh.Init(vertices, indices);
 	//mesh.LoadFromFile("Resources/Models/Cube.obj", MeshFormat::MESH_FORMAT_OBJ);
-	mesh.LoadFromFile("Resources/Models/Car.obj", MeshFormat::MESH_FORMAT_OBJ);
+	//mesh.LoadFromFile("Resources/Models/Sphere.obj", MeshFormat::MESH_FORMAT_OBJ);
+	//mesh.LoadFromFile("Resources/Models/Monkey.obj", MeshFormat::MESH_FORMAT_OBJ);
+	mesh.LoadFromFile("Resources/Models/MonkeySmooth.obj", MeshFormat::MESH_FORMAT_OBJ);
+	//mesh.LoadFromFile("Resources/Models/Car.obj", MeshFormat::MESH_FORMAT_OBJ);
 
-	gameObject->transform->MoveTo(glm::vec3(0, .5, 0));
-	gameObject->transform->Scale(glm::vec3(7, 7, 7));
+	gameObject->transform->MoveTo(glm::vec3(0, 0, 0));
 	gameObject->AddComponent(MeshRenderer());
 	gameObject->GetComponent(MeshRenderer())->materials.push_back(material);
 	gameObject->GetComponent(MeshRenderer())->mesh = &mesh;
+
+	//gameObject->AddComponent(ParticleSystem());
+	//gameObject->GetComponent(ParticleSystem())->Init(10, 1, glm::vec3(0, -1, 0), 0.25, 2, &material, &mesh);
 
 	camera->AddComponent(Camera());
 	camera->GetComponent(Camera())->Init(renderer->GetProgram("TextureShader"));
@@ -116,9 +121,11 @@ void FluidGL::Application::Run()
 		// Clear screen
 		renderer->ClearScreen(0, 0, 0, 1);
 
+		//gameObject->GetComponent(ParticleSystem())->Update();
+
 		//====RENDER OBJECTS HERE====//
-		//camera->transform->RotateAngles(glm::vec3(0, 1, 0), (int)i % 360);
-		gameObject->GetComponent(MeshRenderer())->Render(camera->GetComponent(Camera()));
+		gameObject->GetComponent(MeshRenderer())->Render(camera->GetComponent(Camera())->GetViewMatrix(), camera->GetComponent(Camera())->GetProjectionMatrix());
+		//gameObject->GetComponent(ParticleSystem())->RenderParticles(camera->GetComponent(Camera())->GetViewMatrix(), camera->GetComponent(Camera())->GetProjectionMatrix());
 
 		glm::vec3 forward = camera->transform->Forward();
 		// Swap buffers

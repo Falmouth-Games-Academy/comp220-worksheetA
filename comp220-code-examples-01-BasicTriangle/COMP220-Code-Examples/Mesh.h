@@ -284,7 +284,7 @@ public:
 			GL_FLOAT,
 			GL_FALSE,
 			sizeof(vertex),
-			(void*)(10 * sizeof(float))
+			(void*)(9 * sizeof(float))
 		);
 
 		glDrawElements(

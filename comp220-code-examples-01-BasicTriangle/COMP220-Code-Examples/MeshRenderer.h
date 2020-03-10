@@ -12,5 +12,5 @@ public:
 	std::vector<Material> materials;
 	// Mesh containing all vertices, normals, uvs etc.
 	Mesh* mesh;
-	void Render(Camera * visibleFromCamera) override;
+	void Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix) override;
 };

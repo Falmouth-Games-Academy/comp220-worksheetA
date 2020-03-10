@@ -42,6 +42,9 @@ public:
 	GLuint glossId;
 	// GLoss texture location
 	GLuint glossLocation;
+	//
+	GLuint ambientLightColorLocation;
+	GLuint ambientMaterialColorLocation;
 //======MATRIX LOCATIONS====//
 	GLuint modelMatrixLocation;
 	GLuint viewMatrixLocation;

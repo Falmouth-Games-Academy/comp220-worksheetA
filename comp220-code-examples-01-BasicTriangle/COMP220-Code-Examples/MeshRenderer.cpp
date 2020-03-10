@@ -1,6 +1,6 @@
 #include "MeshRenderer.h"
 
-void MeshRenderer::Render(Camera* visibleFromCamera)
+void MeshRenderer::Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
 	if (materials.size() == 0)
 	{
@@ -26,14 +26,8 @@ void MeshRenderer::Render(Camera* visibleFromCamera)
 		return;
 	}
 
-	if (!visibleFromCamera)
-	{
-		printf("No camera used to render Mesh Renderer\n");
-		return;
-	}
-
 	// Use material
-	materials[0].Use(transform->GetTransformation(), visibleFromCamera->GetViewMatrix(), visibleFromCamera->GetProjectionMatrix());
+	materials[0].Use(transform->GetTransformation(), viewMatrix, projectionMatrix);
 
 	// Use mesh
 	mesh->Use();

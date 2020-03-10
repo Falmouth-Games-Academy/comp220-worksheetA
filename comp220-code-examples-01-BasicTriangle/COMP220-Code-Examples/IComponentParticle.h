@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Base.h"
-#include "IComponent.h"
 #include "GLUtils.h"
 #include "Transform.h"
+#include "IComponent.h"
 
 using namespace GLU;
 
@@ -15,18 +15,18 @@ using namespace GLU;
 // And a separate shader -> enumerate all shaders
 
 ///<summary>
-/// Interface for implementing the component-based system
+/// Interface for implementing particle related components
 ///</summary>
-class IComponentVisual : public IComponent
+class IComponentParticle : public IComponent
 {
 public:
-	IComponentVisual() {};
-	virtual ~IComponentVisual() override {};
+	IComponentParticle() {};
+	virtual ~IComponentParticle() override {};
 
 	// Runs every loop
 	virtual void Update() override {};
-	// Also runs every loop for render purposes
-	virtual void Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix) {};
+
+	virtual void RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix) {};
 protected:
-	const char* componentType = "visual";
+	const char* componentType = "particle";
 };

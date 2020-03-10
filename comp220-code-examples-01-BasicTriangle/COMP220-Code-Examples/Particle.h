@@ -1,20 +1,22 @@
 #pragma once
 
 #include "Base.h"
-#include "Components.h"
+#include "MeshRenderer.h"
 
 class Particle
 {
 public:
-	Particle(glm::vec3 position, glm::vec3 velocity, GLfloat lifespan, Mesh &mesh, Material &material);
+	Particle(glm::vec3 position, glm::vec3 velocity, float lifespan, Mesh *mesh, Material *material);
 	~Particle();
 
-	void Reset(glm::vec3 position, GLfloat lifespan);
+	void Reset(glm::vec3 position, float lifespan);
 
-	void Update();
-	void Render(Camera* camera);
-private:
-	GLfloat lifespan;
+	void Update(float timeSinceLastUpdate, bool &alive);
+	void Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
+
+	bool active = true;
+public:
+	float lifespan;
 	Transform* transform;
 	MeshRenderer* meshRenderer;
 	glm::vec3 velocity;

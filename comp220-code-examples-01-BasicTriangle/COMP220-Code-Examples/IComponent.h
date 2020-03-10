@@ -33,6 +33,9 @@ public:
 	// Runs every update loop
 	virtual void Update() {};
 	// Get a clone of this component
+	
+	// Is the component enabled?
+	bool enabled = true;
 protected:
 	const char* componentType = "";
 	GameObject* owner;
