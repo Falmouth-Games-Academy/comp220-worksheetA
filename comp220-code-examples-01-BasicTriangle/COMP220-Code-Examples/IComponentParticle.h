@@ -26,7 +26,7 @@ public:
 	// Runs every loop
 	virtual void Update() override {};
 
-	virtual void RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix) {};
+	virtual void RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition=glm::vec3(0)) {};
 protected:
 	const char* componentType = "particle";
 };

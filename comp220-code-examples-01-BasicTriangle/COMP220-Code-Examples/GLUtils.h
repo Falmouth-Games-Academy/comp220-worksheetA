@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <random>
 
 namespace GLU
 {
@@ -74,9 +75,6 @@ namespace GLU
 	};
 
 #pragma endregion
-
-#pragma region utils
-
 	// Add a unique element to the vector
 	//template <typename T>
 	//inline void AddUnique(std::vector<T> &arr, T elem)
@@ -89,6 +87,4 @@ namespace GLU
 
 	//	arr.push_back(elem);
 	//}
-	
-#pragma endregion
 }

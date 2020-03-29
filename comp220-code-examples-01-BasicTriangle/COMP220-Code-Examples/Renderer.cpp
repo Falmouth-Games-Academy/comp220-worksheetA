@@ -53,6 +53,8 @@ int Renderer::Init(const char* windowName, int resX, int resY, bool fullscreen, 
 	if(cullFaces)
 		glEnable(GL_CULL_FACE);
 
+	this->windowTitle = windowName;
+
 	return 0;
 }
 

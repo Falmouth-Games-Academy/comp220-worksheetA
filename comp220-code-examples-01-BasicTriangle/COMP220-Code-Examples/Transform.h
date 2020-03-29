@@ -54,6 +54,21 @@ public:
 	///</summary>
 	void Scale(glm::vec3 scale);
 
+	static glm::quat RandomRotation()
+	{
+		glm::quat rot = glm::quat();
+
+		std::default_random_engine generator;
+		std::normal_distribution<float> nd = std::normal_distribution<float>(0.0f, 1.0f);
+
+		rot.x = nd(generator);
+		rot.y = nd(generator);
+		rot.z = nd(generator);
+		rot.w = nd(generator);
+
+		return rot;
+	}
+
 private:
 	glm::vec3 position = glm::vec3(0.0);
 	glm::vec3 scale = glm::vec3(1.0);

@@ -1,6 +1,6 @@
 #include "MeshRenderer.h"
 
-void MeshRenderer::Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void MeshRenderer::Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition)
 {
 	if (materials.size() == 0)
 	{
@@ -14,11 +14,11 @@ void MeshRenderer::Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 		return;
 	}
 
-	if (owner == nullptr)
-	{
-		printf("No owner assigned to Mesh Renderer\n");
-		return;
-	}
+	//if (owner == nullptr)
+	//{
+	//	printf("No owner assigned to Mesh Renderer\n");
+	//	return;
+	//}
 
 	if (transform == nullptr)
 	{
@@ -27,7 +27,7 @@ void MeshRenderer::Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 	}
 
 	// Use material
-	materials[0].Use(transform->GetTransformation(), viewMatrix, projectionMatrix);
+	materials[0].Use(transform->GetTransformation(), viewMatrix, projectionMatrix, cameraPosition);
 
 	// Use mesh
 	mesh->Use();

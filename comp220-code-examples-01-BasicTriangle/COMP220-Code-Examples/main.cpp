@@ -6,15 +6,7 @@
 #include <fstream>
 
 #include "Application.h"
-#include "GLUtils.h"
 #include "Texture.h"
-
-#include <SDL.h>
-#include <gl\glew.h>
-#include <SDL_opengl.h>
-#include <glm\glm.hpp>
-#include <glm\gtc\matrix_transform.hpp>
-#include <glm\gtc\type_ptr.hpp>
 
 // Consider moving the main loop to a separate project and importing the application as a static library
 // This can also serve as a basis for performing unit tests
@@ -119,6 +111,7 @@ GLuint LoadShaders(const char* vertex_file_path, const char* fragment_file_path)
 int main(int argc, char ** argsv)
 {
 	bool modular = true;
+	int benchmarksToRun = 5;
 
 	if (!modular)
 	{
@@ -367,15 +360,19 @@ int main(int argc, char ** argsv)
 	}
 	else
 	{
-		FluidGL::Application* application = new FluidGL::Application();
-		application->Init("FluidGL", 1280, 720, false);
-		application->Run();
-	
-		// Delete application pointer
-		if (application)
+		// Run the benchmarks
+		for (int i = 0; i < benchmarksToRun; i++)
 		{
-			delete application;
-			application = nullptr;
+			FluidGL::Application* application = new FluidGL::Application();
+			application->Init("FluidGL", 1280, 720, false);
+			application->Run();
+	
+			// Delete application pointer
+			if (application)
+			{
+				delete application;
+				application = nullptr;
+			}
 		}
  }
 	

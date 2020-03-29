@@ -111,13 +111,15 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.1\lib\x64\*.dll "</Command>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\Libraries\SDL2_image-2.0.5\include;..\Libraries\glew-2.1.0\include;..\Libraries\SDL2-2.0.10\include;..\Libraries\assimp-4.1.0\include;..\Libraries\glm</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>OpenGL32.lib;glew32.lib;SDL2_image.lib;SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.5\lib\x64;..\Libraries\SDL2-2.0.10\lib\x64;..\Libraries\assimp-4.1.0\lib\x64</AdditionalLibraryDirectories>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\Libraries\glew-2.1.0\bin\Release\x64\glew32.dll "$(OutDir)\glew32.dll"
@@ -198,6 +200,8 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.5\lib\x64\*.dll "$(OutDir)\*.dll"</Co
     <None Include="BasicShader.vert" />
     <None Include="Lighting.frag" />
     <None Include="Lighting.vert" />
+    <None Include="PostProcessing.frag" />
+    <None Include="PostProcessing.vert" />
     <None Include="TextureShader.frag" />
     <None Include="TextureShader.vert" />
   </ItemGroup>

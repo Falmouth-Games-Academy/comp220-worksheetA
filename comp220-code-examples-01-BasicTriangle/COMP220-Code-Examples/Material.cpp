@@ -33,10 +33,11 @@ void Material::Init(GLuint shaderProgram, GLuint albedo, GLuint normal, GLuint s
 
 	ambientLightColorLocation = glGetUniformLocation(shaderProgram, "ambientLightColor");
 	ambientMaterialColorLocation = glGetUniformLocation(shaderProgram, "ambientMaterialColor");
+	cameraPositionLocation = glGetUniformLocation(shaderProgram, "cameraPosition");
 }
 
 // TODO: add camera location for updating specular lighting
-void Material::Use(glm::mat4 translationMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void Material::Use(glm::mat4 translationMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition)
 {
 	// Use albedo texture
 	if (albedoId != NOTEXTURE)
@@ -61,6 +62,7 @@ void Material::Use(glm::mat4 translationMatrix, glm::mat4 viewMatrix, glm::mat4 
 
 	glUniform4fv(ambientLightColorLocation, 1, glm::value_ptr(ambientLightColor));
 	glUniform4fv(ambientMaterialColorLocation, 1, glm::value_ptr(ambientMaterialColor));
+	glUniform3fv(cameraPositionLocation, 1, glm::value_ptr(cameraPosition));
 
 	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(translationMatrix));
 	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));

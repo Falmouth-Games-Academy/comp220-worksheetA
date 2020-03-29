@@ -1,25 +1,17 @@
-#include <iostream>
-#include <vector>
-#include <array>
-
-#include <sstream>
-#include <fstream>
+#include "Base.h"
 
 #include "Renderer.h"
 #include "GameObject.h"
 #include "GLUtils.h"
 #include "Components.h"
 #include "Time.h"
-
-#include <SDL.h>
-#include <gl\glew.h>
-#include <SDL_opengl.h>
-#include <glm\glm.hpp>
-#include <glm\gtc\matrix_transform.hpp>
-#include <glm\gtc\type_ptr.hpp>
+#include <filesystem>
+#include <cstdint>
+#include <filesystem>
 
 namespace FluidGL
 {
+	namespace fs = std::filesystem;
 
 	class Application
 	{

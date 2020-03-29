@@ -65,10 +65,14 @@ public:
 	GLuint GetProgram(const char* programName) { return loadedPrograms.at(programName); }
 	// Render all cameras 
 
+	// Get window name
+	const char* GetWindowTitle() { return windowTitle.c_str(); }
+
 
 private : 
 	SDL_Window* window = nullptr;
 	SDL_GLContext glContext = NULL;
+	std::string windowTitle;
 
 	// Returns a shader ID
 	GLuint LoadSingleShader(const char* file_path, GLenum shaderType);

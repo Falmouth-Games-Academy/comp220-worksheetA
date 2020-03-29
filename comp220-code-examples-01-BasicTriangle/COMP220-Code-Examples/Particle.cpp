@@ -14,6 +14,7 @@ Particle::Particle(glm::vec3 position, glm::vec3 velocity, float lifespan, Mesh*
 	this->meshRenderer->materials.push_back(*material);
 
 	this->transform = new Transform();
+	this->transform->Scale(glm::vec3(0.2, 0.2, 0.2));
 
 	this->meshRenderer->SetTransform(this->transform);
 }
@@ -32,7 +33,7 @@ Particle::~Particle()
 
 void Particle::Reset(glm::vec3 position, float lifespan)
 {
-	this->transform->MoveTo(position);
+	this->transform->Move(glm::vec3(0, -this->transform->Position().y, 0));
 	this->lifespan = lifespan;
 	this->active = true;
 }
@@ -56,8 +57,8 @@ void Particle::Update(float timeSinceLastUpdate, bool& alive)
 	}
 }
 
-void Particle::Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void Particle::Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition)
 {
 	if(active)
-		this->meshRenderer->Render(viewMatrix, projectionMatrix);
+		this->meshRenderer->Render(viewMatrix, projectionMatrix, cameraPosition);
 }

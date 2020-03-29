@@ -12,7 +12,7 @@ public:
 	void Reset(glm::vec3 position, float lifespan);
 
 	void Update(float timeSinceLastUpdate, bool &alive);
-	void Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
+	void Render(glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition=glm::vec3(0));
 
 	bool active = true;
 public:

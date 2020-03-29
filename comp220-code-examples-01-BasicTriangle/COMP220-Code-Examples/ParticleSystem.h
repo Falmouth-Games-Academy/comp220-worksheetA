@@ -21,21 +21,25 @@ public:
 	///<param name="particleLifespan">Lifespan of individual particles</param>
 	///<param name="material">Material assigned to particles</param>
 	///<param name="mesh">Mesh assigned to particles. If none is assigned, particles are considered 2D</param>
+	///<param name="maxRandomDeviation">Maximum angle deviation (degrees) from desired emission direction</param>
 	void Init(int maxParticles,
 		float emissionRate,
 		glm::vec3 emissionDirection,
 		float emissionSpeed,
 		float particleLifespan,
 		Material* material,
-		Mesh* mesh
+		Mesh* mesh,
+		float maxRandomDeviation=0.0f
 	);
 
 	void EmitParticle();
 	void EmitParticles(int amount);
 
+	int ParticleCount() { return particles.size(); }
+
 	void Reset();
 	void Update() override;
-	void RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix) override;
+	void RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition=glm::vec3(0)) override;
 private:
 	std::vector<Particle*> particles;
 	std::vector<Particle*> pooledParticles;
@@ -48,4 +52,5 @@ private:
 	float emissionSpeed;
 	Material* material = NULL;
 	Mesh* mesh = NULL;
+	float maxRandomDeviation;
 };

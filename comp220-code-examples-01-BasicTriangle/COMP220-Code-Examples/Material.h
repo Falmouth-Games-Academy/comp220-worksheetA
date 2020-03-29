@@ -18,7 +18,7 @@ public:
 	~Material();
 
 	void Init(GLuint shaderProgram, GLuint albedo = NOTEXTURE, GLuint normal = NOTEXTURE, GLuint specular = NOTEXTURE, GLuint gloss = NOTEXTURE);
-	void Use(glm::mat4 translationMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
+	void Use(glm::mat4 translationMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition = glm::vec3(0));
 
 	GLuint shaderProgram;
 	
@@ -45,6 +45,7 @@ public:
 	//
 	GLuint ambientLightColorLocation;
 	GLuint ambientMaterialColorLocation;
+	GLuint cameraPositionLocation;
 //======MATRIX LOCATIONS====//
 	GLuint modelMatrixLocation;
 	GLuint viewMatrixLocation;

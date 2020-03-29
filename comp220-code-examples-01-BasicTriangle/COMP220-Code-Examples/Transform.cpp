@@ -8,7 +8,7 @@ void Transform::Move(glm::vec3 velocity)
 
 void Transform::MoveTo(glm::vec3 position)
 {
-	translationMatrix = glm::translate(translationMatrix, this->position - position);
+	translationMatrix = glm::translate(translationMatrix, position - this->position);
 	this->position = position;
 }
 

@@ -18,7 +18,15 @@ ParticleSystem::~ParticleSystem()
 	this->pooledParticles.clear();
 }
 
-void ParticleSystem::Init(int maxParticles, float emissionRate, glm::vec3 emissionDirection, float emissionSpeed, float particleLifespan, Material* material, Mesh* mesh)
+void ParticleSystem::Init(int maxParticles,
+	float emissionRate,
+	glm::vec3 emissionDirection,
+	float emissionSpeed,
+	float particleLifespan,
+	Material* material,
+	Mesh* mesh,
+	float maxRandomDeviation
+)
 {
 	this->maxParticles = maxParticles;
 	this->emissionRate = 1.0 / emissionRate;
@@ -28,6 +36,9 @@ void ParticleSystem::Init(int maxParticles, float emissionRate, glm::vec3 emissi
 	this->material = material;
 	this->mesh = mesh;
 	this->lastEmission = clock();
+	this->maxRandomDeviation = maxRandomDeviation;
+
+	srand(time(NULL));
 }
 
 void ParticleSystem::EmitParticle()
@@ -49,7 +60,7 @@ void ParticleSystem::EmitParticle()
 	// Otherwise, create a new particle
 	else
 	{
-		p = new Particle(transform->Position(), this->emissionDirection * this->emissionSpeed, this->particleLifespan, this->mesh, this->material);
+		p = new Particle(transform->Position(), glm::vec3((rand() % 100 - 50) / 100.0, (rand() % 100 - 50) / 100.0, (rand() % 100 - 50) / 100.0) * this->emissionSpeed, this->particleLifespan, this->mesh, this->material);
 		this->particles.push_back(p);
 	}
 
@@ -73,8 +84,11 @@ void ParticleSystem::Reset()
 
 void ParticleSystem::Update()
 {
+	float now = (float)clock();
+	float emissionTime = (now - (float)lastEmission) / CLOCKS_PER_SEC;
+	float updateTime = (now - (float)lastUpdate) / CLOCKS_PER_SEC;
 	// Emit new particle if needed
-	if ((float)(clock() - lastEmission) / CLOCKS_PER_SEC > emissionRate && particles.size() < this->maxParticles)
+	if (emissionTime > emissionRate && particles.size() < this->maxParticles)
 	{
 		EmitParticle();
 	}
@@ -85,7 +99,7 @@ void ParticleSystem::Update()
 	while (i != this->particles.end())
 	{
 		// Will thow an "expression must have pointer-to-class error without the brackets due to '->' having higher precedence than '*'
-		(*i)->Update((float)(clock() - lastUpdate) / CLOCKS_PER_SEC, alive);
+		(*i)->Update(updateTime, alive);
 
 		if (!alive)
 		{
@@ -94,16 +108,20 @@ void ParticleSystem::Update()
 			// And remove it from list of active particles
 			i = this->particles.erase(i);
 		}
+		else
+		{
+			i++;
+		}
 	}
 
 	lastUpdate = clock();
 }
 
-void ParticleSystem::RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void ParticleSystem::RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition)
 {
 	// Render all particles
 	for (auto& i : this->particles)
 	{
-		i->Render(viewMatrix, projectionMatrix);
+		i->Render(viewMatrix, projectionMatrix, cameraPosition);
 	}
 }
