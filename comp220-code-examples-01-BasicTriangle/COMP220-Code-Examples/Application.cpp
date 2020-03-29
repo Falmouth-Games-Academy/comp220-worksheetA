@@ -59,6 +59,10 @@ void FluidGL::Application::Run()
 	camera->AddComponent(Camera());
 	camera->GetComponent(Camera())->Init(renderer->GetProgram("TextureShader"));
 	camera->transform->MoveTo(gameObject->transform->Position() - glm::vec3(10, 0, 0));
+
+	f << "System information:\nVendor: " << glGetString(GL_VENDOR) << "\n";
+	f << "Renderer: " << glGetString(GL_RENDERER) << "\n";
+	f << "<=====BEGIN BENCHMARK=====>\n";
 	
 	//// Create texture to render to
 	//GLuint postTextureID = CreateTexture(1280, 720);

@@ -1,23 +1,27 @@
-Simulation runtime: 5 s. FPS: 55 Particles 300
-Simulation runtime: 10 s. FPS: 58 Particles 598
-Simulation runtime: 15 s. FPS: 58 Particles 899
-Simulation runtime: 20 s. FPS: 62 Particles 1199
-Simulation runtime: 25 s. FPS: 58 Particles 1499
-Simulation runtime: 30 s. FPS: 50 Particles 1777
-Simulation runtime: 35 s. FPS: 43 Particles 2020
-Simulation runtime: 40 s. FPS: 39 Particles 2236
-Simulation runtime: 45 s. FPS: 38 Particles 2435
-Simulation runtime: 50 s. FPS: 35 Particles 2619
-Simulation runtime: 55 s. FPS: 33 Particles 2791
-Simulation runtime: 60 s. FPS: 32 Particles 2953
-Simulation runtime: 65 s. FPS: 31 Particles 3105
-Simulation runtime: 70 s. FPS: 28 Particles 3251
-Simulation runtime: 75 s. FPS: 27 Particles 3389
-Simulation runtime: 80 s. FPS: 27 Particles 3524
-Simulation runtime: 85 s. FPS: 26 Particles 3653
-Simulation runtime: 90 s. FPS: 24 Particles 3778
-Simulation runtime: 95 s. FPS: 23 Particles 3898
-Simulation runtime: 100 s. FPS: 23 Particles 4016
-Simulation runtime: 105 s. FPS: 21 Particles 4129
-Simulation runtime: 110 s. FPS: 21 Particles 4239
-Simulation runtime: 115 s. FPS: 21 Particles 4347
+System information:
+Vendor: NVIDIA Corporation
+Renderer: GeForce GTX 1060/PCIe/SSE2
+<=====BEGIN BENCHMARK=====>
+Simulation runtime: 5 s. FPS: 62 Particles 301
+Simulation runtime: 10 s. FPS: 58 Particles 602
+Simulation runtime: 15 s. FPS: 62 Particles 902
+Simulation runtime: 20 s. FPS: 62 Particles 1202
+Simulation runtime: 25 s. FPS: 52 Particles 1485
+Simulation runtime: 30 s. FPS: 45 Particles 1718
+Simulation runtime: 35 s. FPS: 32 Particles 1923
+Simulation runtime: 40 s. FPS: 38 Particles 2109
+Simulation runtime: 45 s. FPS: 28 Particles 2286
+Simulation runtime: 50 s. FPS: 32 Particles 2451
+Simulation runtime: 55 s. FPS: 30 Particles 2606
+Simulation runtime: 60 s. FPS: 27 Particles 2758
+Simulation runtime: 65 s. FPS: 29 Particles 2902
+Simulation runtime: 70 s. FPS: 26 Particles 3036
+Simulation runtime: 75 s. FPS: 25 Particles 3166
+Simulation runtime: 80 s. FPS: 25 Particles 3290
+Simulation runtime: 85 s. FPS: 22 Particles 3409
+Simulation runtime: 90 s. FPS: 22 Particles 3527
+Simulation runtime: 95 s. FPS: 22 Particles 3642
+Simulation runtime: 100 s. FPS: 21 Particles 3752
+Simulation runtime: 105 s. FPS: 22 Particles 3858
+Simulation runtime: 110 s. FPS: 19 Particles 3961
+Simulation runtime: 115 s. FPS: 20 Particles 4062
