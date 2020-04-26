@@ -110,14 +110,15 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.1\lib\x64\*.dll "</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Libraries\SDL2_image-2.0.5\include;..\Libraries\glew-2.1.0\include;..\Libraries\SDL2-2.0.10\include;..\Libraries\assimp-4.1.0\include;..\Libraries\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\bullet3-2.87\include;..\Libraries\SDL2_image-2.0.5\include;..\Libraries\glew-2.1.0\include;..\Libraries\SDL2-2.0.10\include;..\Libraries\assimp-4.1.0\include;..\Libraries\glm</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>OpenGL32.lib;glew32.lib;SDL2_image.lib;SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.5\lib\x64;..\Libraries\SDL2-2.0.10\lib\x64;..\Libraries\assimp-4.1.0\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenGL32.lib;glew32.lib;SDL2_image.lib;SDL2.lib;SDL2main.lib;assimp-vc140-mt.lib;Bullet3Collision_Debug.lib;Bullet3Common_Debug.lib;Bullet3Dynamics_Debug.lib;Bullet3Geometry_Debug.lib;Bullet3OpenCL_clew_Debug.lib;LinearMath_Debug.lib;BulletCollision_Debug.lib;BulletDynamics_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Libraries\bullet3-2.87\lib\Debug\x64;..\Libraries\glew-2.1.0\lib\Release\x64;..\Libraries\SDL2_image-2.0.5\lib\x64;..\Libraries\SDL2-2.0.10\lib\x64;..\Libraries\assimp-4.1.0\lib\x64</AdditionalLibraryDirectories>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -169,7 +170,9 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.5\lib\x64\*.dll "$(OutDir)\*.dll"</Co
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -184,13 +187,16 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.5\lib\x64\*.dll "$(OutDir)\*.dll"</Co
     <ClInclude Include="IComponent.h" />
     <ClInclude Include="IComponentCamera.h" />
     <ClInclude Include="IComponentParticle.h" />
+    <ClInclude Include="IComponentPhysics.h" />
     <ClInclude Include="IComponentVisual.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />

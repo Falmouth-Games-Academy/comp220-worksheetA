@@ -9,13 +9,21 @@ void FluidGL::Application::Init(const char* applicationName, int windowWidth, in
 	renderer->LoadProgram("TextureShader");
 	renderer->LoadProgram("Lighting");
 	renderer->LoadProgram("PostProcessing");
+	renderer->InitPostProcess();
+
+	physicsContext = new PhysicsContext();
+	physicsContext->Init();
 }
 
 void FluidGL::Application::Run()
 {
-	GameObject* gameObject = new GameObject();
-	GameObject* terrain = new GameObject();
+	GameObject* particleSpawner = new GameObject();
 	GameObject* camera = new GameObject();
+	GameObject* sphere = new GameObject();
+	GameObject* box1 = new GameObject();
+	GameObject* box2 = new GameObject();
+	GameObject* box3 = new GameObject();
+	GameObject* box4 = new GameObject();
 
 	fs::create_directory("Benchmarks");
 
@@ -36,88 +44,49 @@ void FluidGL::Application::Run()
 	material.Init(renderer->GetProgram("Lighting"), albedoId, normalId);
 
 	Mesh mesh = Mesh();
-	//mesh.Init(vertices, indices);
-	//mesh.LoadFromFile("Resources/Models/Cube.obj", MeshFormat::MESH_FORMAT_OBJ);
 	mesh.LoadFromFile("Resources/Models/SphereSmooth.obj", MeshFormat::MESH_FORMAT_OBJ);
-	//mesh.LoadFromFile("Resources/Models/Monkey.obj", MeshFormat::MESH_FORMAT_OBJ);
-	//mesh.LoadFromFile("Resources/Models/MonkeySmooth.obj", MeshFormat::MESH_FORMAT_OBJ);
-	//mesh.LoadFromFile("Resources/Models/Car.obj", MeshFormat::MESH_FORMAT_OBJ);
 
-	Mesh terrainMesh = Mesh();
-	//terrainMesh.LoadFromFile("Resources/Models/Terrain.obj", MeshFormat::MESH_FORMAT_OBJ);
+	particleSpawner->transform->Move(glm::vec3(0, 5, 0));
+	particleSpawner->AddComponent(ParticleSystem());
+	particleSpawner->GetComponent(ParticleSystem())->Init(10000, 50, glm::vec3(0, 1, 0), 0.01f, 500.0f, &material, &mesh, 0, physicsContext);
 
-	gameObject->transform->MoveTo(glm::vec3(0, 0, 0));
-	terrain->transform->Scale(glm::vec3(10, 10, 10));
+	sphere->transform->MoveTo(glm::vec3(0, -3, 0));
 
-	gameObject->AddComponent(ParticleSystem());
-	gameObject->GetComponent(ParticleSystem())->Init(10000, 200.0f, glm::vec3(0, 1, 0), 0.05f, 1000.0f, &material, &mesh);
+	sphere->AddComponent(MeshRenderer());
+	sphere->GetComponent(MeshRenderer())->mesh = &mesh;
+	sphere->GetComponent(MeshRenderer())->materials.push_back(material);
 
-	//terrain->AddComponent(MeshRenderer());
-	//terrain->GetComponent(MeshRenderer())->materials.push_back(material);
-	//terrain->GetComponent(MeshRenderer())->mesh = &terrainMesh;
+	sphere->AddComponent(Rigidbody());
+	sphere->GetComponent(Rigidbody())->Init(physicsContext, new btBoxShape(btVector3(2, 1, 2)), 100000);
+	sphere->GetComponent(Rigidbody())->SetGravity(glm::vec3(0, 0, 0));
+
+	box1->AddComponent(Rigidbody());
+	box1->GetComponent(Rigidbody())->Init(physicsContext, new btBoxShape(btVector3(2, 3, 1)), 100000);
+	box1->GetComponent(Rigidbody())->SetGravity(glm::vec3(0, 0, 0));
+	box1->transform->MoveTo(glm::vec3(0, 0, 3));
+
+	box2->AddComponent(Rigidbody());
+	box2->GetComponent(Rigidbody())->Init(physicsContext, new btBoxShape(btVector3(2, 3, 1)), 100000);
+	box2->GetComponent(Rigidbody())->SetGravity(glm::vec3(0, 0, 0));
+	box2->transform->MoveTo(glm::vec3(0, 0, -3));
+
+	box3->AddComponent(Rigidbody());
+	box3->GetComponent(Rigidbody())->Init(physicsContext, new btBoxShape(btVector3(1, 3, 2)), 100000);
+	box3->GetComponent(Rigidbody())->SetGravity(glm::vec3(0, 0, 0));
+	box3->transform->MoveTo(glm::vec3(3, 0, 0));
+
+	box4->AddComponent(Rigidbody());
+	box4->GetComponent(Rigidbody())->Init(physicsContext, new btBoxShape(btVector3(1, 3, 2)), 100000);
+	box4->GetComponent(Rigidbody())->SetGravity(glm::vec3(0, 0, 0));
+	box4->transform->MoveTo(glm::vec3(-3, 0, 0));
 
 	camera->AddComponent(Camera());
 	camera->GetComponent(Camera())->Init(renderer->GetProgram("TextureShader"));
-	camera->transform->MoveTo(gameObject->transform->Position() - glm::vec3(10, 0, 0));
+	camera->transform->MoveTo(glm::vec3(-10, 0, 0));
 
 	f << "System information:\nVendor: " << glGetString(GL_VENDOR) << "\n";
 	f << "Renderer: " << glGetString(GL_RENDERER) << "\n";
 	f << "<=====BEGIN BENCHMARK=====>\n";
-	
-	//// Create texture to render to
-	//GLuint postTextureID = CreateTexture(1280, 720);
-
-	//// Create depth buffer
-	//GLuint depthBufferID;
-	//glGenRenderbuffers(1, &depthBufferID);
-	//// Bind depth buffer
-	//glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
-	//// The higher the buffer the more precise it is but the more expensive it is. GL_DEPTH_COMPONENT is 8 bits and should be enough
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1280, 720);
-
-	//// Create frame buffer
-	//GLuint frameBufferID;
-	//glGenFramebuffers(1, &frameBufferID);
-	//glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
-
-	//// Bind texture - depends on how many attachments your drivers support
-	//glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, postTextureID, 0);
-
-	//// Bind the depth buffer
-	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
-
-	//// Check the framebuffer works well
-	//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	//{
-	//	printf("Incomplete framebuffer!\n");
-	//	Quit();
-	//}
-
-	//// Vertices for Post processing quad
-	//float vertices[] =
-	//{
-	//	-1, -1,
-	//	1, -1,
-	//	-1, 1,
-	//	1, 1
-	//};
-
-	//GLuint screenVBO;
-	//glGenBuffers(1, &screenVBO);
-	//glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
-	//glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW);
-	//
-	//GLuint screenVAO;
-	//glGenVertexArrays(1, &screenVAO);
-	//glBindVertexArray(screenVAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
-	//
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-	//GLuint postProcessingProgramID = renderer->GetProgram("PostProcessing");
-
-	//GLuint texture0ID = glGetUniformLocation(postProcessingProgramID, "texture0");
 
 	bool running = true;
 	//SDL Event structure, this will be checked in the while loop
@@ -129,7 +98,18 @@ void FluidGL::Application::Run()
 	float runTime = 0;
 	bool benchmark = false;
 
+	renderer->usePostProcess = false;
+
 	Time time = Time();
+
+	sphere->GetComponent(Rigidbody())->UpdatePhysicsContext();
+	box1->GetComponent(Rigidbody())->UpdatePhysicsContext();
+	box2->GetComponent(Rigidbody())->UpdatePhysicsContext();
+	box3->GetComponent(Rigidbody())->UpdatePhysicsContext();
+	box4->GetComponent(Rigidbody())->UpdatePhysicsContext();
+	particleSpawner->GetComponent(ParticleSystem())->UpdatePhysicsContext();
+
+	bool usePhysics = true;
 
  	while (running)
 	{
@@ -159,6 +139,9 @@ void FluidGL::Application::Run()
 				case SDLK_SPACE:
 					renderer->SetFullscreen(!renderer->IsFullscreen());
 					break;
+				case SDLK_p:
+					usePhysics = !usePhysics;
+					break;
 				}
 			}
 		}
@@ -173,53 +156,42 @@ void FluidGL::Application::Run()
 			camera->transform->RotateAngles(glm::vec3(1, 0, 0), 2);
 
 		camera->transform->Move(-camera->transform->Forward() * input);
-		
-		// Bind the frame buffer
-		//glBindFramebuffer(GL_FRAMEBUFFER, depthBufferID);
-		
-		// Clear screen
-		renderer->ClearScreen(0, 0, 0, 1);
 
+		//====UPDATE PHYSICS HERE====//
+		if (usePhysics)
+		{
+			physicsContext->UpdatePhysics();
+		
+			sphere->GetComponent(Rigidbody())->UpdatePhysicsComponent();
+			box1->GetComponent(Rigidbody())->UpdatePhysicsComponent();
+			box2->GetComponent(Rigidbody())->UpdatePhysicsComponent();
+			box3->GetComponent(Rigidbody())->UpdatePhysicsComponent();
+			box4->GetComponent(Rigidbody())->UpdatePhysicsComponent();
+
+			particleSpawner->GetComponent(ParticleSystem())->UpdateParticleSystemPhysics();
+		}
 		//====UPDATE OBJECTS HERE====//
 
-		gameObject->GetComponent(ParticleSystem())->Update();
-
-		glm::quat q = Transform::RandomRotation();
+		particleSpawner->GetComponent(ParticleSystem())->Update();
 		
 		//======END UPDATE HERE======//
 		//====RENDER OBJECTS HERE====//
-		
+		renderer->PreRender();
 
-		gameObject->GetComponent(ParticleSystem())->RenderParticles(camera->GetComponent(Camera())->GetViewMatrix(), camera->GetComponent(Camera())->GetProjectionMatrix(), camera->transform->Position());
-		//printf("Particles rendered : %d\nCurrent FPS: %d\n", gameObject->GetComponent(ParticleSystem())->ParticleCount(), (int)(1.0 / time.deltaTime));
+		sphere->GetComponent(MeshRenderer())->Render(camera->GetComponent(Camera())->GetViewMatrix(), camera->GetComponent(Camera())->GetProjectionMatrix(), camera->transform->Position());
+		particleSpawner->GetComponent(ParticleSystem())->RenderParticles(camera->GetComponent(Camera())->GetViewMatrix(), camera->GetComponent(Camera())->GetProjectionMatrix(), camera->transform->Position());
 
-		//terrain->GetComponent(MeshRenderer())->Render(camera->GetComponent(Camera())->GetViewMatrix(), camera->GetComponent(Camera())->GetProjectionMatrix());
-
+		renderer->PostRender();
 		//======END RENDER HERE======//
-
-		//// Start post processing
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//renderer->ClearScreen(0, 0, 0, 1, GL_COLOR_BUFFER_BIT);
-
-		//glUseProgram(postProcessingProgramID);
-
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, postTextureID);
-		//glUniform1d(texture0ID, 0);
-		//
-		//// Draw post processing quad
-		//glDisable(GL_DEPTH_TEST);
-		//glBindVertexArray(screenVAO);
-		//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		// Display an FPS counter in the window title
 		std::string title = renderer->GetWindowTitle();
-		title = title + " @ " + std::to_string((int)(1.0 / time.deltaTime)) + " FPS & " + std::to_string(mesh.triangles.size() * gameObject->GetComponent(ParticleSystem())->ParticleCount() / 3) + " triangles rendered";
+		title = title + " @ " + std::to_string((int)(1.0 / time.deltaTime)) + " FPS & " + std::to_string(mesh.triangles.size() * particleSpawner->GetComponent(ParticleSystem())->ParticleCount() / 3) + " triangles rendered";
 		SDL_SetWindowTitle(renderer->GetWindow(), title.c_str());
 
 		if (int(runTime) % 5 == 0 && benchmark)
 		{
-			f << "Simulation runtime: " << std::to_string((int)runTime) <<  " s. FPS: " << std::to_string((int)(1.0 / time.deltaTime)) << " Particles " << std::to_string(gameObject->GetComponent(ParticleSystem())->ParticleCount()) << "\n";
+			f << "Simulation runtime: " << std::to_string((int)runTime) <<  " s. FPS: " << std::to_string((int)(1.0 / time.deltaTime)) << " Particles " << std::to_string(particleSpawner->GetComponent(ParticleSystem())->ParticleCount()) << "\n";
 			benchmark = false;
 		}
 		else if (int(runTime) % 5 == 1)
@@ -231,23 +203,33 @@ void FluidGL::Application::Run()
 		renderer->SwapBuffers();
 		// End frame timer
 		time.EndTimer();
-		runTime += time.deltaTime;
+		//runTime += time.deltaTime;
 
-		if ((int)(runTime) == 120)
-			running = false;
+		//if ((int)(runTime) == 120)
+		//	running = false;
 	}
 
-	//glDeleteBuffers(1, &screenVBO);
-	//glDeleteVertexArrays(1, &screenVAO);
-
-	//glDeleteRenderbuffers(1, &depthBufferID);
-	//glDeleteTextures(1, &postTextureID);
-	//glDeleteBuffers(1, &screenVBO);
-	//glDeleteFramebuffers(1, &frameBufferID);
+	particleSpawner->GetComponent(ParticleSystem())->DestroyRigidBodies();
+	sphere->GetComponent(Rigidbody())->Destroy();
+	box1->GetComponent(Rigidbody())->Destroy();
+	box2->GetComponent(Rigidbody())->Destroy();
+	box3->GetComponent(Rigidbody())->Destroy();
+	box4->GetComponent(Rigidbody())->Destroy();
 }
 
 void FluidGL::Application::Quit()
 {
-	delete renderer;
+	if (renderer)
+	{
+		delete renderer;
+		renderer = nullptr;
+	}
+
+	if (physicsContext)
+	{
+		delete physicsContext;
+		physicsContext = nullptr;
+	}
+
 	GameObject::DeleteAll();
 }

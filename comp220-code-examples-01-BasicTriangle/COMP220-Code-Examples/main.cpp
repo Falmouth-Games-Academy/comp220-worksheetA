@@ -111,7 +111,7 @@ GLuint LoadShaders(const char* vertex_file_path, const char* fragment_file_path)
 int main(int argc, char ** argsv)
 {
 	bool modular = true;
-	int benchmarksToRun = 5;
+	int benchmarksToRun = 1;
 
 	if (!modular)
 	{

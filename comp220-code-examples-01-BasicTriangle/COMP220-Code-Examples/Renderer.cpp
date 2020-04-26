@@ -2,6 +2,14 @@
 
 Renderer::~Renderer()
 {
+	glDeleteBuffers(1, &screenVBO);
+	glDeleteVertexArrays(1, &screenVAO);
+
+	glDeleteRenderbuffers(1, &depthBufferID);
+	glDeleteTextures(1, &postTextureID);
+	glDeleteBuffers(1, &screenVBO);
+	glDeleteFramebuffers(1, &frameBufferID);
+
 	SDL_GL_DeleteContext(glContext);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
@@ -133,6 +141,100 @@ void Renderer::UnloadAllPrograms()
 {
 	for (auto& item : loadedPrograms)
 		UnloadProgramByName(item.first);
+}
+
+void Renderer::InitPostProcess()
+{
+	int resX, resY;
+	SDL_GetWindowSize(window, &resX, &resY);
+	postTextureID = CreateTexture(resX, resY);
+
+	// Create depth buffer
+	depthBufferID = 0;
+	glGenRenderbuffers(1, &depthBufferID);
+	// Bind depth buffer
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
+	// The higher the buffer the more precise it is but the more expensive it is. GL_DEPTH_COMPONENT is 8 bits and should be enough
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, 1280, 720);
+
+	// Create frame buffer
+	frameBufferID = 0;
+	glGenFramebuffers(1, &frameBufferID);
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+
+	// Bind the depth buffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
+
+	// Bind texture - depends on how many attachments your drivers support
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, postTextureID, 0);
+	
+	// Check the framebuffer works well
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		printf("Incomplete framebuffer!\n");
+		return;
+	}
+
+	glGenBuffers(1, &screenVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
+	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), pVertices, GL_STATIC_DRAW);
+	
+	glGenVertexArrays(1, &screenVAO);
+	glBindVertexArray(screenVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
+	
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	postProcessingProgramID = this->GetProgram("PostProcessing");
+
+	texture0ID = glGetUniformLocation(postProcessingProgramID, "texture0");
+
+	glBindBuffer(GL_FRAMEBUFFER, 0);
+
+	postProcessInit = true;
+}
+
+void Renderer::PreRender()
+{
+	// Bind the frame buffer
+	if (usePostProcess)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+	}
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	// Clear screen
+	ClearScreen(0, 0, 0, 1);
+}
+
+void Renderer::PostRender()
+{
+	if (usePostProcess)
+		PostProcess();
+}
+
+void Renderer::PostProcess()
+{
+	// Start post processing
+	glDisable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	ClearScreen(0, 0, 0, 1, GL_COLOR_BUFFER_BIT);
+
+	glUseProgram(postProcessingProgramID);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, postTextureID);
+	glUniform1d(texture0ID, 0);
+		
+	// Draw post processing quad
+	glBindVertexArray(screenVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 GLuint Renderer::LoadSingleShader(const char* file_path, GLenum shaderType)

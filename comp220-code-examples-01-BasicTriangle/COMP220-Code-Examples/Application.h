@@ -5,6 +5,7 @@
 #include "GLUtils.h"
 #include "Components.h"
 #include "Time.h"
+
 #include <filesystem>
 #include <cstdint>
 #include <filesystem>
@@ -29,5 +30,6 @@ namespace FluidGL
 		void Quit();
 	private:
 		Renderer* renderer;
+		PhysicsContext* physicsContext;
 	};
 }

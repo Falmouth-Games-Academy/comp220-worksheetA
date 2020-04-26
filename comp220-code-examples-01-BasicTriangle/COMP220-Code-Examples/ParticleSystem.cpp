@@ -14,6 +14,12 @@ ParticleSystem::~ParticleSystem()
 		this->material = NULL;
 	}
 
+	if (physicsContext != NULL)
+	{
+		delete physicsContext;
+		physicsContext = NULL;
+	}
+
 	this->particles.clear();
 	this->pooledParticles.clear();
 }
@@ -25,7 +31,8 @@ void ParticleSystem::Init(int maxParticles,
 	float particleLifespan,
 	Material* material,
 	Mesh* mesh,
-	float maxRandomDeviation
+	float maxRandomDeviation,
+	PhysicsContext* physicsContext
 )
 {
 	this->maxParticles = maxParticles;
@@ -37,6 +44,7 @@ void ParticleSystem::Init(int maxParticles,
 	this->mesh = mesh;
 	this->lastEmission = clock();
 	this->maxRandomDeviation = maxRandomDeviation;
+	this->physicsContext = physicsContext;
 
 	srand(time(NULL));
 }
@@ -60,7 +68,7 @@ void ParticleSystem::EmitParticle()
 	// Otherwise, create a new particle
 	else
 	{
-		p = new Particle(transform->Position(), glm::vec3((rand() % 100 - 50) / 100.0, (rand() % 100 - 50) / 100.0, (rand() % 100 - 50) / 100.0) * this->emissionSpeed, this->particleLifespan, this->mesh, this->material);
+		p = new Particle(transform->Position(), glm::vec3((rand() % 100 - 50) / 100.0, (rand() % 100 - 50) / 100.0, (rand() % 100 - 50) / 100.0) * this->emissionSpeed, this->particleLifespan, this->mesh, this->material, this->physicsContext);
 		this->particles.push_back(p);
 	}
 
@@ -80,6 +88,48 @@ void ParticleSystem::Reset()
 {
 	this->particles.clear();
 	this->pooledParticles.clear();
+}
+
+void ParticleSystem::DestroyRigidBodies()
+{
+	if (physicsContext)
+	{
+		auto i = this->particles.begin();
+		while (i != this->particles.end())
+		{
+			// Will thow an "expression must have pointer-to-class error without the brackets due to '->' having higher precedence than '*'
+			(*i)->rigidBody->Destroy();
+			i++;
+		}
+	}
+}
+
+void ParticleSystem::UpdateParticleSystemPhysics()
+{
+	if (physicsContext)
+	{
+		auto i = this->particles.begin();
+		while (i != this->particles.end())
+		{
+			// Will thow an "expression must have pointer-to-class error without the brackets due to '->' having higher precedence than '*'
+			(*i)->UpdateParticlePhysics();
+			i++;
+		}
+	}
+}
+
+void ParticleSystem::UpdatePhysicsContext()
+{
+	if (physicsContext)
+	{
+		auto i = this->particles.begin();
+		while (i != this->particles.end())
+		{
+			// Will thow an "expression must have pointer-to-class error without the brackets due to '->' having higher precedence than '*'
+			(*i)->UpdateParticlePhysicsContext();
+			i++;
+		}
+	}
 }
 
 void ParticleSystem::Update()

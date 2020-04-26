@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Base.h"
+#include "Physics.h"
+#include "Rigidbody.h"
 #include "GLUtils.h"
 #include "Transform.h"
 #include "IComponent.h"

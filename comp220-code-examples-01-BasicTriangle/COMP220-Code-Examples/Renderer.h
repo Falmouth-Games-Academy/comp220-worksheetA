@@ -61,13 +61,22 @@ public:
 	void UnloadProgramById(GLuint id);
 	// Unload all programs
 	void UnloadAllPrograms();
+	// Initialize post-processing
+	void InitPostProcess();
+	// Function call before rendering is started
+	void PreRender();
+	// Function call after rendering is done
+	void PostRender();
+	// Apply post-processing
+	void PostProcess();
 	// Get program based on name
 	GLuint GetProgram(const char* programName) { return loadedPrograms.at(programName); }
 	// Render all cameras 
 
 	// Get window name
 	const char* GetWindowTitle() { return windowTitle.c_str(); }
-
+	// Use post-processing?
+	bool usePostProcess = true;
 
 private : 
 	SDL_Window* window = nullptr;
@@ -80,4 +89,22 @@ private :
 	GLuint LinkShaders(std::vector<GLuint> shaderID);
 
 	std::map <std::string, GLuint> loadedPrograms;	// Dictionary of all shader programs loaded
+
+	// =====POST-PROCESSING===== //
+
+	// Has post processing been initialized?
+	bool postProcessInit = false;
+	// Intermediary texture to render to
+	GLuint postTextureID;
+	// Depth bugger
+	GLuint depthBufferID = 0;
+	// Frame buffer
+	GLuint frameBufferID = 0;
+	// Vertices for post-processing quad
+	float pVertices[8] = { -1, -1, 1, -1, -1, 1, 1, 1 };
+	GLuint screenVBO = 0;
+	GLuint screenVAO = 0;
+	GLuint postProcessingProgramID = 0;
+	// Location of texture to render to
+	GLuint texture0ID = 0;
 };

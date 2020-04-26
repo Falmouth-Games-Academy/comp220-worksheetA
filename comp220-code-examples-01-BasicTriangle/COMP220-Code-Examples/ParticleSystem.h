@@ -29,7 +29,8 @@ public:
 		float particleLifespan,
 		Material* material,
 		Mesh* mesh,
-		float maxRandomDeviation=0.0f
+		float maxRandomDeviation=0.0f,
+		PhysicsContext* physicsContext = nullptr
 	);
 
 	void EmitParticle();
@@ -38,6 +39,9 @@ public:
 	int ParticleCount() { return particles.size(); }
 
 	void Reset();
+	void DestroyRigidBodies();
+	void UpdateParticleSystemPhysics();
+	void UpdatePhysicsContext();
 	void Update() override;
 	void RenderParticles(glm::mat4 viewMatrix, glm::mat4 projectionMatrix, glm::vec3 cameraPosition=glm::vec3(0)) override;
 private:
@@ -53,4 +57,5 @@ private:
 	Material* material = NULL;
 	Mesh* mesh = NULL;
 	float maxRandomDeviation;
+	PhysicsContext* physicsContext = NULL;
 };
