@@ -93,6 +93,7 @@ void FluidGL::Application::Run()
 	SDL_Event ev;
 
 	float input = 0;
+	float inputy = 0;
 	const Uint8* keys = SDL_GetKeyboardState(NULL);
 
 	float runTime = 0;
@@ -110,11 +111,15 @@ void FluidGL::Application::Run()
 	particleSpawner->GetComponent(ParticleSystem())->UpdatePhysicsContext();
 
 	bool usePhysics = true;
+	float mouseSensitivity = 100.0f;
+
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 
  	while (running)
 	{
 		time.StartTimer();
 		input = 0;
+		inputy = 0;
 		keys = SDL_GetKeyboardState(NULL);
 		//Poll for the events which have happened in this frame
 		//https://wiki.libsdl.org/SDL_PollEvent
@@ -129,7 +134,7 @@ void FluidGL::Application::Run()
 				break;
 				//KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
-				//Check the actual key code of the key that has been pressed
+			{//Check the actual key code of the key that has been pressed
 				switch (ev.key.keysym.sym)
 				{
 					//Escape key
@@ -143,19 +148,29 @@ void FluidGL::Application::Run()
 					usePhysics = !usePhysics;
 					break;
 				}
+				break;
+			}
+			case SDL_MOUSEMOTION:
+			{
+				// Check for mouse movement
+				camera->transform->RotateAngles(glm::vec3(1, 0, 0), ev.motion.xrel / mouseSensitivity);
+				camera->transform->RotateAngles(glm::vec3(0, 1, 0), -ev.motion.yrel / mouseSensitivity);
+				break;
+			}
 			}
 		}
 
-		if (keys[SDL_SCANCODE_UP])
+		if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W])
 			input = -0.1;
-		if (keys[SDL_SCANCODE_DOWN])
+		if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S])
 			input += 0.1;
-		if (keys[SDL_SCANCODE_LEFT])
-			camera->transform->RotateAngles(glm::vec3(1, 0, 0), -2);
-		if(keys[SDL_SCANCODE_RIGHT])
-			camera->transform->RotateAngles(glm::vec3(1, 0, 0), 2);
+		if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A])
+			inputy += 0.1;
+		if(keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
+			inputy -= 0.1;
 
 		camera->transform->Move(-camera->transform->Forward() * input);
+		camera->transform->Move(-camera->transform->Right() * inputy);
 
 		//====UPDATE PHYSICS HERE====//
 		if (usePhysics)

@@ -38,6 +38,10 @@ public:
 	///</summary>
 	glm::vec3 Forward() { return glm::vec3(cos(EulerRotation().x) * cos(EulerRotation().y), cos(EulerRotation().x) * sin(EulerRotation().y), sin(EulerRotation().x)); }
 	///<summary>
+	/// Returns the forward vector of the transform
+	///</summary>
+	glm::vec3 Right() { return glm::cross(Forward(), glm::vec3(0, 1, 0)); }
+	///<summary>
 	/// Move GameObject by certain amount
 	///</summary>
 	void Move(glm::vec3 velocity);
