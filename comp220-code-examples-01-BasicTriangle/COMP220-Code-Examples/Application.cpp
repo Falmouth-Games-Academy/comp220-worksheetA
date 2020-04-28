@@ -187,7 +187,8 @@ void FluidGL::Application::Run()
 		}
 		//====UPDATE OBJECTS HERE====//
 
-		particleSpawner->GetComponent(ParticleSystem())->Update();
+		if(usePhysics)
+			particleSpawner->GetComponent(ParticleSystem())->Update();
 		
 		//======END UPDATE HERE======//
 		//====RENDER OBJECTS HERE====//
