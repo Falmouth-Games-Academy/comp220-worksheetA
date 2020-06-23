@@ -1,0 +1,67 @@
+#include "TextureSystem.h"
+
+GLuint TextureSystem::LoadTextureFromFile(const std::string& filename)
+{
+	GLuint textureID;
+
+	GLenum textureFormat = GL_RGB;
+	GLenum internalFormat = GL_RGB8;
+
+	SDL_Surface* surface = IMG_Load(filename.c_str());
+	if (surface == nullptr)
+	{
+		printf("Could not load file %s", IMG_GetError());
+		return 0;
+	}
+	GLint colorCount = surface->format->BytesPerPixel;
+	if (colorCount == 4)
+	{
+
+		if (surface->format->Rmask == 0x000000ff)
+		{
+			textureFormat = GL_RGBA;
+			internalFormat = GL_RGBA8;
+		}
+		else
+		{
+			textureFormat = GL_BGRA;
+			internalFormat = GL_RGBA8;
+		}
+	}
+	else if (colorCount == 3)
+	{
+		if (surface->format->Rmask == 0x000000ff)
+		{
+			textureFormat = GL_RGB;
+			internalFormat = GL_RGB8;
+		}
+		else
+		{
+			textureFormat = GL_BGR;
+			internalFormat = GL_RGB8;
+		}
+	}
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, surface->w, surface->h, 0, textureFormat, GL_UNSIGNED_BYTE, surface->pixels);
+
+	SDL_FreeSurface(surface);
+	return textureID;
+}
+
+GLuint TextureSystem::CreateTexture(int width, int height)
+{
+	GLuint textureID = 0;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	return textureID;
+}

@@ -21,32 +21,29 @@ int ByGL::Application::Init()
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_Init failed", SDL_GetError(), NULL);
 		return Quit();
 	}
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#pragma endregion
+#pragma region ECS Setup
+
+	// Initialize Coordinator
+	coordinator = std::make_unique<Coordinator>();
+	coordinator->Init();
+	RegisterComponents();
 #pragma endregion
 
-#pragma region Window Setup
-	// Initialize the main window and check its success.
-	glWindow.push_back(NewWindow("New Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_TRUE, SDL_WINDOW_OPENGL));
-	if (glWindow.at(0) == nullptr)
-		return Quit();
+#pragma region
 #pragma endregion
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+
 	return 1;
 	running = true;
 }
 
-ByGL::OpenGLWindow* ByGL::Application::NewWindow(const char* title, int x, int y, int windowWidth, int windowHeight, SDL_bool fullscreen, SDL_WindowFlags flags)
-{
-	OpenGLWindow* newWindow = new OpenGLWindow(title, x, y, windowWidth, windowHeight, fullscreen, flags);
-	if (newWindow != nullptr)
-	{
-		if (!newWindow->CheckSuccess())
-		{
-			// Should the window fail, quit the application
-			delete newWindow;
-		}
-		return newWindow;
-	}
-	return nullptr;
-}
 
 int ByGL::Application::Run()
 {
@@ -55,25 +52,126 @@ int ByGL::Application::Run()
 	{
 		return Quit();
 	}
+#pragma region Components
+	// Create signatures for the systems
+	std::vector<Signature> sigs;
 	
+	sigs = AddSignature(sigs, coordinator->GetComponentType<WindowComponent>());
+	std::shared_ptr<WindowUpdateSystem> windowUpdate = RegisterSystems<WindowUpdateSystem>(sigs);
+	sigs.clear();
+
+	sigs = AddSignature(sigs, coordinator->GetComponentType<DebugComponent>());
+	std::shared_ptr<DebugSystem> debugSystem = RegisterSystems<DebugSystem>(sigs);
+	sigs.clear();
+
+	sigs = AddSignature(sigs, coordinator->GetComponentType<MeshCollectionComponent>());
+	sigs = AddSignature(sigs, coordinator->GetComponentType<MeshComponent>());
+	sigs = AddSignature(sigs, coordinator->GetComponentType<Transform>());
+	std::shared_ptr<MeshSystem> meshSystem = RegisterSystems<MeshSystem>(sigs);
+	sigs.clear();
+	
+	sigs = AddSignature(sigs, coordinator->GetComponentType<Texture>());
+	std::shared_ptr<TextureSystem> textureSystem = RegisterSystems<TextureSystem>(sigs);
+	sigs.clear();
+
+	sigs = AddSignature(sigs, coordinator->GetComponentType<CameraComponent>());
+	sigs = AddSignature(sigs, coordinator->GetComponentType<Transform>());
+	std::shared_ptr<CameraSystem> camSystem = RegisterSystems<CameraSystem>(sigs);
+	sigs.clear();
+
+	sigs = AddSignature(sigs, coordinator->GetComponentType<MeshCollectionComponent>());
+	std::shared_ptr<ShaderSystem> shaderSystem = RegisterSystems<ShaderSystem>(sigs);
+	sigs.clear();
+
+	// Create entity
+	auto ent = coordinator->CreateEntity();
+	auto visualEntity = coordinator->CreateEntity();
+	auto cameraEntity = coordinator->CreateEntity();
+	// Initialise Components
+	WindowComponent* wc = new WindowComponent();
+	wc->Init("Wimdow", 300, 300, 800, 600, true);
+	DebugComponent* dc = new DebugComponent();
+	dc->Init("qq", "pp");
+	Texture* tex = new Texture();
+	Transform* tc = new Transform();
+	Transform* tc2 = new Transform();
+	tc->Init(0, 10, 0);
+	tc2->Init(0, 10, 0);
+
+	// Add components to Entity
+	coordinator->AddComponent<WindowComponent>(ent, *wc);
+	// Initialize the window and add it to component
+	wc->SetWindow(windowUpdate->CreateWindow(coordinator, ent));
+	// Remove the component then readd it with the window ptr
+	coordinator->RemoveComponent<WindowComponent>(ent);
+	coordinator->AddComponent<WindowComponent>(ent, *wc);
+	coordinator->AddComponent<DebugComponent>(ent, DebugComponent{coordinator->GetComponent<WindowComponent>(ent).title, " created."});
+
+	coordinator->AddComponent<MeshCollectionComponent>(visualEntity, MeshCollectionComponent{meshSystem->LoadMeshCollectionFromFile("2019-20-utah-teapot.fbx")});
+	coordinator->AddComponent<Transform>(visualEntity, Transform{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f});
+	coordinator->AddComponent<Texture>(visualEntity, Texture{textureSystem->LoadTextureFromFile("brick_D.png")});
+	//coordinator->AddComponent<Vertex>(visualEntity, Vertex{});
+
+	coordinator->AddComponent<CameraComponent>(cameraEntity, CameraComponent{ 0, 0, -20, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 45.0f, 1280, 720, 0.1f, 1000.0f});
+	coordinator->AddComponent<Transform>(cameraEntity, Transform{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 1.0f, 1.0f, 1.0f, 1.0f});
+
+	//windowUpdate->sy_Entities.insert(ent);
+	//debugSystem->sy_Entities.insert(ent);
+
+	//meshSystem->sy_Entities.insert(visualEntity);
+	//shaderSystem->sy_Entities.insert(visualEntity);
+	debugSystem->Update(coordinator);
+
+	shaderSystem->Load("DefaultVert.glsl", "DefaultFrag.glsl");
+	//shaderSystem->
+#pragma endregion
 	while (running)
 	{
-		// Physics Update
+		// Debug System
 
-		// Events loop
+		// Physics System
+
+		// Events System - Actually make this a System
 		Events();
-		// Object Update
+		// Update Components
 
-		// Update Screen
-		glClearColor(0.0, 1.0, 0.5, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (int i = 0; i < glWindow.size(); i++)
-			SDL_GL_SwapWindow(glWindow.at(i)->GetWindow());
+
+		// Camera Update
+		camSystem->UpdateCameraPosition(coordinator);
+
+		// Start Render and Add Textures
+		windowUpdate->StartRender();
+
+		shaderSystem->Bind();
+		// Mesh Update
+		meshSystem->Update(coordinator);
+		shaderSystem->Update(coordinator, 
+			coordinator->GetComponent<CameraComponent>(cameraEntity).view, coordinator->GetComponent<CameraComponent>(cameraEntity).projection,
+			shaderSystem->GetUniform("view"), shaderSystem->GetUniform("projection"));
+		camSystem->SendCameraData(coordinator, shaderSystem->GetUniform("view"), shaderSystem->GetUniform("projection"));
+		meshSystem->Render(coordinator);
+		// End Rendering
+		//windowUpdate->EndRender();
+
+		// Swap Windows
+		windowUpdate->UpdateWindow(coordinator);
+
 	}
-	for (int i = 0; i < glWindow.size(); i++)
-		delete glWindow.at(i);
-	glWindow.clear();
+	//for (int i = 0; i < glWindow.size(); i++)
+	//	delete glWindow.at(i);
+	//glWindow.clear();
+	delete(wc);
+	delete(dc);
+	delete(tc);
 	return Quit();
+}
+
+std::vector<Signature> ByGL::Application::AddSignature(std::vector<Signature> signatures, ComponentType newSignature)
+{
+	Signature sig;
+	sig.set(newSignature);
+	signatures.push_back(sig);
+	return signatures;
 }
 
 void ByGL::Application::Events()
@@ -103,6 +201,20 @@ void ByGL::Application::Events()
 		}
 	}
 }
+
+
+void ByGL::Application::RegisterComponents()
+{
+	coordinator->RegisterComponent<CameraComponent>();
+	coordinator->RegisterComponent<DebugComponent>();
+	coordinator->RegisterComponent<MeshCollectionComponent>();
+	coordinator->RegisterComponent<MeshComponent>();
+	coordinator->RegisterComponent<Texture>();
+	coordinator->RegisterComponent<Transform>();
+	coordinator->RegisterComponent<Vertex>();
+	coordinator->RegisterComponent<WindowComponent>();
+}
+
 
 int ByGL::Application::Quit()
 {
