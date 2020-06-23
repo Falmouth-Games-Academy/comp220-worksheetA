@@ -57,6 +57,11 @@ public:
 		return co_componentManager->GetComponent<T>(entity);
 	}
 	template<typename T>
+	T* GetComponentPtr(Entity entity)
+	{
+		return co_componentManager->GetComponentPtr<T>(entity);
+	}
+	template<typename T>
 	ComponentType GetComponentType()
 	{
 		return co_componentManager->GetComponentType<T>();

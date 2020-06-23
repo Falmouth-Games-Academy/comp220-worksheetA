@@ -4,7 +4,7 @@ void DebugSystem::DebugIDs()
 {
 	
 }
-void DebugSystem::Update(std::unique_ptr<Coordinator>& coord)
+void DebugSystem::Update(Coordinator* coord)
 {
 	if (sy_Entities.size() > 0)
 	{

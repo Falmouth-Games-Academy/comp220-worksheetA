@@ -24,9 +24,9 @@ public:
 	void Init(Coordinator coord);
 	void Init(MeshComponent mc_mesh);
 	void CopyBufferData(MeshComponent mc_mesh, Vertex *pVerts, unsigned int numberOfVerts, unsigned int *pIndicies, unsigned int numberOfIndices);
-	void Render(std::unique_ptr<Coordinator> &coord);
+	void Render(Coordinator* coord);
 	void Destroy(Coordinator coord);
-	void Update(std::unique_ptr<Coordinator> &coord);
+	void Update(Coordinator* coord);
 	bool LoadModelFromFile(const std::string& filename, GLuint _VBO, GLuint _EBO, unsigned int& _vertCount, unsigned int& indecesCount);
 	std::vector<MeshComponent> LoadMeshCollectionFromFile(const std::string& filename);
 	Vertex LoadMeshVertex(aiMesh* _mesh, int index);

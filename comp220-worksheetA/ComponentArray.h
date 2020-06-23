@@ -50,6 +50,10 @@ public:
 
 		return ca_ComponentArray[ca_EntityToIndexMap[entity]];
 	}
+	T* GetDataPtr(Entity entity)
+	{
+		return &ca_ComponentArray[ca_EntityToIndexMap[entity]];
+	}
 	void EntityDestroyed(Entity entity) override
 	{
 		if (ca_EntityToIndexMap.find(entity) != ca_EntityToIndexMap.end())

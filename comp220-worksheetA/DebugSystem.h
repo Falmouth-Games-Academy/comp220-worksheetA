@@ -7,5 +7,5 @@ class DebugSystem : public System
 {
 public:
 	void DebugIDs();
-	void Update(std::unique_ptr<Coordinator>& coord);
+	void Update(Coordinator* coord);
 };

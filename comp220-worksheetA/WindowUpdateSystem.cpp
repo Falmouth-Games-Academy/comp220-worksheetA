@@ -12,13 +12,13 @@ WindowUpdateSystem::~WindowUpdateSystem()
 
 void WindowUpdateSystem::StartRender()
 {
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0, 1.0, 0.5, 0.0);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void WindowUpdateSystem::UpdateWindow(std::unique_ptr<Coordinator>& coord)
+void WindowUpdateSystem::UpdateWindow(Coordinator* coord)
 {
 	for (Entity ent : sy_Entities)
 	{
@@ -35,7 +35,7 @@ void WindowUpdateSystem::EndRender()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-SDL_Window* WindowUpdateSystem::CreateWindow(std::unique_ptr<Coordinator>& man, Entity ent)
+SDL_Window* WindowUpdateSystem::CreateWindow(Coordinator* man, Entity ent)
 {
 	WindowComponent windowComp = man->GetComponent<WindowComponent>(ent);
 	SDL_Window* window = SDL_CreateWindow(windowComp.title, windowComp.x, windowComp.y, windowComp.windowWidth, windowComp.windowHeight, SDL_WINDOW_OPENGL);

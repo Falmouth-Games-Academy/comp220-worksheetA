@@ -12,6 +12,7 @@
 
 #include "System.h"
 #include "Texture.h"
+#include "CameraComponent.h"
 #include "Coordinator.h"
 #include "MeshCollectionComponent.h"
 
@@ -24,7 +25,8 @@ public:
 	bool Load(const std::string& s_vertFileName, const std::string& s_fragShaderName);
 	GLuint LoadShaders(const char* c_vertexFilePath, const char* c_fragmentFilePath);
 	GLint GetUniform(const std::string& s_uniformName);
-	void Update(std::unique_ptr<Coordinator> &coord, float view[16], float projection[16], GLuint v, GLuint p);
+	void Update(Coordinator* coord, GLuint v, GLuint p);
+	void SetCam(CameraComponent* _cam);
 
 private:
 	bool CheckShader(GLuint shaderID, GLint results, int logLength);
@@ -40,6 +42,7 @@ private:
 
 	GLuint shaderProgramID;
 	std::map<std::string, GLint> Uniforms;
+	CameraComponent* mainCam;
 protected:
 
 };

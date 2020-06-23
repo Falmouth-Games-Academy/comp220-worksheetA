@@ -48,6 +48,11 @@ public:
 	{
 		return GetComponentArray<T>()->GetData(entity);
 	}
+	template<typename T>
+	T* GetComponentPtr(Entity entity)
+	{
+		return GetComponentArray<T>()->GetDataPtr(entity);
+	}
 
 	void EntityDestroyed(Entity entity)
 	{

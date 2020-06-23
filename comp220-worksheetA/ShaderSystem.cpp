@@ -170,6 +170,11 @@ void ShaderSystem::RetrieveUniforms()
 
 }
 
+void ShaderSystem::SetCam(CameraComponent* _cam)
+{
+	mainCam = _cam;
+}
+
 void ShaderSystem::Bind()
 {
 	glUseProgram(shaderProgramID);
@@ -177,7 +182,7 @@ void ShaderSystem::Bind()
 
 
 
-void ShaderSystem::Update(std::unique_ptr<Coordinator>& coord, float _view[16], float _projection[16], GLuint v, GLuint p)
+void ShaderSystem::Update(Coordinator* coord, GLuint v, GLuint p)
 {
 	for (auto const& ent : sy_Entities)
 	{
@@ -187,9 +192,9 @@ void ShaderSystem::Update(std::unique_ptr<Coordinator>& coord, float _view[16], 
 		{
 			glm::mat4 modelMatrix = glm::make_mat4(mesh.modelMatrix);
 			glUniformMatrix4fv(GetUniform("model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-			glm::mat4 view = glm::make_mat4(_view);
+			glm::mat4 view = glm::make_mat4(mainCam->view);
 			glUniformMatrix4fv(v, 1, GL_FALSE, glm::value_ptr(view));
-			glm::mat4 projection = glm::make_mat4(_projection);
+			glm::mat4 projection = glm::make_mat4(mainCam->projection);
 			glUniformMatrix4fv(p, 1, GL_FALSE, glm::value_ptr(projection));
 
 			glActiveTexture(GL_TEXTURE0);

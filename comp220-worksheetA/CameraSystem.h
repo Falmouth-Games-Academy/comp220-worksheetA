@@ -14,11 +14,11 @@
 class CameraSystem : public System
 {
 public:
-	void SetView(CameraComponent cam);
-	void SetProjection(CameraComponent cam, float fov, float aspectWidth, float aspectHeight, float nearClip, float farClip);
-	void SetProjection(CameraComponent cam);
-	void SendCameraData(std::unique_ptr<Coordinator>& coord, GLint _view, GLint _projection);
-	void UpdateCameraPosition(std::unique_ptr<Coordinator>& coord);
+	void SetView(CameraComponent* cam);
+	void SetProjection(CameraComponent* cam, float fov, float aspectWidth, float aspectHeight, float nearClip, float farClip);
+	void SetProjection(CameraComponent* cam);
+	void SendCameraData(Coordinator* coord, GLint _view, GLint _projection);
+	void UpdateCameraPosition(Coordinator* coord);
 
 private:
 

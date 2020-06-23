@@ -45,7 +45,7 @@ namespace ByGL
 		void RegisterComponents();
 		std::vector<Signature> AddSignature(std::vector<Signature> signatures, ComponentType newSignature);
 		int Quit();
-		std::unique_ptr<Coordinator> coordinator;
+		Coordinator* coordinator;
 		SDL_Event ev;
 		bool running;
 

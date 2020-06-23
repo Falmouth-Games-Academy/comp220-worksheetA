@@ -29,7 +29,7 @@ int ByGL::Application::Init()
 #pragma region ECS Setup
 
 	// Initialize Coordinator
-	coordinator = std::make_unique<Coordinator>();
+	coordinator = new Coordinator();
 	coordinator->Init();
 	RegisterComponents();
 #pragma endregion
@@ -90,13 +90,6 @@ int ByGL::Application::Run()
 	// Initialise Components
 	WindowComponent* wc = new WindowComponent();
 	wc->Init("Wimdow", 300, 300, 800, 600, true);
-	DebugComponent* dc = new DebugComponent();
-	dc->Init("qq", "pp");
-	Texture* tex = new Texture();
-	Transform* tc = new Transform();
-	Transform* tc2 = new Transform();
-	tc->Init(0, 10, 0);
-	tc2->Init(0, 10, 0);
 
 	// Add components to Entity
 	coordinator->AddComponent<WindowComponent>(ent, *wc);
@@ -108,21 +101,18 @@ int ByGL::Application::Run()
 	coordinator->AddComponent<DebugComponent>(ent, DebugComponent{coordinator->GetComponent<WindowComponent>(ent).title, " created."});
 
 	coordinator->AddComponent<MeshCollectionComponent>(visualEntity, MeshCollectionComponent{meshSystem->LoadMeshCollectionFromFile("2019-20-utah-teapot.fbx")});
-	coordinator->AddComponent<Transform>(visualEntity, Transform{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f});
+	// x, y, z, qX, qY, qZ, qW, sX, sY, sZ
+	coordinator->AddComponent<Transform>(visualEntity, Transform{0.0f, 0.0f, 20.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f});
 	coordinator->AddComponent<Texture>(visualEntity, Texture{textureSystem->LoadTextureFromFile("brick_D.png")});
 	//coordinator->AddComponent<Vertex>(visualEntity, Vertex{});
-
-	coordinator->AddComponent<CameraComponent>(cameraEntity, CameraComponent{ 0, 0, -20, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 45.0f, 1280, 720, 0.1f, 1000.0f});
+	// x, y, z, lookX, lookY, lookZ, upX, upY, upZ, fov, aspectWidth, aspectHeight, nearClip, FarClip
+	coordinator->AddComponent<CameraComponent>(cameraEntity, CameraComponent{ 0, 0, 0, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 45.0f, 1280, 720, 0.1f, 1000.0f});
 	coordinator->AddComponent<Transform>(cameraEntity, Transform{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 1.0f, 1.0f, 1.0f, 1.0f});
 
-	//windowUpdate->sy_Entities.insert(ent);
-	//debugSystem->sy_Entities.insert(ent);
-
-	//meshSystem->sy_Entities.insert(visualEntity);
-	//shaderSystem->sy_Entities.insert(visualEntity);
 	debugSystem->Update(coordinator);
 
 	shaderSystem->Load("DefaultVert.glsl", "DefaultFrag.glsl");
+	shaderSystem->SetCam(coordinator->GetComponentPtr<CameraComponent>(cameraEntity));
 	//shaderSystem->
 #pragma endregion
 	while (running)
@@ -145,10 +135,7 @@ int ByGL::Application::Run()
 		shaderSystem->Bind();
 		// Mesh Update
 		meshSystem->Update(coordinator);
-		shaderSystem->Update(coordinator, 
-			coordinator->GetComponent<CameraComponent>(cameraEntity).view, coordinator->GetComponent<CameraComponent>(cameraEntity).projection,
-			shaderSystem->GetUniform("view"), shaderSystem->GetUniform("projection"));
-		camSystem->SendCameraData(coordinator, shaderSystem->GetUniform("view"), shaderSystem->GetUniform("projection"));
+		//shaderSystem->Update(coordinator, shaderSystem->GetUniform("view"), shaderSystem->GetUniform("projection"));
 		meshSystem->Render(coordinator);
 		// End Rendering
 		//windowUpdate->EndRender();
@@ -161,8 +148,7 @@ int ByGL::Application::Run()
 	//	delete glWindow.at(i);
 	//glWindow.clear();
 	delete(wc);
-	delete(dc);
-	delete(tc);
+	delete(coordinator);
 	return Quit();
 }
 

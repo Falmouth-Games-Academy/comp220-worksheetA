@@ -13,10 +13,10 @@ public:
 	~WindowUpdateSystem();
 	void StartRender();
 	
-	void UpdateWindow(std::unique_ptr<Coordinator>& coord);
+	void UpdateWindow(Coordinator* coord);
 
 	void EndRender();
-	SDL_Window* CreateWindow(std::unique_ptr<Coordinator>& man, Entity ent);
+	SDL_Window* CreateWindow(Coordinator* man, Entity ent);
 private:
 	// Have a window component reference
 protected:

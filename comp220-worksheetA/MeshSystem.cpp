@@ -28,34 +28,32 @@ void MeshSystem::Init(MeshComponent mc_mesh)
 
 void MeshSystem::CopyBufferData(MeshComponent mc_mesh, Vertex* pVerts, unsigned int numberOfVerts, unsigned int *pIndices, unsigned int numberOfIndices)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, mc_mesh.m_EBO);
-	glBufferData(GL_ARRAY_BUFFER, numberOfVerts * sizeof(Vertex), pVerts, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(1);	
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);	
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(7 * sizeof(float)));
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(9 * sizeof(float)));
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(12 * sizeof(float)));
-	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(15 * sizeof(float)));
 }
 
-void MeshSystem::Render(std::unique_ptr<Coordinator> &coord)
+void MeshSystem::Render(Coordinator* coord)
 {
 	for (Entity ent : sy_Entities)
 	{
-		MeshCollectionComponent meshCollection = coord->GetComponent<MeshCollectionComponent>(ent);
-		for (MeshComponent mesh : meshCollection.mcc_meshCollection)
+		MeshCollectionComponent* meshCollection = coord->GetComponentPtr<MeshCollectionComponent>(ent);
+		for (MeshComponent &mesh : meshCollection->mcc_meshCollection)
 		{
-			mesh.m_VAO = 2;
-			mesh.m_VBO = 3;
-			mesh.m_EBO = 4;
-			CopyBufferData(mesh, mesh.m_verts.data(), mesh.m_verts.size(), mesh.m_indices.data(), mesh.m_indices.size());
+			//CopyBufferData(mesh, mesh.m_verts.data(), mesh.m_verts.size(), mesh.m_indices.data(), mesh.m_indices.size());
+			glBindBuffer(GL_ARRAY_BUFFER, mesh.m_EBO);
+			//glBufferData(GL_ARRAY_BUFFER, numberOfVerts * sizeof(Vertex), pVerts, GL_STATIC_DRAW);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(7 * sizeof(float)));
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(9 * sizeof(float)));
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(12 * sizeof(float)));
+			glEnableVertexAttribArray(5);
+			glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(15 * sizeof(float)));
 			glDrawElements(GL_TRIANGLES, mesh.m_numberOfIndices, GL_UNSIGNED_INT, (void*)0);
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
@@ -116,20 +114,19 @@ void MeshSystem::LoadMeshIndices(aiMesh* _mesh, std::vector<unsigned int> _ind)
 	}
 }
 
-void MeshSystem::Update(std::unique_ptr<Coordinator>& coord)
+void MeshSystem::Update(Coordinator* coord)
 {
 	for (auto const& ent : sy_Entities)
 	{
-		MeshCollectionComponent mcc = coord->GetComponent<MeshCollectionComponent>(ent);
-		Transform transform = coord->GetComponent<Transform>(ent);
-		for (MeshComponent mesh : mcc.mcc_meshCollection)
+		MeshCollectionComponent* mcc = coord->GetComponentPtr<MeshCollectionComponent>(ent);
+		Transform* transform = coord->GetComponentPtr<Transform>(ent);
+		for (MeshComponent &mesh : mcc->mcc_meshCollection)
 		{
-
-			glm::mat4 translation = glm::translate(glm::vec3(transform.x, transform.y, transform.z));
-			glm::mat4 rotation = glm::rotate(transform.qX, glm::vec3(1.0f, 0.0f, 0.0f))
-				* glm::rotate(transform.qY, glm::vec3(0.0f, 1.0f, 0.0f))
-				* glm::rotate(transform.qZ, glm::vec3(0.0f, 0.0f, 1.0f));
-			glm::mat4 scale = glm::scale(glm::vec3(transform.sX, transform.sY, transform.sZ));
+			glm::mat4 translation = glm::translate(glm::vec3(transform->x, transform->y, transform->z));
+			glm::mat4 rotation = glm::rotate(transform->qX, glm::vec3(1.0f, 0.0f, 0.0f))
+				* glm::rotate(transform->qY, glm::vec3(0.0f, 1.0f, 0.0f))
+				* glm::rotate(transform->qZ, glm::vec3(0.0f, 0.0f, 1.0f));
+			glm::mat4 scale = glm::scale(glm::vec3(transform->sX, transform->sY, transform->sZ));
 
 			glm::mat4 model = translation * rotation * scale;
 
@@ -225,7 +222,6 @@ std::vector<MeshComponent> MeshSystem::LoadMeshCollectionFromFile(const std::str
 		mc_mesh->m_verts = verts;
 		mc_mesh->m_indices = ind;
 
-		meshCollection.push_back(*mc_mesh);
 		verts.clear();
 		ind.clear();
 
@@ -239,6 +235,7 @@ std::vector<MeshComponent> MeshSystem::LoadMeshCollectionFromFile(const std::str
 		glGenBuffers(1, &mc_mesh->m_EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mc_mesh->m_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mc_mesh->m_indices.size() * sizeof(unsigned int), mc_mesh->m_indices.data(), GL_STATIC_DRAW);
+		meshCollection.push_back(*mc_mesh);
 	}
 	return meshCollection;
 }
