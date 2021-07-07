@@ -1,0 +1,27 @@
+System information:
+Vendor: NVIDIA Corporation
+Renderer: GeForce GTX 1060/PCIe/SSE2
+<=====BEGIN BENCHMARK=====>
+Simulation runtime: 5 s. FPS: 58 Particles 296
+Simulation runtime: 10 s. FPS: 55 Particles 596
+Simulation runtime: 15 s. FPS: 62 Particles 897
+Simulation runtime: 20 s. FPS: 58 Particles 1197
+Simulation runtime: 25 s. FPS: 55 Particles 1484
+Simulation runtime: 30 s. FPS: 45 Particles 1727
+Simulation runtime: 35 s. FPS: 37 Particles 1942
+Simulation runtime: 40 s. FPS: 37 Particles 2136
+Simulation runtime: 45 s. FPS: 34 Particles 2315
+Simulation runtime: 50 s. FPS: 31 Particles 2475
+Simulation runtime: 55 s. FPS: 30 Particles 2631
+Simulation runtime: 60 s. FPS: 31 Particles 2776
+Simulation runtime: 65 s. FPS: 23 Particles 2917
+Simulation runtime: 70 s. FPS: 26 Particles 3050
+Simulation runtime: 75 s. FPS: 25 Particles 3174
+Simulation runtime: 80 s. FPS: 22 Particles 3293
+Simulation runtime: 85 s. FPS: 22 Particles 3406
+Simulation runtime: 90 s. FPS: 23 Particles 3520
+Simulation runtime: 95 s. FPS: 21 Particles 3633
+Simulation runtime: 100 s. FPS: 21 Particles 3741
+Simulation runtime: 105 s. FPS: 21 Particles 3849
+Simulation runtime: 110 s. FPS: 19 Particles 3953
+Simulation runtime: 115 s. FPS: 20 Particles 4054
